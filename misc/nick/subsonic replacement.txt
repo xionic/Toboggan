@@ -1,0 +1,12 @@
+Aims (above and beyond subsonic):
+Lighter than subsonic
+No frames
+Transcode and download
+HTML5 support
+per user bandwidth limit/usage cap
+Better folder traversal and layout
+Support subsonic REST API
+Partial file downloading (php proxy problem?)
+Zip files before download? (fix content-length problem)
+Better playlist support
+Better jukebox mode?
