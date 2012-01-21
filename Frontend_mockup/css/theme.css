@@ -1,0 +1,28 @@
+
+#folderbrowserContainer 
+{
+	border-right: 1px solid grey;
+	z-index: 1;
+}
+
+#playlistContainer, #playerContainer
+{
+	border-top: 1px solid grey;
+	z-index: 0;
+}
+
+div.containerPadding 
+{
+	padding: 1ex;
+}
+
+html 
+{
+	font-family: "Trebuchet MS", "Liberation Sans", "Tahoma", Sans-Serif;
+	font-size: small;
+}
+
+#playerContainer 
+{
+	background-color:#eee;
+}
