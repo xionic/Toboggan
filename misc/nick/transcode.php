@@ -7,8 +7,8 @@ $filename = "test.avi";
 
 //header("Content-Transfer-Encoding: binary");
 //header("Content-Type: audio/mp3");
-header("Content-Type: video/flv");
-header("Content-disposition: attachment; filename=".$filename.".flv");
+header("Content-Type: video/webm");
+header("Content-disposition: attachment; filename=".$filename.".webm");
 
 header("Cache-Control: no-cache");
 
@@ -22,10 +22,10 @@ $descriptors = array(
 
 $cwd = "/var/www/projects/ultrasonic/misc/nick/";
 
-//flv transcode
-$cmd = "/usr/bin/ffmpeg -i $filename -async 1 -f flv -v 0 -vcodec libx264 -ar 44100 -ac 2 -preset superfast -threads 0 -s 320x240 -b 700k -";
+//video transcode
+$cmd = "/usr/bin/ffmpeg -i $filename -async 1 -f webm -v 0 -ar 44100 -ac 2 -preset superfast -threads 0 -s 320x240 -b 700k -";
 
-//mp3 transcode
+//audio transcode
 //$cmd = "/usr/bin/ffmpeg -i $filename -v 0 -f mp3 -ab 128k -";
 
 nlog("Starting transcode");

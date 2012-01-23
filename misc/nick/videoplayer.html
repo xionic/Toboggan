@@ -9,17 +9,18 @@
 			$("#jquery_jplayer_1").jPlayer({
 				ready: function(){
 					$(this).jPlayer("setMedia", {
-						flv: "../transcode.php",
+						webmv: "https://ssl.xionic.co.uk/debug/projects/ultrasonic/misc/nick/transcode.php",
 					});
 				},
 				swfPath: "./jPlayer/",
-				supplied: "flv",
+				supplied: "webmv",
 				//wmode: "window",
 				size: {
 					width: "640px",
 					height: "360px",
 					cssClass: "jp-video-360p"
 				},
+				errorAlerts: true,
 			});
 		});
 	</script>
