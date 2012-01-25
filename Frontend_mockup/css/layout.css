@@ -58,7 +58,8 @@ table {
 
 	width: 20em;
 	height: auto;
-	overflow: auto;
+	overflow-x: auto;
+	overflow-y: scroll;
 }
 #folderbrowserContainer
 {
@@ -67,6 +68,9 @@ table {
 	left: 0px;
 	bottom: 8ex;
 	width: 10em;
+	
+	overflow-y: scroll;
+	overflow-x: auto;
 }
 #trackbrowserContainer
 {
@@ -83,22 +87,25 @@ table {
 	height: 8ex;
 	left: 0em;
 	right: 0em;
+
 }
 
 /** 
 	Styles Vital to things working but not colours, borders etc
 */
 
-ol#playlistTracks li {
+ol#playlistTracks li
+{
 	cursor: move;
-/*	height: 2.2ex;	*/	/* same as the ui-state-highlight  height*/
+	height: 2.2ex;		/* same as the ui-state-highlight  height*/
+/*
 	list-style: decimal;
 	list-style-position: inside;
+*/
 }
 ol#playlistTracks .ui-state-highlight { 
-/*	height: 2.2ex; 
-	line-height: 2.2ex; */
-/*	border: 0px;	*/
+	height: 2.2ex; 
+	line-height: 2.2ex; 
 }
 
 /** helper classes **/

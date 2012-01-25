@@ -18,15 +18,41 @@
 			wmode: "window"
 		});
 		
-		/** Make the playlist drag-sortable */
-		$( "#playlistTracks" ).sortable({
-			placeholder: "ui-state-highlight"
+		/** Make the playlist drag-sortable & Droppable*/
+		
+		$( "#tracklist li" ).draggable({
+			appendTo: "body",
+			helper: "clone"
 		});
-		$( "#playlistTracks" ).disableSelection();
+		
+		$("#playlistTracks").droppable({
+				accept: ":not(.ui-sortable-helper)",	//make sure that if its being rearranged this doesn't count as a drop
+				drop: function( event, ui ) {
+					$( this ).find( ".placeholder" ).remove();
+					
+					//TODO: Extract the metadata information for the track and clone it as well as the filename etc
+					//or some sort of deep clone:
+					//$(ui.draggable).clone().appendTo(this);
+					var trackTagObject = $(ui.draggable).children("span.trackName");
+					
+					$("<li></li>").append(
+						$("<a href='javascript:;'></a>")
+							.text( trackTagObject.text() )
+							.attr( "data-trackpath", trackTagObject.attr("data-trackpath"))
+					).appendTo(this);
+				}
+			}).sortable({
+				items: "li:not(.placeholder)",
+				sort: function() {
+					// gets added unintentionally by droppable interacting with sortable
+					// using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
+					$( this ).removeClass( "ui-state-default" );
+				}
+			});
 		
 		addTrackClickHandlers();
-		addFolderClickHandlers();
-		
+		//addFolderClickHandlers();
+		updateFolderBrowser();
 	});
 
 	/**
@@ -51,20 +77,50 @@
 	function addFolderClickHandlers()
 	{
 		$("#folderlist").children("li").children("a").click(function(){
-			updateFolderBrowser();
+			alert("Folder Clicked");
+			updateFolderBrowser(this);
 		});
 	}
 	
 	/**
 		Actually updates the folder browser with content
 	*/
-	function updateFolderBrowser()
+	function updateFolderBrowser(clickedObj)
 	{
+	
+		var folderName = $(clickedObj).text();
 		//retrieve a list of new folders
-		
-		//update the content holders
+		$.ajax({
+			cache: false,
+			url: "list_files.php",
+			type: "GET",
+			data: { 'dir' : folderName },
+			complete: function(jqxhr, status) {},
+			error: function(jqxhr, status, errorThrown) {
+				alert("AJAX ERROR - check the console!");
+				console.error(jqxhr, status, errorThrown);
+			},
+			success: function(data, status, jqxhr) {
+				console.debug(data);
 				
-		addFolderClickHandlers();
+				$("#folderlist").empty();
+				
+				for (dir in data.Directories)
+				{
+					$("<li></li>").append(
+						$("<a href='javascript:;'></a>")
+							.text(data.Directories[dir])
+					)
+					.appendTo($("#folderlist"));
+				}
+				
+				
+				//TODO: List files too
+				//data.Files
+				
+				addFolderClickHandlers();
+			},
+		});
 	}
 	
 })();
