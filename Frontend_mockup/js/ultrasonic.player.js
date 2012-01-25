@@ -77,7 +77,6 @@
 	function addFolderClickHandlers()
 	{
 		$("#folderlist").children("li").children("a").click(function(){
-			alert("Folder Clicked");
 			updateFolderBrowser(this);
 		});
 	}
