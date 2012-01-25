@@ -1,3 +1,13 @@
+<?php
+	require_once("functions.php");
+	$file = $_GET["file"];
+	//get streamers for file
+	$streamers = getAvailableStreamers($file);
+	if(!$streamers)
+		die("File not supported");
+							
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,11 +19,20 @@
 			$("#jquery_jplayer_1").jPlayer({
 				ready: function(){
 					$(this).jPlayer("setMedia", {
-						webmv: "https://ssl.xionic.co.uk/debug/projects/ultrasonic/misc/nick/test_notpipe.webm",						
+						<?			
+						//string for supplied parameter later
+						$suppliedStr="";
+						foreach($streamers as $s){
+							$suppliedStr.= $s["toExt"]."";
+							echo $s["toExt"].": '../getStream.php?file=".urlencode($file)."&profile=".$s["id"]."',\n";
+							//echo "flv: 'https://ssl.xionic.co.uk/projects/ultrasonic/misc/nick/testmedia/testflvs/ad.flv'";
+						}
+							
+						?>
 					});
 				},
 				swfPath: "./jPlayer/",
-				supplied: "webmv",
+				supplied: "<?php echo $suppliedStr; ?>",
 				//wmode: "window",
 				size: {
 					width: "640px",
