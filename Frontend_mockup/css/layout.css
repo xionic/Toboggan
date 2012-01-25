@@ -52,37 +52,57 @@ table {
 #playlistContainer 
 {
 	position: fixed;
-	bottom: 0px;
+	top: 0px;
+	bottom: 8ex;
 	right: 0px;
-	left: 10em;
-	height: 30ex;
+
+	width: 20em;
+	height: auto;
+	overflow: auto;
 }
 #folderbrowserContainer
 {
 	position: fixed;
 	top: 0px;
 	left: 0px;
-	bottom: 0px;
+	bottom: 8ex;
 	width: 10em;
 }
 #trackbrowserContainer
 {
 	position: fixed;
 	top: 0px;
-	bottom: 38ex;		/* #playlist.height+#player.height*/
-	right: 0px;
+	bottom: 8ex;		/* #playlist.height+#player.height*/
+	right: 20em;
 	left: 10em;
 }
 #playerContainer
 {
 	position: fixed;
-	bottom: 30ex;
+	bottom: 0ex;
 	height: 8ex;
-	left: 10em;
-	right: 0px;
+	left: 0em;
+	right: 0em;
+}
+
+/** 
+	Styles Vital to things working but not colours, borders etc
+*/
+
+ol#playlistTracks li {
+	cursor: move;
+/*	height: 2.2ex;	*/	/* same as the ui-state-highlight  height*/
+	list-style: decimal;
+	list-style-position: inside;
+}
+ol#playlistTracks .ui-state-highlight { 
+/*	height: 2.2ex; 
+	line-height: 2.2ex; */
+/*	border: 0px;	*/
 }
 
 /** helper classes **/
 .float-container {
 	overflow: auto;
 }
+

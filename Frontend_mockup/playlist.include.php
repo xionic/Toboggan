@@ -1,5 +1,5 @@
 <ol id='playlistTracks'>
-	<li>PlaylistTrack One</li>
-	<li>PlaylistTrack Two</li>
-	<li>PlaylistTrack Three</li>
+	<li><a href='javascript:;'>PlaylistTrack One</a></li>
+	<li><a href='javascript:;'>PlaylistTrack Two</a></li>
+	<li><a href='javascript:;'>PlaylistTrack Three</a></li>
 </ol>

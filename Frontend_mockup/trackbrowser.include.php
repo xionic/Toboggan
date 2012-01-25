@@ -1,5 +1,5 @@
 <ol id='tracklist'>
-	<li>Album Track One</li>
-	<li>Album Track Two</li>
-	<li>Album Track Three</li>
+	<li><a href='javascript:;'>+</a> <span class='trackName'>Album Track One</span></li>
+	<li><a href='javascript:;'>+</a> <span class='trackName'>Album Track Two</span></li>
+	<li><a href='javascript:;'>+</a> <span class='trackName'>Album Track Three</span></li>
 </ol>

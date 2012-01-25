@@ -1,5 +1,5 @@
 <ul id='folderlist'>
-	<li>Folder One</li>
-	<li>Folder Two</li>
-	<li>Folder Three</li>
+	<li><a href='javascript:;'>Folder One</a></li>
+	<li><a href='javascript:;'>Folder Two</a></li>
+	<li><a href='javascript:;'>Folder Three</a></li>
 </ul>

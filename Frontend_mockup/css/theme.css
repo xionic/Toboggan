@@ -1,14 +1,20 @@
 
-#folderbrowserContainer 
+#folderbrowserContainer
 {
 	border-right: 1px solid grey;
 	z-index: 1;
 }
 
-#playlistContainer, #playerContainer
+#playerContainer
 {
 	border-top: 1px solid grey;
-	z-index: 0;
+	z-index: 1;
+}
+
+#playlistContainer
+{
+	border-left: 1px solid grey;
+	z-index: 1;
 }
 
 div.containerPadding 
@@ -26,3 +32,9 @@ html
 {
 	background-color:#eee;
 }
+
+#playlistContainer, #folderbrowserContainer, #trackbrowserContainer
+{
+	background-color: #fafafa;
+}
+
