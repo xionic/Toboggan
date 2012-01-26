@@ -4,7 +4,7 @@
 	//get streamers for file
 	$streamers = getAvailableStreamers($file);
 	if(!$streamers)
-		die("File not supported");
+		die("File type not supported");
 							
 ?>
 

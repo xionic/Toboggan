@@ -22,6 +22,20 @@ $config["videoStreamers"] = array(
 		"cmd" 		=> "/usr/bin/ffmpeg -i %path -async 1 -b 700k -s 320x240 -ar 44100 -ac 2 -v 0 -f flv -vcodec libx264 -preset superfast -",
 		"mime" 		=> "video/flv",
 	),
+	array(
+		"id"		=> 1,
+		"fromExt" 	=> "mp4",
+		"toExt" 	=> "flv",
+		"cmd" 		=> "/usr/bin/ffmpeg -i %path -async 1 -b 700k -s 320x240 -ar 44100 -ac 2 -v 0 -f flv -vcodec libx264 -preset superfast -",
+		"mime" 		=> "video/flv",
+	),
+	array(
+		"id"		=> 1,
+		"fromExt" 	=> "wmv",
+		"toExt" 	=> "flv",
+		"cmd" 		=> "/usr/bin/ffmpeg -i %path -async 1 -b 700k -s 320x240 -ar 44100 -ac 2 -v 0 -f flv -vcodec libx264 -preset superfast -",
+		"mime" 		=> "video/flv",
+	),
 );
 
 $config["supportedPlayFormatExts"] = array(
