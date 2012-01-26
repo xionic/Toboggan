@@ -39,7 +39,7 @@ html
 #playlistTracks
 {
 	min-height: 2.2ex;
-	border: 1px solid grey;
+	border: 0px solid grey;
 	padding: 1ex;
 	position: absolute;
 	top: 0px;
@@ -48,13 +48,15 @@ html
 	bottom: 0px;
 }
 
-#folderlist li 
+#folderlist li, #tracklist li
 {
 	padding-top: 0.25ex;
 	padding-bottom: 0.25ex;
 }
 
-#folderlist li:nth-of-type(even)
+#folderlist li:nth-of-type(even),
+#playlistTracks li:nth-of-type(even),
+#tracklist li:nth-of-type(even)
 {
 	background: #eee;
 }

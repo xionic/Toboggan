@@ -108,7 +108,7 @@ table {
 ol#playlistTracks li
 {
 	cursor: move;
-	height: 2.2ex;		/* same as the ui-state-highlight  height*/
+	min-height: 2.2ex;		/* same as the ui-state-highlight  height*/
 /*
 	list-style: decimal;
 	list-style-position: inside;
