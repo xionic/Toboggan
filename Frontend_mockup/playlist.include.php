@@ -1,3 +1,5 @@
-<ol id='playlistTracks' class='' >
+<div class='containerPadding'>
+	<ol id='playlistTracks' class='' >
 
-</ol>
+	</ol>
+</div>

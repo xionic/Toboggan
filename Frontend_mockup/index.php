@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<link href='./css/layout.css' rel='stylesheet' type='text/css' />
-	<link href='./css/theme.css' rel='stylesheet' type='text/css' />
+	<link href='./css/?layout.css' rel='stylesheet' type='text/css' />
+	<link href='./css/?theme.css' rel='stylesheet' type='text/css' />
 	<!-- jPlayer theme -->
 	<link href='./css/jQuery.jPlayer.Theme/jplayer.ultrasonic.css' rel='stylesheet' type='text/css' />
 	<link href='./css/jQuery-ui/smoothness/jquery-ui-1.8.17.custom.css' rel='stylesheet' type='text/css' />
@@ -16,29 +16,19 @@
 <body>
 
 <div id='playlistContainer'>
-	<div class='containerPadding'>
-		<?php include 'playlist.include.php'; ?>
-	</div>
+	<?php include 'playlist.include.php'; ?>
 </div>
 
 <div id='folderbrowserContainer'>
-	<div class='containerPadding'>
-		<?php include 'folderbrowser.include.php'; ?>
-	</div>
+	<?php include 'folderbrowser.include.php'; ?>
 </div>
 
 <div id='trackbrowserContainer'>
-	<div class='containerPadding'>
-		<?php include 'trackbrowser.include.php'; ?>
-	</div>
+	<?php include 'trackbrowser.include.php'; ?>
 </div>
 
 <div id='playerContainer'>
-	<div class='containerPadding'>
-		<?php
-			include 'player.include.php';
-		?>
-	</div>
+	<?php include 'player.include.php';	?>
 </div>
 
 </body>
