@@ -9,12 +9,15 @@
 <body>
 	<div id='fileContainer' >
 	<?php
-//	define(ROOT_DIR,"/var/www/music_files/");
+	
+	
+	$inputDir = isset($_GET['dir'])?$_GET['dir']:"";
+	
 	define('ROOT_DIR', "/media/WD-250_md0/music/");
 
-	$dir = html_entity_decode(base64_decode($_GET['dir']));
+	$dir = html_entity_decode(base64_decode($inputDir));
 
-	if(strlen(strstr($dir,".."))>0 || $dir[0]=='/' | $dir=="")
+	if(strlen(strstr($dir,".."))>0 || $dir=="" || $dir[0]=='/' )
 		$dir = ".";
 
 	if(substr($dir,-1)!="/")

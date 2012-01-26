@@ -1,20 +1,13 @@
 
-#folderbrowserContainer
+#trackbrowserContainer
 {
 	border-right: 1px solid grey;
-	z-index: 1;
+	border-left: 1px solid grey;
 }
 
 #playerContainer
 {
 	border-top: 1px solid grey;
-	z-index: 1;
-}
-
-#playlistContainer
-{
-	border-left: 1px solid grey;
-	z-index: 1;
 }
 
 div.containerPadding 
@@ -28,7 +21,7 @@ html
 	font-size: small;
 }
 
-#playerContainer 
+#playerContainer, #playlistTracks
 {
 	background-color:#eee;
 }
@@ -38,3 +31,8 @@ html
 	background-color: #fafafa;
 }
 
+#playlistTracks
+{
+	min-height: 2.2ex;
+	border: 1px solid grey;
+}
