@@ -34,7 +34,6 @@
 			$("#jquery_jplayer_1").jPlayer( "setMedia", {
 					"mp3" : streamSource
 				}).jPlayer("play");
-			                                                                
 			
 			nextObjectLi.children("span");
 			
@@ -115,7 +114,9 @@
 		$("#playlistTracks li a").unbind("click");
 		$("#playlistTracks li a").click(function(){
 			var streamSource = ""+$(this).attr("data-dir")+""+$(this).attr("data-filename");
-
+			
+			$("#playlistTracks .jPlaying").removeClass("jPlaying");
+			
 			$(this).addClass("jPlaying");
 	
 			$("#jquery_jplayer_1").jPlayer( "setMedia", {
