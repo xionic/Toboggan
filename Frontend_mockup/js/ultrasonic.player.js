@@ -16,8 +16,30 @@
 			swfPath: "./js/jQuery.jPlayer.2.1.0/",
 			supplied: "mp3",
 			wmode: "window"
+		}).bind($.jPlayer.event.ended, function(event){
+			console.log("play next track");
+			//$("#playlistTracks")
+			
+			//get the currently played one
+			var playingObject = $("#playlistTracks .jPlaying");
+			playingObject.removeClass("jPlaying");
+			
+			var nextObjectSpan = playingObject.parent().next("li").children("a");
+			if(!nextObjectSpan)
+				return;
+			
+			var streamSource = ""+$(nextObjectSpan).attr("data-dir")+""+$(nextObjectSpan).attr("data-filename");
+			$(nextObjectSpan).addClass("jPlaying");
+		                        
+			$("#jquery_jplayer_1").jPlayer( "setMedia", {
+					"mp3" : streamSource
+				}).jPlayer("play");
+			                                                                
+			
+			nextObjectLi.children("span");
+			
 		});
-		
+	
 		updateFolderBrowser();
 	});
 
@@ -72,6 +94,7 @@
 		});
 		
 		addPlaylistClickHandlers();
+		
 	}
 	
 	/**
@@ -92,6 +115,8 @@
 		$("#playlistTracks li a").unbind("click");
 		$("#playlistTracks li a").click(function(){
 			var streamSource = ""+$(this).attr("data-dir")+""+$(this).attr("data-filename");
+
+			$(this).addClass("jPlaying");
 	
 			$("#jquery_jplayer_1").jPlayer( "setMedia", {
 				"mp3" : streamSource
