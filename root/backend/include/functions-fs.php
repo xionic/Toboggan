@@ -1,13 +1,18 @@
 <?php
 
-/** Returns a JSON object representing the current folder contents **/
+function getMediaSourceID_JSON(){
+	restTools::sendResponse(json_encode(array(1)),200);
+}
 
-	header("Content-type: application/json");
+function getDirContents_JSON($dir, $mediaSourceID){
 
-	$inputDir = isset($_GET['dir'])?$_GET['dir']:"";
-	
+	//check inputs
+	if(((int)$mediaSourceID)==0)
+	{
+		restTools::sendResponse("Invalid mediaSourceID given", 404, "text/plain");
+	}
 
-	$dir = html_entity_decode(urldecode($inputDir));
+	$mediaSourcePath = normalisePath(getMediaSourcePath($mediaSourceID))."/";
 
 	if(strlen(strstr($dir,".."))>0 || $dir=="" || $dir[0]=='/' )
 		$dir = ".";
@@ -15,7 +20,7 @@
 	if(substr($dir,-1)!="/")
 		$dir .= "/";
 
-	$dh = opendir(ROOT_DIR.$dir) or die("opendir failed:".ROOT_DIR.$dir);
+	$dh = opendir($mediaSourcePath.$dir) or die("opendir failed:".$mediaSourcePath.$dir);
 
 	$files	= array();
 	$dirs	= array();
@@ -28,7 +33,7 @@
 			continue;
 		}
 
-		switch(filetype(ROOT_DIR.$dir.$occurrence))
+		switch(filetype($mediaSourcePath.$dir.$occurrence))
 		{
 			case 'dir':
 				$dirs[] 		= $occurrence;
@@ -50,7 +55,12 @@
 		
 	//var_dump($dirs);	
 		
-	echo json_encode(
+	restTools::sendResponse(
+		json_encode(
 			array("CurrentPath" => $dir, "Directories" => $dirs, "Files" => $files)
-		);	
+		),
+		200
+	);
+}
+
 ?>

@@ -48,5 +48,23 @@ function getCurrentMediaDir(){
 	return $config["basedir"];
 }
 
+function getDBConnection()
+{
+	$db = new PDO(PDO_DSN);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	return $db;
+}
+
+function getMediaSourcePath($mediaSourceID)
+{
+	$conn = getDBConnection();
+	$stmt = $conn->prepare("SELECT path FROM mediaSource WHERE idmediaSource = :idmediaSource");
+	$stmt->bindValue(":idmediaSource",$mediaSourceID, PDO::PARAM_INT);
+	$stmt->execute();
+
+	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	return $row["path"];
+}
+
 
 ?>
