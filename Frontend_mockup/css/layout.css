@@ -89,6 +89,7 @@ table {
 	bottom: $playerHeight;
 	right: $Playlist_columnWidth;
 	left: $Directory_columnWidth;
+	overflow-y: scroll;
 }
 
 #playerContainer

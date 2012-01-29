@@ -1,0 +1,4 @@
+
+Full Path + Filename
+Stream type (mp3) + Supplied String
+
