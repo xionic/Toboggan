@@ -1,5 +1,5 @@
 <?php
-	require_once("functions.php");
+	require_once("include/functions.php");
 	$file = $_GET["file"];
 	//get streamers for file
 	$streamers = getAvailableStreamers($file);
@@ -23,8 +23,8 @@
 						//string for supplied parameter later
 						$suppliedStr="";
 						foreach($streamers as $s){
-							$suppliedStr.= $s["toExt"]."";
-							echo $s["toExt"].": '../getStream.php?file=".urlencode($file)."&profile=".$s["id"]."',\n";
+							$suppliedStr.= $s->toExt.",";
+							echo $s->toExt.": 'https://ssl.xionic.co.uk/projects/ultrasonic/misc/nick/poc/getStream.php?file=".urlencode($file)."&profile=".$s->id."',\n";
 							//echo "flv: 'https://ssl.xionic.co.uk/projects/ultrasonic/misc/nick/testmedia/testflvs/ad.flv'";
 						}
 							

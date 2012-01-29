@@ -3,16 +3,20 @@
 /**
 * function to return a valid path - i.e. not malicious or breaking out of the root media dir
 */
-function getValidPath($path){
+function getFullValidPath($path){
+	global $config;
 	//insert checks here
 	
-	return $path;
+	//should be pulled from db via some sort of context
+	return $config["basedir"].$path;
 }
 /**
 * function to log messages to a file with a verbosity level
 */
 function appLog($message, $level = -1){
 	global $config;
+	if($level >= appLog_DEBUG) return; //verbosity cut-off level
+	
 	$file = fopen($config["logFile"], "a");
 	fwrite($file, time() . ": ". $level. " :". $message."\n");
 	fclose($file);

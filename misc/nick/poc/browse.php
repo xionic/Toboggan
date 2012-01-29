@@ -10,7 +10,7 @@
 	<div id='fileContainer' >
 	<?php
 //	define(ROOT_DIR,"/var/www/music_files/");
-	define('ROOT_DIR', "/mnt/storage/video/TV/");
+	define('ROOT_DIR', "/mnt/storage/");
 
 	$dir = html_entity_decode(base64_decode($_GET['dir']));
 
