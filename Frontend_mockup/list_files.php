@@ -7,6 +7,7 @@
 	$inputDir = isset($_GET['dir'])?$_GET['dir']:"";
 	
 	define('ROOT_DIR', "/media/WD-250_md0/music/");
+	//define('ROOT_DIR', "/var/wwws/code/ultrasonic/ultrasonic/Frontend_mockup/");
 
 	$dir = html_entity_decode(urldecode($inputDir));
 
@@ -52,6 +53,6 @@
 	//var_dump($dirs);	
 		
 	echo json_encode(
-			array("Directories" => $dirs, "Files" => $files)
+			array("CurrentPath" => $dir, "Directories" => $dirs, "Files" => $files)
 		);	
 ?>

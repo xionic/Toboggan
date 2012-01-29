@@ -1,3 +1,11 @@
+/**ARGS_DEFINITION
+
+$Directory_columnWidth = 20em;
+$playerHeight = 8ex;
+$Playlist_columnWidth = 20em;
+
+*/
+
 /* Reset CSS */
 /* http://meyerweb.com/eric/tools/css/reset/ 
    v2.0 | 20110126
@@ -53,42 +61,45 @@ table {
 {
 	position: fixed;
 	top: 0px;
-	bottom: 8ex;
+	bottom: $playerHeight;
 	right: 0px;
 
-	width: 20em;
+	width: $Playlist_columnWidth;
 	height: auto;
 	overflow-x: auto;
 	overflow-y: scroll;
 }
+
 #folderbrowserContainer
 {
 	position: fixed;
 	top: 0px;
 	left: 0px;
-	bottom: 8ex;
-	width: 10em;
+	bottom: $playerHeight;
+	width: $Directory_columnWidth;
 	
 	overflow-y: scroll;
 	overflow-x: auto;
 }
+
 #trackbrowserContainer
 {
 	position: fixed;
 	top: 0px;
-	bottom: 8ex;		/* #playlist.height+#player.height*/
-	right: 20em;
-	left: 10em;
+	bottom: $playerHeight;
+	right: $Playlist_columnWidth;
+	left: $Directory_columnWidth;
 }
+
 #playerContainer
 {
 	position: fixed;
 	bottom: 0ex;
-	height: 8ex;
+	height: $playerHeight;
 	left: 0em;
 	right: 0em;
 
-}
+	}
 
 /** 
 	Styles Vital to things working but not colours, borders etc
@@ -97,11 +108,12 @@ table {
 ol#playlistTracks li
 {
 	cursor: move;
-	height: 2.2ex;		/* same as the ui-state-highlight  height*/
+	min-height: 2.2ex;		/* same as the ui-state-highlight  height*/
 /*
 	list-style: decimal;
 	list-style-position: inside;
 */
+
 }
 ol#playlistTracks .ui-state-highlight { 
 	height: 2.2ex; 
