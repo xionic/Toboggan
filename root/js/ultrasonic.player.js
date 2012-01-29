@@ -77,6 +77,7 @@
 					.text( trackTagObject.text() )
 					.attr( "data-filename", trackTagObject.attr("data-filename"))
 					.attr( "data-dir", trackTagObject.attr("data-dir"))
+					.attr( "data-streamers", trackTagObject.attr("data-streamers"))
 					.attr( "data-media_source", trackTagObject.attr("data-media_source"))
 			).appendTo($("#playlistTracks"));
 			
@@ -150,9 +151,6 @@
 		
 		if(clickedObj)
 			folderName = $(clickedObj).attr("data-parent")+""+$(clickedObj).text();
-			
-		console.debug(folderName);
-		console.debug(mediaSourceID);
 		
 		//retrieve a list of new folders
 		$.ajax({
@@ -170,7 +168,6 @@
 			},
 			success: function(data, status, jqxhr) {
 				
-				console.log(data);
 				$("#tracklist").empty();
 				$("#folderlist").empty();
 				
@@ -221,9 +218,7 @@
 				alert("AJAX ERROR - check the console!");
 				console.error(jqxhr, status, errorThrown);
 			},
-			success: function(data, status, jqxhr) {
-				console.debug(data);
-				
+			success: function(data, status, jqxhr) {		
 				for (var x=0; x<data.length; ++x)
 				{
 					$("#mediaSourceSelector").append(
