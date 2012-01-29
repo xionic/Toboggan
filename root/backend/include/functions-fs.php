@@ -39,7 +39,7 @@ function getDirContents_JSON($dir, $mediaSourceID){
 				$dirs[] 		= $occurrence;
 				break;
 			case 'file':
-				$files[] 		= $occurrence;
+				$files[]		= getFileObject($dir.$occurrence);
 				break;
 			case 'link':
 				$links[]		= $occurrence;

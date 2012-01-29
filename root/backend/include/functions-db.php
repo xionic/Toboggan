@@ -21,9 +21,6 @@ function getAvailableStreamers($file){
 			$suitableStreamers[] = new Streamer($item["id"], $item["fromExt"], $item["toExt"],$item["cmd"],$item["mime"],$item["outputMediaType"], $item["bitrateCmd"]);
 		}
 	}
-	//if no streamers available for file
-	if(count($suitableStreamers)==0)
-		return false;
 	
 	return $suitableStreamers;
 
@@ -43,11 +40,6 @@ function getStreamerById($id){
 	return false;
 }
 
-function getCurrentMediaDir(){
-	global $config;
-	return $config["basedir"];
-}
-
 function getDBConnection()
 {
 	$db = new PDO(PDO_DSN);
@@ -55,6 +47,9 @@ function getDBConnection()
 	return $db;
 }
 
+/**
+* get mediaSource path from it's ID
+*/
 function getMediaSourcePath($mediaSourceID)
 {
 	$conn = getDBConnection();
@@ -64,6 +59,29 @@ function getMediaSourcePath($mediaSourceID)
 
 	$row = $stmt->fetch(PDO::FETCH_ASSOC);
 	return $row["path"];
+}
+
+/**
+* get an object which represents data about a media file
+*/
+function getFileObject($path)
+{
+	$pathinfo = pathinfo($path);
+	$filename = $pathinfo["basename"];
+	$displayName = $filename; //to be updated in the future
+	
+	$streamers = array();
+	
+	foreach(getAvailableStreamers($path) as $s)
+	{
+		$streamers[] = array($s->toExt => $s->id);
+	}
+	return array(
+		"filename" 		=> $filename,
+		"displayName"	=> $displayName,
+		"streamers"		=> $streamers,
+		
+	);
 }
 
 
