@@ -74,7 +74,7 @@ function getFileObject($path)
 	
 	foreach(getAvailableStreamers($path) as $s)
 	{
-		$streamers[] = array($s->toExt => $s->id);
+		$streamers[] = array("extension" => $s->toExt, "streamerID" => $s->id);
 	}
 	return array(
 		"filename" 		=> $filename,
