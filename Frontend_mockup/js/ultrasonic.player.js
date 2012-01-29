@@ -17,7 +17,6 @@
 			supplied: "mp3",
 			wmode: "window"
 		}).bind($.jPlayer.event.ended, function(event){
-			console.log("play next track");
 			//$("#playlistTracks")
 			
 			//get the currently played one
@@ -31,8 +30,10 @@
 			var streamSource = ""+$(nextObjectSpan).attr("data-dir")+""+$(nextObjectSpan).attr("data-filename");
 			$(nextObjectSpan).addClass("jPlaying");
 		                        
+			console.debug("streamFile.php?file="+streamSource);
+			
 			$("#jquery_jplayer_1").jPlayer( "setMedia", {
-					"mp3" : streamSource
+					"mp3" : "streamFile.php?file="+streamSource
 				}).jPlayer("play");
 			
 			nextObjectLi.children("span");
@@ -119,8 +120,10 @@
 			
 			$(this).addClass("jPlaying");
 	
+			console.debug("streamFile.php?file="+streamSource);
+			
 			$("#jquery_jplayer_1").jPlayer( "setMedia", {
-				"mp3" : streamSource
+				"mp3" : "streamFile.php?file="+streamSource
 			}).jPlayer("play");
 		});
 	}
@@ -171,7 +174,7 @@
 					).append(
 						$("<span class='trackName'></span>")
 							.text(data.Files[file])
-							.attr("data-dir",folderName)
+							.attr("data-dir",folderName+"/")
 							.attr("data-filename",data.Files[file])					
 					).appendTo($("#tracklist"));
 				}
