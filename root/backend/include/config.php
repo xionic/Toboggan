@@ -10,7 +10,7 @@ define("DBPATH", "/var/wwws/projects/ultrasonic/root/backend/db/nick-dev.db");
 define("PDO_DSN", "sqlite:".DBPATH);
 
 //logging
-$config["logLevel"] = appLog_VERBOSE;
+$config["logLevel"] = appLog_DEBUG;
 
 $config["supportedPlayFormatExts"] = array(
 	"flv",

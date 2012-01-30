@@ -46,7 +46,7 @@ switch($action)
 		$fullfilepath = getMediaSourcePath($mediaSourceID).normalisePath($partialfilepath.$filename);
 		
 		//output the media stream via a streamer
-		outputStream($fullfilepath, $streamerID);
+		outputStream($streamerID, $fullfilepath, 200);
 		break;
 		
 	case "":

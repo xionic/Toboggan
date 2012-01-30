@@ -1,5 +1,7 @@
 <?php
-
+/**
+* get a JSON representation of the contents of directories
+*/
 function getDirContents_JSON($dir, $mediaSourceID){
 
 	//check inputs

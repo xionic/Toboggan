@@ -1,15 +1,4 @@
 <?php
-
-/**
-* function to return a valid path - i.e. not malicious or breaking out of the root media dir
-*/
-// function getFullValidPath($path){
-	// global $config;
-	// //insert checks here
-	
-	// //should be pulled from db via some sort of context
-	// return $config["basedir"].$path;
-// }
 /**
 * function to log messages to a file with a verbosity level
 */
@@ -28,24 +17,36 @@ function appLog($message, $level = -1){
 /**
 * replaces placeholders in command strings with sanitized replacements
 */
-function expandCmdString($cmd, $path){
-	//sanitize replacements
-	$path = escapeshellarg($path);
+function expandCmdString($cmd, $data){
 
-	$patterns = array();
-	$patterns[0] = "/%path/";
+	$allowedPatterns = array(
+		"path",
+		"bitrate"
+	);
 	
+	$patterns = array();
 	$replacements = array();
-	$replacements[0] = $path;
+	
+	foreach($allowedPatterns as $item)
+	{
+		if(isset($data[$item]))
+		{
+			$patterns[]		 = "/%".$item."/";
+			$replacements[]	 =	escapeshellarg($data[$item]);
+		}
+	}
 	
 	return preg_replace($patterns, $replacements, $cmd);
 }
-
+/**
+* debugging function
+*/
 function var_dump_pre($var){
 	echo "<pre>";
 	var_dump($var);
 	echo "</pre>";
 }
+
 /**
 * custom error handler 
 */
@@ -73,11 +74,16 @@ function appErrorHandler($errNo, $errStr, $errFile, $errLine){
 			break;
     }
 }
-
+/**
+* Generic exception handler
+*/
 function handleExeption($exception){
 	appLog("Uncaught PHP Exception: ". var_export($exception,true));
 }
 
+/**
+* function to clean-up and sanitize relative file system paths
+*/
 function normalisePath($fn){
 	$fnArray = explode("/",$fn);
 	$ofnArray = array();
@@ -89,7 +95,7 @@ function normalisePath($fn){
 			//delete last location from array
 			array_pop($ofnArray);
 		}
-		else if ($val != ".")
+		else if ($val != "." && $val != "")
 			$ofnArray[] = $val;
 	}
 

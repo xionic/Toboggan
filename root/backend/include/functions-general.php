@@ -7,10 +7,28 @@ function getConfig($name){
 	return $config[$name];
 }
 
+
+
 /**
-* get the current maximum bandwidth that media should be streamed at
+* get an object which represents data about a media file
 */
-function getCurrentMaxBandwidth(){
-	return 100;
+function getFileObject($path)
+{
+	$pathinfo = pathinfo($path);
+	$filename = $pathinfo["basename"];
+	$displayName = $filename; //to be updated in the future
+	
+	$streamers = array();
+	
+	foreach(getAvailableStreamers($path) as $s)
+	{
+		$streamers[] = array("extension" => $s->toExt, "streamerID" => $s->id, "mediaType" => $s->outputMediaType);
+	}
+	return array(
+		"filename" 		=> $filename,
+		"displayName"	=> $displayName,
+		"streamers"		=> $streamers,
+		
+	);
 }
 ?>

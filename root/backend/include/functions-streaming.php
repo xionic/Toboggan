@@ -1,7 +1,7 @@
 <?php
 require_once("functions.php");
 
-function outputStream($file, $streamerID){
+function outputStream($streamerID, $file){
 
 	//set errorhandler so errors are captures and not output
 	set_error_handler("appErrorHandler");
@@ -34,21 +34,28 @@ function outputStream($file, $streamerID){
 	/**
 	* Get media bitrate
 	*/
-	//testing
-	$maxBitrate = 191; //get from db in the end
+	$maxBitrate = getCurrentMaxBitrate(); //get from db in the end
 	$mustAdjustBitrate = false;
 	
 	if($maxBitrate != NO_MAX_BITRATE)//if there is a max bitrate
 	{ 
-		$bitrateCommand = expandCmdString($streamerObj->bitrateCmd, $file);
-		if(!$bitrateCommand){ //check that the bitrate command is defined
+		//get the bitrate command with variables expanded
+		$bitrateCommand = expandCmdString($streamerObj->bitrateCmd, 
+			array(
+				"path" 		=> $file,
+			)
+		);
+		//check that the bitrate command is defined
+		if(!$bitrateCommand){ 
 			appLog("No valid command to get bitrate - skipping", appLog_VERBOSE);
 			$mustAdjustBitrate = true; //don't know source file bitrate - be safe and transcode
 		}
-		else{			
+		else{ // if there is a command to get the bitrate - get the bitrate and compare with the max
 			appLog("Retreiving bitrate from file using command: ". $bitrateCommand, appLog_DEBUG);
-			$bitrate = (int) exec($bitrateCommand);
-			appLog("Bitrate read from file: " . $bitrate . "kb/s", appLog_DEBUG);		
+			$bitrateOutput = exec($bitrateCommand);
+			appLog("Output from bitrate command: ". $bitrateOutput, appLog_DEBUG);
+			$bitrate = (int) $bitrateOutput;
+			appLog("Parsed bitrate number read from bitrate command output: " . $bitrate . "kb/s", appLog_DEBUG);		
 		
 			//check if max bitrate is over 
 			if($bitrate > $maxBitrate)
@@ -94,9 +101,12 @@ function passthroughStream($file){
 	$fileSize = filesize($file);
 	header("Content-Length: " . $fileSize);
 
+	$maxBandwidth = getCurrentMaxBandwidth();
+	appLog("Limiting bandwidth to ". $maxBandwidth . "KB/s", appLog_DEBUG);
+
 	while(!feof($fh))
 	{
-		print(fread($fh, getCurrentMaxBandwidth()*1024));
+		print(fread($fh, $maxBandwidth*1024));
 		usleep(1000000);
 	}
 
@@ -118,7 +128,12 @@ function transcodeStream($streamerObj, $file){
 	);
 
 	//expand placeholders in command string
-	$cmd = expandCmdString($streamerObj->cmd, $file);
+	$cmd = expandCmdString($streamerObj->cmd, 
+		array(
+			"path" 		=> $file,
+			"bitrate"	=> getCurrentMaxBitrate(),
+		)
+	);
 
 	//start the process
 	$process = proc_open($cmd, $descriptors, $pipes, sys_get_temp_dir());
@@ -135,6 +150,10 @@ function transcodeStream($streamerObj, $file){
 	
 	$previousPointerLoc=0; // var to remember how many bytes were last read from STDOUT once the process is dead
 	$output = null;
+	
+	//bandwidth limit
+	$maxBandwidth = getCurrentMaxBandwidth();
+	appLog("Limiting bandwidth to ". $maxBandwidth . "KB/s", appLog_DEBUG);
 	
 	//number times per sec that we need to fread to output the max bandwidth
 	$iterationsPerSec = getCurrentMaxBandwidth()/8;
@@ -156,7 +175,7 @@ function transcodeStream($streamerObj, $file){
 		//get error output
 		$errOutput = fgets($pipes[2]);
 		if($errOutput != "")
-			appLog("STREAMER_ERRSTREAM: ".$errOutput,appLog_DEBUG);
+			appLog("STREAMER_ERRSTREAM: ".$errOutput,appLog_DEBUG2);
 		
 		//get process status
 		$status = proc_get_status($process);

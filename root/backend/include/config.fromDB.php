@@ -1,6 +1,4 @@
 <?php
-//basedir --will be replaced by config interface
-$config["basedir"] = "/mnt/storage/";
 
 //file to log messages to
 $config["logFile"] = "/tmp/ultrasonic.log";

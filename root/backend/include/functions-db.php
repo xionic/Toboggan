@@ -1,7 +1,6 @@
 <?php
 require_once("classes/Streamer.class.php");
 
-
 /**
 * returns streamer profiles which are suitable to produce streams for the given file
 */
@@ -49,7 +48,6 @@ function getAvailableStreamers($file){
 /**
 * get a streamer profile from its id
 */
-
 function getStreamerById($id){
 	$conn = getDBConnection();
 	
@@ -65,6 +63,9 @@ function getStreamerById($id){
 	return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
 }
 
+/**
+* get a database connection
+*/
 function getDBConnection()
 {
 	$db = new PDO(PDO_DSN);
@@ -87,28 +88,6 @@ function getMediaSourcePath($mediaSourceID)
 }
 
 /**
-* get an object which represents data about a media file
-*/
-function getFileObject($path)
-{
-	$pathinfo = pathinfo($path);
-	$filename = $pathinfo["basename"];
-	$displayName = $filename; //to be updated in the future
-	
-	$streamers = array();
-	
-	foreach(getAvailableStreamers($path) as $s)
-	{
-		$streamers[] = array("extension" => $s->toExt, "streamerID" => $s->id);
-	}
-	return array(
-		"filename" 		=> $filename,
-		"displayName"	=> $displayName,
-		"streamers"		=> $streamers,
-		
-	);
-}
-/**
 * get a JSON string representing a list of mediaSources
 */
 function getMediaSourceID_JSON(){
@@ -124,6 +103,20 @@ $conn = getDBConnection();
 		$mediaSources[]  =  array("mediaSourceID" => $row["idmediaSource"], "displayName" => $row["displayName"]);
 	}
 	return json_encode($mediaSources);
+}
+
+/**
+* get the current maximum bandwidth that media should be streamed at
+*/
+function getCurrentMaxBandwidth(){
+	return 100;
+}
+
+/**
+* get the current max bitrate that media should be streamed at
+*/
+function getCurrentMaxBitrate(){
+	return "191k";
 }
 
 
