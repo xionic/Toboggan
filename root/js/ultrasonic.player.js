@@ -14,7 +14,7 @@
 				});
 			},
 			swfPath: "./js/jQuery.jPlayer.2.1.0/",
-			supplied: "mp3",
+			supplied: "mp3,flv",
 			wmode: "window"
 		}).bind($.jPlayer.event.ended, function(event){
 
@@ -57,7 +57,7 @@
 		var streamerObject = $.parseJSON(remote_streamers), mediaObject = {};
 		for(var x=0; x<streamerObject.length; ++x)
 		{
-			mediaObject[streamerObject[x].extension] = "backend/rest.php"+"?action=getStream"+
+			mediaObject[streamerObject[x].extension] = "/code/ultrasonic/ultrasonic/root/backend/rest.php"+"?action=getStream"+
 														"&filename="+encodeURIComponent(remote_filename)+
 														"&dir="+encodeURIComponent(remote_directory)+
 														"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+

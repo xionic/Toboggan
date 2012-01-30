@@ -30,8 +30,8 @@
 	<?php include 'trackbrowser.include.php'; ?>
 </div>
 
-<div id='playerContainer'>
-	<?php include 'player.include.php';	?>
+<div id='playerControlsContainer'>
+	<?php include 'playerControls.include.php';	?>
 </div>
 
 </body>

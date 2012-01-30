@@ -93,7 +93,7 @@ table {
 	overflow-y: auto;
 }
 
-#playerContainer
+#playerControlsContainer
 {
 	position: fixed;
 	bottom: 0ex;

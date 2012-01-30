@@ -5,7 +5,7 @@
 	border-left: 1px solid grey;
 }
 
-#playerContainer
+#playerControlsContainer
 {
 	border-top: 1px solid grey;
 }
@@ -21,7 +21,7 @@ html
 	font-size: small;
 }
 
-#playerContainer
+#playerControlsContainer
 {
 	background-color:#eee;
 }
@@ -81,4 +81,8 @@ html
 
 .jPlaying {
 	font-weight: bold;
+}
+
+#jquery_jplayer_1 {
+	border: 1px solid grey;
 }
