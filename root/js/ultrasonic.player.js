@@ -57,7 +57,11 @@
 		var streamerObject = $.parseJSON(remote_streamers), mediaObject = {};
 		for(var x=0; x<streamerObject.length; ++x)
 		{
-			mediaObject[streamerObject[x].extension] = "backend/rest.php"+"?action=getStream&filename="+encodeURIComponent(remote_filename)+"&directory="+encodeURIComponent(remote_directory)+"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+"&streamerID="+streamerObject[x].streamerID;
+			mediaObject[streamerObject[x].extension] = "backend/rest.php"+"?action=getStream"+
+														"&filename="+encodeURIComponent(remote_filename)+
+														"&dir="+encodeURIComponent(remote_directory)+
+														"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
+														"&streamerID="+streamerObject[x].streamerID;
 		}
 
 		$("#jquery_jplayer_1").jPlayer( "setMedia", mediaObject).jPlayer("play");
@@ -222,7 +226,7 @@
 				for (var x=0; x<data.length; ++x)
 				{
 					$("#mediaSourceSelector").append(
-						$("<option>").val(data[x]).text(data[x])
+						$("<option>").val(data[x].mediaSourceID).text(data[x].displayName)
 					);
 				}
 				
