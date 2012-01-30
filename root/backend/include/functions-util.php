@@ -3,22 +3,25 @@
 /**
 * function to return a valid path - i.e. not malicious or breaking out of the root media dir
 */
-function getFullValidPath($path){
-	global $config;
-	//insert checks here
+// function getFullValidPath($path){
+	// global $config;
+	// //insert checks here
 	
-	//should be pulled from db via some sort of context
-	return $config["basedir"].$path;
-}
+	// //should be pulled from db via some sort of context
+	// return $config["basedir"].$path;
+// }
 /**
 * function to log messages to a file with a verbosity level
 */
 function appLog($message, $level = -1){
 	global $config;
-	if($level >= appLog_DEBUG) return; //verbosity cut-off level
+	if($level > $config["logLevel"]) return; //verbosity cut-off level
 	
+	$debugInfo = debug_backtrace();
+	if(count($debugInfo) > 1)
+		$callingfn = $debugInfo[1]["function"];
 	$file = fopen($config["logFile"], "a");
-	fwrite($file, time() . ": ". $level. " :". $message."\n");
+	fwrite($file, date("Y/m/d H:i:s") . ": ". $level. ": " . $callingfn . ": " . $message."\n");
 	fclose($file);
 }
 
@@ -99,5 +102,7 @@ function normalisePath($fn){
 
 	return $newPath;
 }
+
+
 
 ?>

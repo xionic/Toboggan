@@ -10,19 +10,39 @@ function getAvailableStreamers($file){
 	$pathinfo = pathinfo($file);
 	$extension = strtolower($pathinfo["extension"]);
 	
-	//array to be filled with streamer settings appropriate to this file	
+	$conn = getDBConnection();
+	
+	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
+				INNER JOIN fromExt USING (idfromExt)
+				INNER JOIN toExt USING(idtoExt)
+				INNER JOIN transcode_cmd USING(idtranscode_cmd)
+				WHERE `fromExt`.Extension = :fromExt");
+	$stmt->bindValue(":fromExt",$extension, PDO::PARAM_STR);
+	$stmt->execute();
+	
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	
 	$suitableStreamers = array();
-	
-	//find suitable streamers for extension
-	global $config;
-	foreach($config["videoStreamers"] as $item){
-		if($extension == $item["fromExt"]){
-			//construct Streamer objects
-			$suitableStreamers[] = new Streamer($item["id"], $item["fromExt"], $item["toExt"],$item["cmd"],$item["mime"],$item["outputMediaType"], $item["bitrateCmd"]);
-		}
-	}
-	
+	foreach($results as $row){
+		$suitableStreamers[] = new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
+	}	
 	return $suitableStreamers;
+	
+	
+	
+	// //array to be filled with streamer settings appropriate to this file	
+	// $suitableStreamers = array();
+	
+	// //find suitable streamers for extension
+	// global $config;
+	// foreach($config["videoStreamers"] as $item){
+		// if($extension == $item["fromExt"]){
+			// //construct Streamer objects
+			// $suitableStreamers[] = new Streamer($item["id"], $item["fromExt"], $item["toExt"],$item["cmd"],$item["mime"],$item["outputMediaType"], $item["bitrateCmd"]);
+		// }
+	// }
+	
+	// return $suitableStreamers;
 
 }
 
@@ -31,13 +51,18 @@ function getAvailableStreamers($file){
 */
 
 function getStreamerById($id){
-	global $config;
-	foreach($config["videoStreamers"] as $item){
-		if($id == $item["id"]){
-			return new Streamer($item["id"], $item["fromExt"], $item["toExt"],$item["cmd"],$item["mime"],$item["outputMediaType"], $item["bitrateCmd"]);
-		}
-	}
-	return false;
+	$conn = getDBConnection();
+	
+	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
+				INNER JOIN fromExt USING (idfromExt)
+				INNER JOIN toExt USING(idtoExt)
+				INNER JOIN transcode_cmd USING(idtranscode_cmd)
+				WHERE idextensionMap = :idextensionMap");
+	$stmt->bindValue(":idextensionMap",$id, PDO::PARAM_INT);
+	$stmt->execute();
+
+	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
 }
 
 function getDBConnection()
@@ -83,15 +108,22 @@ function getFileObject($path)
 		
 	);
 }
-
+/**
+* get a JSON string representing a list of mediaSources
+*/
 function getMediaSourceID_JSON(){
 $conn = getDBConnection();
 	$stmt = $conn->prepare("SELECT idmediaSource, displayName FROM mediaSource");
 	$stmt->execute();
 
-	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	
-	return json_encode(array($row["idmediaSource"], $row["displayName"]));
+	$mediaSources = array();
+	foreach($results as $row)
+	{
+		$mediaSources[]  =  array("mediaSourceID" => $row["idmediaSource"], "displayName" => $row["displayName"]);
+	}
+	return json_encode($mediaSources);
 }
 
 

@@ -16,7 +16,7 @@ switch($action)
 		break;
 		
 	case "listDirContents":
-		if(!@$_GET["dir"])
+		if(empty($_GET["dir"]))
 		{
 			$dir = "";
 		}
@@ -25,19 +25,23 @@ switch($action)
 			$dir = urldecode($_GET["dir"]);
 		}
 			
-		getDirContents_JSON(urldecode($dir, $_GET["mediaSourceID"]));
+		getDirContents_JSON(urldecode($dir), $_GET["mediaSourceID"]);
 		break;
 		
 	case "getStream": // INPUT VALIDITY CHECKING SHOULD BE BETTER HERE
-		$partialfilepath	= @$_GET["dir"];
+		$partialfilepath	= @$_GET["dir"]; // can be empty
 		$filename			= @$_GET["filename"];
 		$mediaSourceID		= @$_GET["mediaSourceID"];
 		$streamerID			= @$_GET["streamerID"];
 		
-		if(!$partialfilepath || !$mediaSourceID || !$streamerID || !$filename)
-		{ // invalid data passed
-			restTools::sendResponse("Invalid argument", 400, "text/plain");
-		}
+		// check inputs validity		
+		if(!$mediaSourceID || ((int)$mediaSourceID) == 0)
+			restTools::sendResponse("mediaSourceID is invalid", 400, "text/plain");
+		elseif(!$streamerID || ((int)$streamerID) == 0)
+			restTools::sendResponse("streamerID is invalid", 400, "text/plain");
+		elseif(!$filename)
+			restTools::sendResponse("filename is invalid", 400, "text/plain");
+		
 		//get full path to file
 		$fullfilepath = getMediaSourcePath($mediaSourceID).normalisePath($partialfilepath.$filename);
 		

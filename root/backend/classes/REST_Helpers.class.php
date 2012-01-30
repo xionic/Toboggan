@@ -17,8 +17,10 @@ class restTools {
 		header($status_header);
 
 		// set the content type
-		//header('Content-type: ' . $content_type);
-		header('Content-type: text/plain');
+		if(isset($_GET["debug"]))
+			header('Content-type: text/plain');
+		else
+			header('Content-type: ' . $content_type);
 
 		if(is_string($body))
 			echo $body;

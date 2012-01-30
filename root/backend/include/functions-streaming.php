@@ -5,6 +5,13 @@ function outputStream($file, $streamerID){
 
 	//set errorhandler so errors are captures and not output
 	set_error_handler("appErrorHandler");
+	
+	//check file exist
+	if(!is_file($file) && !is_link($file))
+	{
+		appLog("File does not exist: ".$file, appLog_INFO);
+		return false;
+	}
 
 	appLog("Streaming file: ". $file, appLog_VERBOSE);
 	
@@ -76,8 +83,6 @@ function outputStream($file, $streamerID){
 * Streams a file straight through as is
 */
 function passthroughStream($file){
-	//test - REPLACE
-	$bandwidth = 1000;
 
 	$fh = @fopen($file,'rb');
 	if(!$fh)
@@ -91,7 +96,7 @@ function passthroughStream($file){
 
 	while(!feof($fh))
 	{
-		print(fread($fh, $bandwidth*1024));
+		print(fread($fh, getCurrentMaxBandwidth()*1024));
 		usleep(1000000);
 	}
 
@@ -131,10 +136,15 @@ function transcodeStream($streamerObj, $file){
 	$previousPointerLoc=0; // var to remember how many bytes were last read from STDOUT once the process is dead
 	$output = null;
 	
+	//number times per sec that we need to fread to output the max bandwidth
+	$iterationsPerSec = getCurrentMaxBandwidth()/8;
 	/**
 	* loop until trancode process dies outputing the data stream
 	*/
 	while(true){
+		
+		//start time for bandwidth throttling
+		$startTime = microtime(true);
 		
 		//try to prevent php timeouts
 		set_time_limit(60);
@@ -160,10 +170,11 @@ function transcodeStream($streamerObj, $file){
 			}
 			$previousPointerLoc = ftell($pipes[1]);
 		}
-		flush();
+		//flush();
 		
-		//give the streamer a chance (otherwise php will loop far faster than data can be produced	)
-		usleep(25000);
+		//sleep for 1 second minus the time taken to read the data - for bandwidth limiting
+		$sleeptime = ((1 - (microtime(true) - $startTime))*1000000)/$iterationsPerSec;
+		usleep($sleeptime);
 	}
 	
 	appLog("Finished transcode: ". $cmd, appLog_DEBUG);
