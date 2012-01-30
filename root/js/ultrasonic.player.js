@@ -27,9 +27,16 @@
 				return;
 			
 			play_jPlayerTrack(nextObjectSpan);
-			
-			
 		});
+		
+		$("#jp_container_1 ul.jp-controls .jp-play").click(function(){
+			//if there is no track being played then play the first
+			if($("#playlistTracks .jPlaying").length == 0)
+			{
+				$("#playlistTracks li:first a").click();
+			}
+		});
+		
 		$("#mediaSourceSelector").change(function(event){
 			updateFolderBrowser($("#mediaSourceSelector").val());
 		});
