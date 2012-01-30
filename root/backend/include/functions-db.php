@@ -84,5 +84,15 @@ function getFileObject($path)
 	);
 }
 
+function getMediaSourceID_JSON(){
+$conn = getDBConnection();
+	$stmt = $conn->prepare("SELECT idmediaSource, displayName FROM mediaSource");
+	$stmt->execute();
+
+	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	
+	return json_encode(array($row["idmediaSource"], $row["displayName"]));
+}
+
 
 ?>

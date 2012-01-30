@@ -17,8 +17,8 @@ class restTools {
 		header($status_header);
 
 		// set the content type
-		header('Content-type: ' . $content_type);
-		//header('Content-type: text/plain');
+		//header('Content-type: ' . $content_type);
+		header('Content-type: text/plain');
 
 		if(is_string($body))
 			echo $body;

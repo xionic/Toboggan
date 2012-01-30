@@ -1,0 +1,44 @@
+List of API methods exposed by the backend:
+
+These are utilised by calling rest.php?action=methodName&arg1=val1...
+
+listMediaSources
+	args:
+		none
+	Returns JSON representing an array of mediaSourceIDs which are integers. These represent a list of media directories which can be accessed.
+	
+listDirContents
+	args:
+		dir - the path of the directory to get the contents of.
+		mediaSourceID - the mediaSource in which the directory is located in.
+	Returns JSON representing an array structured as follows:
+	{
+		CurrrentPath: "pathBeingListed",
+		Directories:[
+			"subDir1",
+			"subDir2",
+			...
+		],
+		Files:[
+			{
+				filename: "nameOfFile",
+				displayName: "givenNameOfFileWhichShouldBeDisplayed",
+				streamers: [
+					{
+						extension: "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
+						streamerID: "ID number of streamer",
+					}
+					...
+				],
+			},
+			...
+		],
+	}
+	
+getStream
+	args:
+		dir - directory containing file to stream.
+		filename - the filename of the file to stream.
+		mediaSourceID - the ID of the mediaSource containing the dir
+		streamerID - the ID of the streamer which should be used to stream the file
+	Outputs a binary media stream of the file which is in dir contained by the mediaSource specified by mediaSourceID using the streamer identified by streamerID.

@@ -5,24 +5,31 @@
 */
 
 require_once("include/functions.php");
-require_once("classes/REST_Helpers.php");
+require_once("classes/REST_Helpers.class.php");
 
 $action = @$_GET["action"];
 
 switch($action)
 {
 	case "listMediaSources":
-		getMediaSourceID_JSON();
+		restTools::sendResponse(getMediaSourceID_JSON(),200);
 		break;
 		
 	case "listDirContents":
 		if(!@$_GET["dir"])
-			$_GET["dir"] = "";
-		getDirContents_JSON(urldecode($_GET["dir"]), $_GET["mediaSourceID"]);
+		{
+			$dir = "";
+		}
+		else
+		{
+			$dir = urldecode($_GET["dir"]);
+		}
+			
+		getDirContents_JSON(urldecode($dir, $_GET["mediaSourceID"]));
 		break;
 		
 	case "getStream": // INPUT VALIDITY CHECKING SHOULD BE BETTER HERE
-		$partialfilepath	= @$_GET["directory"];
+		$partialfilepath	= @$_GET["dir"];
 		$filename			= @$_GET["filename"];
 		$mediaSourceID		= @$_GET["mediaSourceID"];
 		$streamerID			= @$_GET["streamerID"];

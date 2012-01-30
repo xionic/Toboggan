@@ -1,9 +1,5 @@
 <?php
 
-function getMediaSourceID_JSON(){
-	restTools::sendResponse(json_encode(array(1)),200);
-}
-
 function getDirContents_JSON($dir, $mediaSourceID){
 
 	//check inputs

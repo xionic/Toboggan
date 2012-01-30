@@ -6,4 +6,4 @@ INSERT INTO transcode_cmd(command) VALUES("ffmpeg -i %path -ab 128 -v 0 -f mp3 -
 
 INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(1,1,1);
 
-INSERT INTO mediaSource(path) VALUES("/mnt/storage/music");
+INSERT INTO mediaSource(path, displayName) VALUES("/mnt/storage/music", "Music");
