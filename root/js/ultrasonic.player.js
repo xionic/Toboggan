@@ -57,7 +57,7 @@
 		var streamerObject = $.parseJSON(remote_streamers), mediaObject = {};
 		for(var x=0; x<streamerObject.length; ++x)
 		{
-			mediaObject[streamerObject[x].extension] = "/code/ultrasonic/ultrasonic/root/backend/rest.php"+"?action=getStream"+
+			mediaObject[streamerObject[x].extension] = g_ultrasonic_basePath+"/backend/rest.php"+"?action=getStream"+
 														"&filename="+encodeURIComponent(remote_filename)+
 														"&dir="+encodeURIComponent(remote_directory)+
 														"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
@@ -159,7 +159,7 @@
 		//retrieve a list of new folders
 		$.ajax({
 			cache: false,
-			url: "backend/rest.php"+"?action=listDirContents",
+			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listDirContents",
 			type: "GET",
 			data: { 
 				'dir' : folderName, 
@@ -215,7 +215,7 @@
 	{
 		$.ajax({
 			cache: false,
-			url: "backend/rest.php"+"?action=listMediaSources",
+			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listMediaSources",
 			type: "GET",
 			complete: function(jqhxr,status) {},
 			error: function(jqxhr, status, errorThrown) {

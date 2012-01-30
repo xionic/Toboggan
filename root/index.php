@@ -10,6 +10,12 @@
 	<script type="text/javascript" src="./js/jQuery/jQuery.1.7.1.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery-ui.1.8.17/jquery-ui-1.8.17.custom.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery.jPlayer.2.1.0/jquery.jplayer.min.js"></script>
+	<script type="text/javascript">
+<?php
+	//TODO: make this handle if the URI was accessed via index.php
+	echo "var g_ultrasonic_basePath=\"{$_SERVER['REQUEST_URI']}\";";
+?>
+	</script>
 	<script type="text/javascript" src="./js/ultrasonic.player.js"></script>
 	<title>"Ultrasonic" Mockup</title>
 </head>
