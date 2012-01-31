@@ -109,14 +109,14 @@ $conn = getDBConnection();
 * get the current maximum bandwidth that media should be streamed at
 */
 function getCurrentMaxBandwidth(){
-	return 100;
+	return 10;
 }
 
 /**
 * get the current max bitrate that media should be streamed at
 */
 function getCurrentMaxBitrate(){
-	return "191k";
+	return "1910k";
 }
 
 

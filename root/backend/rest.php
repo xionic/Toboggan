@@ -8,6 +8,7 @@ require_once("include/functions.php");
 require_once("classes/REST_Helpers.class.php");
 
 $action = @$_GET["action"];
+appLog("Received request for action ". $action, appLog_DEBUG);
 
 switch($action)
 {

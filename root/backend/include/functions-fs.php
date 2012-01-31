@@ -7,13 +7,11 @@ function getDirContents_JSON($dir, $mediaSourceID){
 	//check inputs
 	if(((int)$mediaSourceID)==0)
 	{
-		restTools::sendResponse("Invalid mediaSourceID given", 404, "text/plain");
+		restTools::sendResponse("Invalid or missing mediaSourceID", 404, "text/plain");
 	}
 
 	$mediaSourcePath = normalisePath(getMediaSourcePath($mediaSourceID))."/";
-
-	if(strlen(strstr($dir,".."))>0 || $dir=="" || $dir[0]=='/' )
-		$dir = ".";
+	$dir = normalisePath($dir);
 
 	if(substr($dir,-1)!="/")
 		$dir .= "/";

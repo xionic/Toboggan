@@ -5,7 +5,8 @@ These are utilised by calling rest.php?action=methodName&arg1=val1...
 listMediaSources
 	args:
 		none
-	Returns JSON representing an array of mediaSourceIDs which are integers. These represent a list of media directories which can be accessed.
+	Returns JSON representing an array of mediaSourceIDs which are integers, and displayNames for each mediaSource. 
+	These represent a list of media directories which can be accessed.
 	
 listDirContents
 	args:
@@ -27,6 +28,7 @@ listDirContents
 					{
 						extension: "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
 						streamerID: "ID number of streamer",
+						mediaType: "The media type which this streamer outputs",
 					}
 					...
 				],
