@@ -68,7 +68,8 @@ html
 #playlistTracks li:nth-of-type(even),
 #tracklist li:nth-of-type(even)
 {
-	background: #eee;
+//	background: #ddd;
+	background: -o-linear-gradient(#d4d4d4,#ddd);
 }
 
 #folderlist li a,
@@ -83,6 +84,7 @@ html
 	font-weight: bold;
 }
 
-#jquery_jplayer_1 {
-	border: 1px solid grey;
+#jquery_jplayer_1, #centerPlayerContainer {
+//	border: 1px solid grey;
+	background: black;
 }

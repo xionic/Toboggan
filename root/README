@@ -1,1 +1,13 @@
 Root directory for frontend-backend interaction
+
+=============
+  TODO List
+=============
+ Add to playlist buttons
+ Control Panel
+ Remove from playlist
+ Visible notification of what directory is being browsed
+ Expandable Tree structure for directories?
+ Better location for the video playback
+ Download as X (using streamer settings)
+ Handlers for different systems

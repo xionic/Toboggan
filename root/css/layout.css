@@ -3,7 +3,7 @@
 $Directory_columnWidth = 20em;
 $playerHeight = 8ex;
 $Playlist_columnWidth = 20em;
-
+$playWindowHeight = 270px;
 */
 
 /* Reset CSS */
@@ -91,6 +91,7 @@ table {
 	left: $Directory_columnWidth;
 	min-width: 30em;
 	overflow-y: auto;
+	padding-bottom: $playWindowHeight;
 }
 
 #playerControlsContainer
@@ -100,7 +101,31 @@ table {
 	height: $playerHeight;
 	left: 0em;
 	right: 0em;
+}
 
+#centerTrackContainer
+{
+	overflow-y: scroll;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: $playWindowHeight;
+}
+
+#centerPlayerContainer
+{
+	position: fixed;
+	bottom: $playerHeight;
+	left: $Directory_columnWidth;
+	right: $Playlist_columnWidth;
+	height: $playWindowHeight;
+}
+
+#jquery_jplayer_1
+{
+	margin-left: auto;
+	margin-right: auto;
 }
 
 /** 
