@@ -79,16 +79,34 @@
 	*/
 	function addTrackClickHandlers()
 	{
-		$("#tracklist").children("li").children("a").click(function(){
+
+		var parentElement = $("#tracklist").children("li");
+		parentElement.children("a.downloadButton").click(function(){
+			
+			var trackObject = $(this).parent().children("span.trackName");
+			var     remote_filename = $(trackObject).attr("data-filename"),
+			        remote_directory = $(trackObject).attr("data-dir"),
+			        remote_streamers = $(trackObject).attr("data-streamers"),
+			        remote_mediaSource = $(trackObject).attr("data-media_source");
+			                                                 
+
+			var url = g_ultrasonic_basePath+"/backend/rest.php"+"?action=downloadFile"+
+					"&filename="+encodeURIComponent(remote_filename)+
+			    	"&dir="+encodeURIComponent(remote_directory)+
+		    		"&mediaSourceID="+encodeURIComponent(remote_mediaSource);
+		    		
+			window.open(url);	//open in new window
+		});
+		parentElement.children("a.addToPlaylistButton").click(function(){
 			
 			var trackTagObject = $(this).parent().children("span.trackName");
 			
 			$("<li></li>").append(
-				$("<a href='javascript:;'></a>")
-					.text( trackTagObject.text() )
-					.attr( "data-filename", trackTagObject.attr("data-filename"))
-					.attr( "data-dir", trackTagObject.attr("data-dir"))
-					.attr( "data-streamers", trackTagObject.attr("data-streamers"))
+					$("<a href='javascript:;'></a>")
+						.text( trackTagObject.text() )
+				.attr( "data-filename", trackTagObject.attr("data-filename"))
+				.attr( "data-dir", trackTagObject.attr("data-dir"))
+				.attr( "data-streamers", trackTagObject.attr("data-streamers"))
 					.attr( "data-media_source", trackTagObject.attr("data-media_source"))
 			).appendTo($("#playlistTracks"));
 			
@@ -198,7 +216,9 @@
 				for (file in data.Files)
 				{	//<li><a href='javascript:;'>+</a> <span class='trackName' data-trackpath='testMP3_1.mp3'>Album Track One</span></li>
 					$("<li></li>").append(
-						$("<a href='javascript:;'>+</a> ")
+						$("<a href='javascript:;' class='addToPlaylistButton'>+</a>")
+					).append(
+						$("<a href='javascript:;' class='downloadButton'>D</a>")
 					).append(
 						$("<span class='trackName'></span>")
 							.text(data.Files[file].displayName)
