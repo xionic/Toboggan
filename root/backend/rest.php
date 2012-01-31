@@ -29,6 +29,9 @@ switch($action)
 		getDirContents_JSON(urldecode($dir), $_GET["mediaSourceID"]);
 		break;
 		
+	case "downloadFile": //download a file unmodified
+		$_GET["streamerID"] = 0; //hack through the switch and allow to follow through the getStream handler
+		
 	case "getStream": // INPUT VALIDITY CHECKING SHOULD BE BETTER HERE
 		$partialfilepath	= @$_GET["dir"]; // can be empty
 		$filename			= @$_GET["filename"];
@@ -38,7 +41,7 @@ switch($action)
 		// check inputs validity		
 		if(!$mediaSourceID || ((int)$mediaSourceID) == 0)
 			restTools::sendResponse("mediaSourceID is invalid", 400, "text/plain");
-		elseif(!$streamerID || ((int)$streamerID) == 0)
+		elseif(!is_numeric($streamerID))
 			restTools::sendResponse("streamerID is invalid", 400, "text/plain");
 		elseif(!$filename)
 			restTools::sendResponse("filename is invalid", 400, "text/plain");
@@ -52,6 +55,8 @@ switch($action)
 		
 	case "":
 		restTools::sendResponse("No action specified", 400, "test/plain");
+		break;
+		
 	default:
 		restTools::sendResponse("Action not supported", 400, "test/plain");
 		

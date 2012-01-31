@@ -9,6 +9,8 @@ function appLog($message, $level = -1){
 	$debugInfo = debug_backtrace();
 	if(count($debugInfo) > 1)
 		$callingfn = $debugInfo[1]["function"];
+	else
+		$callingfn = "[function unavailable]";
 	$file = fopen($config["logFile"], "a");
 	fwrite($file, date("Y/m/d H:i:s") . ": ". $level. ": " . $callingfn . ": " . $message."\n");
 	fclose($file);

@@ -60,7 +60,13 @@ function getStreamerById($id){
 	$stmt->execute();
 
 	$row = $stmt->fetch(PDO::FETCH_ASSOC);
-	return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
+	
+	
+	if($row)
+		return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
+	else
+		return false;
+	
 }
 
 /**
@@ -109,7 +115,7 @@ $conn = getDBConnection();
 * get the current maximum bandwidth that media should be streamed at
 */
 function getCurrentMaxBandwidth(){
-	return 10;
+	return 100;
 }
 
 /**

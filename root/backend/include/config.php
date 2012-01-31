@@ -16,5 +16,8 @@ $config["supportedPlayFormatExts"] = array(
 	"flv",
 );
 
+//user password salt
+$config["passwordSalt"] = "JbC^*(I4GJbgz7V)"
+
 
 ?>

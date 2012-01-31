@@ -15,66 +15,105 @@ function outputStream($streamerID, $file){
 
 	appLog("Streaming file: ". $file, appLog_VERBOSE);
 	
+	//info about the file and path
+	$filepathInfo = pathinfo($file);
+	
 	//global config
 	global $config;
-
-	//streamer settings
-	$streamerObj = getStreamerById($streamerID);
-	appLog("Using Streamer ID: ". $streamerObj->id, appLog_VERBOSE);
 	
+	//default mime
+	$mimeType = "application/octet-stream";
+	
+	//check if this is a download
+	if($streamerID == 0){
+		appLog("This is a download - going straight to passthrough", appLog_DEBUG);		
+		$filenameToSend = $filepathInfo["basename"]; // filename for the http header
+	}
+	else{	
+		//streamer settings
+		$streamerObj = getStreamerById($streamerID);
+		if(!$streamerObj)
+		{
+			appLog("Streamer object with id $streamerID does not exist", appLog_INFO);
+			return false;
+		}
+		//check that the extension is compatible with the streamer
+		if($streamerObj->fromExt != $filepathInfo["extension"])
+		{
+			appLog("Streamer does not support this extension", appLog_INFO);
+			return false;
+		}
+	
+		appLog("Using Streamer ID: ". $streamerObj->id, appLog_VERBOSE);			
+		
+		/**
+		* Get media bitrate
+		*/
+		$maxBitrate = getCurrentMaxBitrate(); //get from db in the end
+		$mustAdjustBitrate = false;
+		
+		if($maxBitrate != NO_MAX_BITRATE)//if there is a max bitrate
+		{ 
+			//get the bitrate command with variables expanded
+			$bitrateCommand = expandCmdString($streamerObj->bitrateCmd, 
+				array(
+					"path" 		=> $file,
+				)
+			);
+			//check that the bitrate command is defined
+			if(!$bitrateCommand){ 
+				appLog("No valid command to get bitrate - skipping", appLog_VERBOSE);
+				$mustAdjustBitrate = true; //don't know source file bitrate - be safe and transcode
+			}
+			else{ // if there is a command to get the bitrate - get the bitrate and compare with the max
+				appLog("Retreiving bitrate from file using command: ". $bitrateCommand, appLog_DEBUG);
+				$bitrateOutput = exec($bitrateCommand);
+				appLog("Output from bitrate command: ". $bitrateOutput, appLog_DEBUG);
+				$bitrate = (int) $bitrateOutput;
+				appLog("Parsed bitrate number read from bitrate command output: " . $bitrate . "kb/s", appLog_DEBUG);		
+			
+				//check if max bitrate is over 
+				if($bitrate > $maxBitrate)
+				{
+					appLog("Source file bitrate($bitrate) is greater than the max player bitrate($maxBitrate) - need to change bitrate", appLog_DEBUG);
+					$mustAdjustBitrate = true;
+				}
+			}
+		}
+		else//no max bitrate
+		{ 
+			appLog("No maximum bitrate is to be applied", appLog_VERBOSE);
+			$mustAdjustBitrate = false;
+		}
+		//mimetype of file to be output
+		$mimeType = $streamerObj->mime;		
+		
+		//filename to send
+		$filenameToSend = substr($filepathInfo["basename"], 0, strrpos($filepathInfo["basename"], ".")). "." . $streamerObj->toExt;
+		
+	}// end if download
+	
+	/**
+	* setup for streaming data and headers
+	*/
 	//do not buffer
 	ini_set("output_buffering", "0");
 
-
-	header("Content-Type: " . $streamerObj->mime);
-	header("Content-disposition: attachment; filename=media.stream");
+	appLog("Using mime type: ". $mimeType, appLog_DEBUG);
+	header("Content-Type: " . $mimeType);
+	
+	appLog("Using attachement filename: $filenameToSend", appLog_DEBUG);
+	header("Content-disposition: attachment; filename=".$filenameToSend);
 
 	header("Cache-Control: no-cache");
 	
 	/**
-	* Get media bitrate
-	*/
-	$maxBitrate = getCurrentMaxBitrate(); //get from db in the end
-	$mustAdjustBitrate = false;
-	
-	if($maxBitrate != NO_MAX_BITRATE)//if there is a max bitrate
-	{ 
-		//get the bitrate command with variables expanded
-		$bitrateCommand = expandCmdString($streamerObj->bitrateCmd, 
-			array(
-				"path" 		=> $file,
-			)
-		);
-		//check that the bitrate command is defined
-		if(!$bitrateCommand){ 
-			appLog("No valid command to get bitrate - skipping", appLog_VERBOSE);
-			$mustAdjustBitrate = true; //don't know source file bitrate - be safe and transcode
-		}
-		else{ // if there is a command to get the bitrate - get the bitrate and compare with the max
-			appLog("Retreiving bitrate from file using command: ". $bitrateCommand, appLog_DEBUG);
-			$bitrateOutput = exec($bitrateCommand);
-			appLog("Output from bitrate command: ". $bitrateOutput, appLog_DEBUG);
-			$bitrate = (int) $bitrateOutput;
-			appLog("Parsed bitrate number read from bitrate command output: " . $bitrate . "kb/s", appLog_DEBUG);		
-		
-			//check if max bitrate is over 
-			if($bitrate > $maxBitrate)
-			{
-				appLog("Source file bitrate($bitrate) is greater than the max player bitrate($maxBitrate) - need to change bitrate", appLog_DEBUG);
-				$mustAdjustBitrate = true;
-			}
-		}
-	}
-	else//no max bitrate
-	{ 
-		appLog("No maximum bitrate is to be applied", appLog_VERBOSE);
-		$mustAdjustBitrate = false;
-	}
-	
-	/**
 	* Output the stream
 	*/
-	if(!$mustAdjustBitrate && $streamerObj->toExt == $streamerObj->fromExt) // if the file's bitrate does not need to be change and the format is supported by the player, do not transcode
+	if(
+		$streamerID == 0 || //straight passthrough file download
+		(!$mustAdjustBitrate && $streamerObj->toExt == $streamerObj->fromExt)
+	) // if the file's bitrate does not need to be change and the format is supported by the player, do not transcode
 	{
 		appLog("File does not need to be transcoded, streaming straight through", appLog_VERBOSE);
 		passthroughStream($file);
