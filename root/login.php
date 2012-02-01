@@ -18,8 +18,9 @@
 </head>
 //post arguments = username=$username&password=sha256(password);
 <form action='backend/rest.php?action=login' method='POST' id='loginForm'>
-	<p>username: <input type='text' id='username' name='username'/></p>
-	<p>password: <input type='password' id='passwordInput' name='' /><input type='hidden' id='password' name='password' /></p>
+	<p>username: <input type='text' id='username' name='username' value='testuser' /></p>
+	<p>password: <input type='password' id='passwordInput' name='' value='password'/>
+				 <input type='hidden' id='password' name='password' /></p>
 	<p><input type='submit' /></p>
 </form>
 </html>
