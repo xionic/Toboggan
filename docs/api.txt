@@ -70,6 +70,6 @@ downloadFile
 	
 login
 	args:
-		None
+		None (see authentication section above)
 	Authenticates the user and starts a session 
 	Note: Only for use with form based authentication

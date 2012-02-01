@@ -12,6 +12,6 @@ INSERT INTO mediaSource(path, displayName) VALUES("/mnt/storage/music", "Music")
 INSERT INTO mediaSource(path, displayName) VALUES("/mnt/storage/video", "Video");
 
 INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth)
-	VALUES ("testuser", "8ffc75cd4740f36c9cb8adf95bb7c48c6dbfda6e819352b7d52506547c996b2b", "test@test.com", 1, 320, 1000, 100);
+	VALUES ("testuser", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "test@test.com", 1, 320, 1000, 100);
 	
 INSERT INTO ClientSettings(apikey, settings, idUser) VALUES("{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}", "", 1);

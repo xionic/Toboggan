@@ -53,7 +53,7 @@ class userLogin {
 					$rows = userLogin::getUserRow($sentUsername);
 					$passhash = $rows['password'];
 					
-					$ourPassStr = hash("sha256",getConfig("passwordSalt").$sentPassHash);
+					$ourPassStr = base64_encode(hash("sha256",getConfig("passwordSalt").$sentPassHash, true));
 					if($ourPassStr!==$passhash)
 					{
 						return false;
@@ -81,7 +81,7 @@ class userLogin {
 		{
 			$userRows = userLogin::getUserRow($_POST["username"]);
 			$passhash = $userRows['password'];
-			$ourPassStr = hash("sha256",getConfig("passwordSalt").$_POST["password"]);
+			$ourPassStr = base64_encode(hash("sha256",getConfig("passwordSalt").$_POST["password"], true));
 			if($ourPassStr!==$passhash)
 			{
 				reportError("Authentication failed", 401, "text/plain");
@@ -114,7 +114,7 @@ class userLogin {
 					$passhash = $rows['password'];
 					
 					
-					$ourPassStr = hash("sha256",getConfig("passwordSalt").$sentPassHash);
+					$ourPassStr = base64_encode(hash("sha256",getConfig("passwordSalt").$sentPassHash, true));
 					if($ourPassStr!==$passhash)
 					{
 						reportError("Authentication failed", 401, "text/plain");
