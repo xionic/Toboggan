@@ -1,4 +1,5 @@
 <?php
+require_once("constants.php");
 
 $config = array();
 
@@ -17,7 +18,10 @@ $config["supportedPlayFormatExts"] = array(
 );
 
 //user password salt
-$config["passwordSalt"] = "JbC^*(I4GJbgz7V)"
+$config["passwordSalt"] = "JbC^*(I4GJbgz7V)";
+
+//sesssion data
+$config["sessionName"] = "Ultrasonic";
 
 
 ?>

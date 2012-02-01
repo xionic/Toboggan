@@ -6,6 +6,18 @@
 
 require_once("include/functions.php");
 require_once("classes/REST_Helpers.class.php");
+require_once("classes/userLogin.class.php");
+
+//check user is auth'd
+if(isset($_GET["action"]) && $_GET["action"] != "login") // special case
+{
+	//echo "'".(userLogin::checkLoggedIn())."'\n";
+	if(userLogin::checkLoggedIn() === false)
+	{
+		reportError("Authentication failed", 401, "text/plain");
+		exit();
+	}
+}
 
 $action = @$_GET["action"];
 appLog("Received request for action ". $action, appLog_DEBUG);
@@ -50,15 +62,27 @@ switch($action)
 		$fullfilepath = getMediaSourcePath($mediaSourceID).normalisePath($partialfilepath.$filename);
 		
 		//output the media stream via a streamer
-		outputStream($streamerID, $fullfilepath, 200);
+		if(!outputStream($streamerID, $fullfilepath))
+		{
+			return; //error outputting stream - error should have been reported by outputStream()
+		}
+		break;
+		
+	case "login":
+		if(!userLogin::validate())
+		{
+			reportError("Login failed", 401, "text/plain");
+			exit();
+		}
+		restTools::sendResponse("", 200, "test/plain");
 		break;
 		
 	case "":
-		restTools::sendResponse("No action specified", 400, "test/plain");
+		restTools::sendResponse("No action specified", 400, "text/plain");
 		break;
 		
 	default:
-		restTools::sendResponse("Action not supported", 400, "test/plain");
+		restTools::sendResponse("Action not supported", 400, "text/plain");
 		
 }
 

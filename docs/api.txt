@@ -1,4 +1,20 @@
-List of API methods exposed by the backend:
+######################################################
+# API Authentication:								 #
+######################################################
+
+There are 2 methods to authenticate:
+1. Form based starting s session:
+	Post "username" and "password" to rest.php&action=login. The password must be a sha256 hash of the password.
+
+2. A HTTP header can be sent with each request to authenticate in the form:
+
+	X-US-Authorization: method userStr|passStr
+
+	where method is US-Auth1, userStr is the username base64 encoded, and passStr is a sha256 hash of the password encoded in base64
+
+######################################################
+# List of API methods exposed by the backend:		 #
+######################################################
 
 These are utilised by calling rest.php?action=methodName&arg1=val1...
 
@@ -44,3 +60,16 @@ getStream
 		mediaSourceID - the ID of the mediaSource containing the dir
 		streamerID - the ID of the streamer which should be used to stream the file
 	Outputs a binary media stream of the file which is in dir contained by the mediaSource specified by mediaSourceID using the streamer identified by streamerID.
+	
+downloadFile
+	args:
+		dir - directory containing file to stream.
+		filename - the filename of the file to stream.
+		mediaSourceID - the ID of the mediaSource containing the dir
+	Output the file as it is on the server
+	
+login
+	args:
+		None
+	Authenticates the user and starts a session 
+	Note: Only for use with form based authentication

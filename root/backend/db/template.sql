@@ -56,7 +56,7 @@ CREATE TABLE `transcode_cmd` (
 CREATE TABLE `User` (
 	`idUser` INTEGER PRIMARY KEY AUTOINCREMENT,
 	`username` VARCHAR(32) NOT NULL,
-	`password` CHAR(32) NOT NULL,
+	`password` CHAR(64) NOT NULL,
 	`email` VARCHAR(256),
 	`enabled` TINYINT(1),
 	`maxAudioBitrate` INT,

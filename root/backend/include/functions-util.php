@@ -10,7 +10,7 @@ function appLog($message, $level = -1){
 	if(count($debugInfo) > 1)
 		$callingfn = $debugInfo[1]["function"];
 	else
-		$callingfn = "[function unavailable]";
+		$callingfn = "[origin unknown]";
 	$file = fopen($config["logFile"], "a");
 	fwrite($file, date("Y/m/d H:i:s") . ": ". $level. ": " . $callingfn . ": " . $message."\n");
 	fclose($file);
@@ -109,6 +109,13 @@ function normalisePath($fn){
 	}
 
 	return $newPath;
+}
+/**
+* reports errors in an appropriate manner
+*/
+function reportError($errMsg, $httpcode = 400, $mime = 'text/plain'){
+	restTools::sendResponse	($errMsg,$httpcode, $mime);
+	
 }
 
 

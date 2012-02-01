@@ -10,6 +10,7 @@ function outputStream($streamerID, $file){
 	if(!is_file($file) && !is_link($file))
 	{
 		appLog("File does not exist: ".$file, appLog_INFO);
+		reportError("Requested file does not exist");
 		return false;
 	}
 
@@ -26,7 +27,7 @@ function outputStream($streamerID, $file){
 	
 	//check if this is a download
 	if($streamerID == 0){
-		appLog("This is a download - going straight to passthrough", appLog_DEBUG);		
+		appLog("This is a download - going straight to passthrough", appLog_DEBUG);
 		$filenameToSend = $filepathInfo["basename"]; // filename for the http header
 	}
 	else{	
@@ -35,12 +36,14 @@ function outputStream($streamerID, $file){
 		if(!$streamerObj)
 		{
 			appLog("Streamer object with id $streamerID does not exist", appLog_INFO);
+			reportError("Invalid StreamerID");
 			return false;
 		}
 		//check that the extension is compatible with the streamer
 		if($streamerObj->fromExt != $filepathInfo["extension"])
 		{
 			appLog("Streamer does not support this extension", appLog_INFO);
+			reportError("Streamer specified by streamerID does not support this file");
 			return false;
 		}
 	

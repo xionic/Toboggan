@@ -18,7 +18,7 @@ class restTools {
 
 		// set the content type
 		if(isset($_GET["debug"]))
-			header('Content-type: text/plain');
+			header('Content-type: text/plain'); // make debug output readable in browsers
 		else
 			header('Content-type: ' . $content_type);
 
