@@ -88,3 +88,18 @@ html
 //	border: 1px solid grey;
 	background: black;
 }
+
+//unplayable tracks
+.unplayable
+{
+	color: grey;
+	font-style: italic;
+}
+
+.draggingTrack
+{
+	display: block;
+	width: 32px;
+	height: 32px;
+	background: red;
+}

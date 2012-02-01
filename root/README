@@ -11,3 +11,8 @@ Root directory for frontend-backend interaction
  Better location for the video playback
  Download as X (using streamer settings)
  Handlers for different systems
+
+==
+Useful addition for right click menus:
+https://github.com/basti1253/jQueryUI-contextmenu
+

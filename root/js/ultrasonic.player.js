@@ -97,6 +97,7 @@
 		    		
 			window.open(url);	//open in new window
 		});
+		
 		parentElement.children("a.addToPlaylistButton").click(function(){
 			
 			var trackTagObject = $(this).parent().children("span.trackName");
@@ -112,10 +113,23 @@
 			
 			addPlaylistClickHandlers();
 		});
+		
 		$( "#tracklist li" ).draggable({
 			appendTo: "body",
-			helper: "clone"
+			//helper: "clone",
+			helper: function(event) {
+			//	console.debug(event);
+			//	console.debug(this);
+				return $("<div class='draggingTrack'></div>");
+			}, 
+			cancel: ".unplayable",
+			cursorAt: {
+				cursor: "move",
+				top: 16,
+				left: 16
+			}
 		});
+		
 		/** Make the playlist drag-sortable & Droppable*/		
 		$("#playlistTracks").droppable({
 			accept: ":not(.ui-sortable-helper)",	//make sure that if its being rearranged this doesn't count as a drop
@@ -214,7 +228,9 @@
 
 				//data.Files
 				for (file in data.Files)
-				{	//<li><a href='javascript:;'>+</a> <span class='trackName' data-trackpath='testMP3_1.mp3'>Album Track One</span></li>
+				{	
+					
+					//<li><a href='javascript:;'>+</a> <span class='trackName' data-trackpath='testMP3_1.mp3'>Album Track One</span></li>
 					$("<li></li>").append(
 						$("<a href='javascript:;' class='addToPlaylistButton'>+</a>")
 					).append(
@@ -222,11 +238,18 @@
 					).append(
 						$("<span class='trackName'></span>")
 							.text(data.Files[file].displayName)
+							.addClass("trackName")
+							.addClass((data.Files[file].streamers.length == 0)?"unplayable":"playable")
 							.attr("data-dir", folderName+"/")
 							.attr("data-filename", data.Files[file].filename)					
 							.attr("data-streamers", JSON.stringify(data.Files[file].streamers))
 							.attr("data-media_source", mediaSourceID)
-					).appendTo($("#tracklist"));
+					)
+					.addClass((data.Files[file].streamers.length == 0)?"unplayable":"playable")
+					.appendTo($("#tracklist"));
+					
+					
+					
 				}
 				addTrackClickHandlers();
 				
