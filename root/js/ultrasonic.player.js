@@ -10,7 +10,8 @@
 		$("#jquery_jplayer_1").jPlayer({
 			ready: function () {
 				$(this).jPlayer("setMedia", {
-				mp3: "",
+					mp3: "",
+					flv: ""
 				});
 			},
 			swfPath: "./js/jQuery.jPlayer.2.1.0/",
@@ -61,7 +62,7 @@
 		
 		//console.debug(remote_filename,remote_directory,remote_mediaSource,remote_streamers);
 		
-		var streamerObject = $.parseJSON(remote_streamers), mediaObject = {};
+		var streamerObject = $.parseJSON(remote_streamers), mediaObject = {}, mediaType="";
 		for(var x=0; x<streamerObject.length; ++x)
 		{
 			mediaObject[streamerObject[x].extension] = g_ultrasonic_basePath+"/backend/rest.php"+"?action=getStream"+
@@ -69,6 +70,20 @@
 														"&dir="+encodeURIComponent(remote_directory)+
 														"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
 														"&streamerID="+streamerObject[x].streamerID;
+			mediaType = streamerObject[x].mediaType;
+		}
+		
+		console.log(mediaType);
+		//is only based on the last mediaType:
+		if(mediaType=="v")
+		{
+			$("#centerPlayerContainer").height("auto");
+			$("#centerTrackContainer").css({ 'bottom': $("#centerPlayerContainer").height() });
+		}
+		else
+		{
+			$("#centerPlayerContainer").height(3);
+			$("#centerTrackContainer").css({ 'bottom':"3px"});
 		}
 
 		$("#jquery_jplayer_1").jPlayer( "setMedia", mediaObject).jPlayer("play");
@@ -103,23 +118,20 @@
 			var trackTagObject = $(this).parent().children("span.trackName");
 			
 			$("<li></li>").append(
-					$("<a href='javascript:;'></a>")
-						.text( trackTagObject.text() )
-				.attr( "data-filename", trackTagObject.attr("data-filename"))
-				.attr( "data-dir", trackTagObject.attr("data-dir"))
-				.attr( "data-streamers", trackTagObject.attr("data-streamers"))
-					.attr( "data-media_source", trackTagObject.attr("data-media_source"))
-			).appendTo($("#playlistTracks"));
+				$("<a href='javascript:;'></a>")
+					.text( trackTagObject.text() )
+					.attr( "data-filename", trackTagObject.attr("data-filename") )
+					.attr( "data-dir", trackTagObject.attr("data-dir") )
+					.attr( "data-streamers", trackTagObject.attr("data-streamers") )
+					.attr( "data-media_source", trackTagObject.attr("data-media_source") )
+			).appendTo( $("#playlistTracks") );
 			
 			addPlaylistClickHandlers();
 		});
 		
 		$( "#tracklist li" ).draggable({
 			appendTo: "body",
-			//helper: "clone",
 			helper: function(event) {
-			//	console.debug(event);
-			//	console.debug(this);
 				return $("<div class='draggingTrack'></div>");
 			}, 
 			cancel: ".unplayable",
@@ -229,17 +241,14 @@
 				//data.Files
 				for (file in data.Files)
 				{	
-					
-					//<li><a href='javascript:;'>+</a> <span class='trackName' data-trackpath='testMP3_1.mp3'>Album Track One</span></li>
 					$("<li></li>").append(
 						$("<a href='javascript:;' class='addToPlaylistButton'>+</a>")
 					).append(
 						$("<a href='javascript:;' class='downloadButton'>D</a>")
 					).append(
-						$("<span class='trackName'></span>")
+						$("<span></span>")
 							.text(data.Files[file].displayName)
 							.addClass("trackName")
-							.addClass((data.Files[file].streamers.length == 0)?"unplayable":"playable")
 							.attr("data-dir", folderName+"/")
 							.attr("data-filename", data.Files[file].filename)					
 							.attr("data-streamers", JSON.stringify(data.Files[file].streamers))
@@ -247,9 +256,6 @@
 					)
 					.addClass((data.Files[file].streamers.length == 0)?"unplayable":"playable")
 					.appendTo($("#tracklist"));
-					
-					
-					
 				}
 				addTrackClickHandlers();
 				
@@ -279,7 +285,6 @@
 						$("<option>").val(data[x].mediaSourceID).text(data[x].displayName)
 					);
 				}
-				
 			},
 		});	
 	}
