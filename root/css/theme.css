@@ -15,7 +15,7 @@ div.containerPadding
 	padding: 1ex;
 }
 
-html 
+html, #loginForm 
 {
 	font-family: "Trebuchet MS", "Liberation Sans", "Tahoma", Sans-Serif;
 	font-size: small;
@@ -101,5 +101,6 @@ html
 	display: block;
 	width: 32px;
 	height: 32px;
-	background: red;
+	background-image: url('../img/dragIcon.png');
+//	border: 1px solid red;	
 }

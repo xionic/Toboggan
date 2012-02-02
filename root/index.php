@@ -17,6 +17,11 @@
 ?>
 	</script>
 	<script type="text/javascript" src="./js/ultrasonic.player.js"></script>
+
+	<!-- login form related -->
+	<script type="text/javascript" src="./js/sha.js"></script>
+	<script type="text/javascript" src="./js/ultrasonic.login.js"></script>
+
 	<title>"Ultrasonic" Mockup</title>
 </head>
 <body>
@@ -38,6 +43,10 @@
 
 <div id='playerControlsContainer'>
 	<?php include 'playerControls.include.php';	?>
+</div>
+
+<div id='loginFormContainer'>
+	<?php include 'loginForm.include.php'; ?>
 </div>
 
 </body>

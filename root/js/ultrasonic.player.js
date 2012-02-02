@@ -42,7 +42,35 @@
 			updateFolderBrowser($("#mediaSourceSelector").val());
 		});
 		
-		getMediaSources();
+		//present the login form:
+		
+		$("#loginFormContainer").dialog({
+			autoOpen: true,
+			modal: true,
+			title: 'Login',
+			buttons: {
+				'login': function(){
+					var hash = new jsSHA($("#passwordInput").val()).getHash("SHA-256","B64");
+					//$("#password").val( hash );
+					$.ajax({
+						url:'backend/rest.php?action=login',
+						type: 'POST',
+						data: {
+							'username': $("#username").val(),
+							'password': hash
+						},
+						success: function(){
+							$("#loginFormContainer").dialog("close");
+							getMediaSources();
+						},
+						error: function(){
+							
+						}
+					});
+				}
+			}
+		});
+		
 	});
 
 	/**
@@ -260,6 +288,8 @@
 						$("<a href='javascript:;' class='addToPlaylistButton'>+</a>")
 					).append(
 						$("<a href='javascript:;' class='downloadButton'>D</a>")
+					).append(
+						"|"
 					).append(
 						$("<span></span>")
 							.text(data.Files[file].displayName)

@@ -153,3 +153,16 @@ ol#playlistTracks .ui-state-highlight {
 	overflow: auto;
 }
 
+
+//hide the login form by default
+#loginFormContainer
+{
+	display: none;
+}
+
+p label 
+{
+	display: inline-block;
+	width: 6em;
+	
+}
