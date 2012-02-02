@@ -52,7 +52,13 @@ function outputStream($streamerID, $file){
 		/**
 		* Get media bitrate
 		*/
-		$maxBitrate = getCurrentMaxBitrate(); //get from db in the end
+		$maxBitrate = getCurrentMaxBitrate($streamerObj->outputMediaType); //get from db in the end
+		if($maxBitrate == 0 || $maxBitrate === false)
+		{
+			reportError("Could not retreive maxBitrate or it was 0 - ignoring");
+			$maxBitrate = NO_MAX_BITRATE; // failover to no max bitrate
+		}
+		appLog("Max bitrate to be applied is: ". $maxBitrate, appLog_DEBUG);
 		$mustAdjustBitrate = false;
 		
 		if($maxBitrate != NO_MAX_BITRATE)//if there is a max bitrate
@@ -150,6 +156,11 @@ function passthroughStream($file){
 	header("Content-Length: " . $fileSize);
 
 	$maxBandwidth = getCurrentMaxBandwidth();
+	if($maxBandwidth === false || $maxBandwidth === 0)
+	{
+		reportError("Could not get maxBandwidth or it is 0");
+		exit();
+	}
 	appLog("Limiting bandwidth to ". $maxBandwidth . "KB/s", appLog_DEBUG);
 
 	while(!feof($fh))
