@@ -55,7 +55,7 @@ function outputStream($streamerID, $file){
 		$maxBitrate = getCurrentMaxBitrate($streamerObj->outputMediaType); //get from db in the end
 		if($maxBitrate == 0 || $maxBitrate === false)
 		{
-			reportError("Could not retreive maxBitrate or it was 0 - ignoring");
+			appLog("Could not retreive maxBitrate or it was 0 - ignoring", appLog_INFO);
 			$maxBitrate = NO_MAX_BITRATE; // failover to no max bitrate
 		}
 		appLog("Max bitrate to be applied is: ". $maxBitrate, appLog_DEBUG);
@@ -187,10 +187,11 @@ function transcodeStream($streamerObj, $file){
 	);
 
 	//expand placeholders in command string
+	appLog($streamerObj->outputMediaType);
 	$cmd = expandCmdString($streamerObj->cmd, 
 		array(
 			"path" 		=> $file,
-			"bitrate"	=> getCurrentMaxBitrate(),
+			"bitrate"	=> getCurrentMaxBitrate($streamerObj->outputMediaType),
 		)
 	);
 

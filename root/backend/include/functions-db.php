@@ -177,14 +177,15 @@ function getCurrentMaxBandwidth(){
 * get the current max bitrate that media should be streamed at dependent on the current user and the media type
 */
 function getCurrentMaxBitrate($type){
+appLog($type);
 	//check the media type
 	if($type == 'a')
 		$mediaColumn = "maxAudioBitrate";
-	elseif($type != 'v')
+	elseif($type == 'v')
 		$mediaColumn = "maxVideoBitrate";
 	else
 	{
-		appLog("Invalid media type given", applog_INFO);
+		appLog("Invalid media type given", appLog_INFO);
 		return false;
 	}
 	//get the current user id
