@@ -114,11 +114,18 @@
 		});
 		
 		parentElement.children("a.addToPlaylistButton").click(function(){
+			var parentObj = $(this).parent(),
+				trackTagObject = parentObj.children("span.trackName");
 			
-			var trackTagObject = $(this).parent().children("span.trackName");
+			if(parentObj.hasClass("unplayable"))
+				return false;
 			
 			$("<li></li>").append(
-				$("<a href='javascript:;'></a>")
+				$("<a href='javascript:;' class='removeFromPlaylist'>R</a>")
+			).append(
+				"|"
+			).append(
+				$("<a href='javascript:;' class='playNow'></a>")
 					.text( trackTagObject.text() )
 					.attr( "data-filename", trackTagObject.attr("data-filename") )
 					.attr( "data-dir", trackTagObject.attr("data-dir") )
@@ -135,8 +142,8 @@
 				return $("<div class='draggingTrack'></div>");
 			}, 
 			cancel: ".unplayable",
+			cursor: "move",
 			cursorAt: {
-				cursor: "move",
 				top: 16,
 				left: 16
 			}
@@ -153,7 +160,11 @@
 				//$(ui.draggable).clone().appendTo(this);
 				var trackTagObject = $(ui.draggable).children("span.trackName");
 				$("<li></li>").append(
-					$("<a href='javascript:;'></a>")
+					$("<a href='javascript:;' class='removeFromPlaylist'>R</a>")
+				).append(
+					"|"
+				).append(
+					$("<a href='javascript:;' class='playNow'></a>")
 						.text( trackTagObject.text() )
 						.attr( "data-filename", trackTagObject.attr("data-filename"))
 						.attr( "data-dir", trackTagObject.attr("data-dir"))
@@ -192,8 +203,12 @@
 	function addPlaylistClickHandlers()
 	{
 		$("#playlistTracks li a").unbind("click");
-		$("#playlistTracks li a").click(function(){
+		$("#playlistTracks li a.playNow").click(function(){
 			play_jPlayerTrack(this);
+		});
+		$("#playlistTracks li a.removeFromPlaylist").click(function(){
+			//play_jPlayerTrack(this);
+			$(this).parent().remove();
 		});
 	}
 	
