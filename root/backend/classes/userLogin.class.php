@@ -27,13 +27,9 @@ class userLogin {
 	*/
 	public static function checkLoggedIn()
 	{
-		//start session
-		session_name(getConfig("sessionName"));
-		session_start();
-		
 		//try getting auth from session
 		if(isset($_SESSION["userid"])){
-			return($_SESSION["userid"]); 
+			return($_SESSION["userid"]);
 		}
 		//if no session then look at HTTP header auth
 		else{
@@ -68,14 +64,18 @@ class userLogin {
 		return false;
 	}
 	/**
+	* Alias of checkLoggedIn() - used to return current userid
+	*/
+	public static function getCurrentUserID()
+	{
+		return userLogin::checkLoggedIn();
+	}
+	
+	/**
 	* check sent login credentials and return user id
 	*/
 	public static function validate(){
-		
-		//start session
-		session_name(getConfig("sessionName"));
-		session_start();
-		
+				
 		//try POST VAR auth
 		if(isset($_POST["username"]) && isset($_POST["password"]))
 		{

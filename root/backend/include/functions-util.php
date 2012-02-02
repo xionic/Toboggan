@@ -114,6 +114,7 @@ function normalisePath($fn){
 * reports errors in an appropriate manner
 */
 function reportError($errMsg, $httpcode = 400, $mime = 'text/plain'){
+	appLog("Reporting error to user: '".$errMsg."'", appLog_DEBUG);
 	restTools::sendResponse	($errMsg,$httpcode, $mime);
 	
 }

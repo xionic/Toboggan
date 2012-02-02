@@ -8,6 +8,10 @@ require_once("include/functions.php");
 require_once("classes/REST_Helpers.class.php");
 require_once("classes/userLogin.class.php");
 
+//start session
+session_name(getConfig("sessionName"));
+session_start();
+
 //check user is auth'd
 if(isset($_GET["action"]) && $_GET["action"] != "login") // special case
 {
