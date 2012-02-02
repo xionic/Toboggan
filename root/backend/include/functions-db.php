@@ -177,7 +177,6 @@ function getCurrentMaxBandwidth(){
 * get the current max bitrate that media should be streamed at dependent on the current user and the media type
 */
 function getCurrentMaxBitrate($type){
-appLog($type);
 	//check the media type
 	if($type == 'a')
 		$mediaColumn = "maxAudioBitrate";
@@ -200,7 +199,7 @@ appLog($type);
 		$result = $stmt->fetch(PDO::FETCH_ASSOC);
 		closeDBConnection($conn);
 		
-		return $result[$mediaColumn];
+		return $result[$mediaColumn]."k"; // whack a k on the end for kilobytes
 	}
 	catch (PDOException $e)
 	{

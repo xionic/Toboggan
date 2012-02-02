@@ -187,7 +187,6 @@ function transcodeStream($streamerObj, $file){
 	);
 
 	//expand placeholders in command string
-	appLog($streamerObj->outputMediaType);
 	$cmd = expandCmdString($streamerObj->cmd, 
 		array(
 			"path" 		=> $file,
