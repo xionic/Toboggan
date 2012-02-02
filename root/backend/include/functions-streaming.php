@@ -99,6 +99,9 @@ function outputStream($streamerID, $file){
 	/**
 	* setup for streaming data and headers
 	*/
+	//sanitise filename
+	$filenameToSend = preg_replace("/\"/","'",$filenameToSend);
+	
 	//do not buffer
 	ini_set("output_buffering", "0");
 
@@ -113,6 +116,9 @@ function outputStream($streamerID, $file){
 	/**
 	* Output the stream
 	*/
+	//make sure the session is closed because otherwise other requests will be blocked by php
+	session_write_close();
+	
 	if(
 		$streamerID == 0 || //straight passthrough file download
 		(!$mustAdjustBitrate && $streamerObj->toExt == $streamerObj->fromExt)

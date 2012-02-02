@@ -20,29 +20,14 @@ function getAvailableStreamers($file){
 	$stmt->execute();
 	
 	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);
 	
 	$suitableStreamers = array();
 	foreach($results as $row){
 		$suitableStreamers[] = new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
 	}	
+	
 	return $suitableStreamers;
-	
-	
-	
-	// //array to be filled with streamer settings appropriate to this file	
-	// $suitableStreamers = array();
-	
-	// //find suitable streamers for extension
-	// global $config;
-	// foreach($config["videoStreamers"] as $item){
-		// if($extension == $item["fromExt"]){
-			// //construct Streamer objects
-			// $suitableStreamers[] = new Streamer($item["id"], $item["fromExt"], $item["toExt"],$item["cmd"],$item["mime"],$item["outputMediaType"], $item["bitrateCmd"]);
-		// }
-	// }
-	
-	// return $suitableStreamers;
-
 }
 
 /**
@@ -60,6 +45,8 @@ function getStreamerById($id){
 	$stmt->execute();
 
 	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	$stmt->closeCursor();
+	closeDBConnection($conn);
 	
 	
 	if($row)
@@ -78,6 +65,13 @@ function getDBConnection()
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	return $db;
 }
+/**
+* close a database connection
+*/ 
+function closeDBConnection($conn)
+{
+	$conn = null;
+}
 
 /**
 * get mediaSource path from it's ID
@@ -90,6 +84,8 @@ function getMediaSourcePath($mediaSourceID)
 	$stmt->execute();
 
 	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);
+	
 	return $row["path"];
 }
 
@@ -101,7 +97,8 @@ $conn = getDBConnection();
 	$stmt = $conn->prepare("SELECT idmediaSource, displayName FROM mediaSource");
 	$stmt->execute();
 
-	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);#
+	closeDBConnection($conn);
 	
 	$mediaSources = array();
 	foreach($results as $row)
@@ -115,14 +112,14 @@ $conn = getDBConnection();
 * get the current maximum bandwidth that media should be streamed at
 */
 function getCurrentMaxBandwidth(){
-	return 100;
+	return 90;
 }
 
 /**
 * get the current max bitrate that media should be streamed at
 */
 function getCurrentMaxBitrate(){
-	return "1910k";
+	return "300k";
 }
 
 
