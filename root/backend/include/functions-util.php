@@ -34,6 +34,7 @@ function expandCmdString($cmd, $data){
 		if(isset($data[$item]))
 		{
 			$patterns[]		 = "/%".$item."/";
+			setlocale(LC_CTYPE, "en_GB.UTF-8"); //stop escapeshellarg from stripping non ascii characters
 			$replacements[]	 =	escapeshellarg($data[$item]);
 		}
 	}
@@ -115,9 +116,11 @@ function normalisePath($fn){
 */
 function reportError($errMsg, $httpcode = 400, $mime = 'text/plain'){
 	appLog("Reporting error to user: '".$errMsg."'", appLog_DEBUG);
+	if($mime != "text/json") // injection protection
+		$errMsg = htmlentities($errMsg);
 	restTools::sendResponse	($errMsg,$httpcode, $mime);
-	
 }
+
 
 
 

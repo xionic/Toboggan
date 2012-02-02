@@ -49,6 +49,14 @@ switch($action)
 		$_GET["streamerID"] = 0; //hack through the switch and allow to follow through the getStream handler
 		
 	case "getStream": // INPUT VALIDITY CHECKING SHOULD BE BETTER HERE
+		
+		/*$args = validateGETArgs(array(
+			"dir" => "",
+			"filename" => "notblank",
+			"mediaSourceID" => "int, notzero",					
+			"streamerID" => "int",
+		));*/
+	
 		$partialfilepath	= @$_GET["dir"]; // can be empty
 		$filename			= @$_GET["filename"];
 		$mediaSourceID		= @$_GET["mediaSourceID"];
@@ -80,6 +88,12 @@ switch($action)
 		}
 		restTools::sendResponse("", 200, "test/plain");
 		break;
+		
+	/*case "saveClientSettings": 
+		//args validation
+		
+		
+		break;*/
 		
 	case "":
 		restTools::sendResponse("No action specified", 400, "text/plain");
