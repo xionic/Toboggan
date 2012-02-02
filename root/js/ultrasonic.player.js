@@ -49,9 +49,8 @@
 			modal: true,
 			title: 'Login',
 			buttons: {
-				'login': function(){
+				'Login': function(){
 					var hash = new jsSHA($("#passwordInput").val()).getHash("SHA-256","B64");
-					//$("#password").val( hash );
 					$.ajax({
 						url:'backend/rest.php?action=login',
 						type: 'POST',
@@ -64,7 +63,7 @@
 							getMediaSources();
 						},
 						error: function(){
-							
+							alert("Login Failed");							
 						}
 					});
 				}
@@ -177,7 +176,7 @@
 			}
 		});
 		
-		/** Make the playlist drag-sortable & Droppable*/		
+		/** Make the playlist drag-sortable & Droppable*/
 		$("#playlistTracks").droppable({
 			accept: ":not(.ui-sortable-helper)",	//make sure that if its being rearranged this doesn't count as a drop
 			drop: function( event, ui ) {
