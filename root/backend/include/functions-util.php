@@ -6,13 +6,13 @@ function appLog($message, $level = -1){
 	global $config;
 	if($level > $config["logLevel"]) return; //verbosity cut-off level
 	
-	$debugInfo = debug_backtrace();
+	$debugInfo = debug_backtrace(1);
 	if(count($debugInfo) > 1)
 		$callingfn = $debugInfo[1]["function"];
 	else
 		$callingfn = "[origin unknown]";
 	$file = fopen($config["logFile"], "a");
-	fwrite($file, date("Y/m/d H:i:s") . ": ". $level. ": " . $callingfn . "\t: (Userid ". userLogin::getCurrentUserID() ."): " . $message."\n");
+	fwrite($file, date("Y/m/d H:i:s") . ": ". $level. ": " . $callingfn . "\t: " . $message."\n");
 	fclose($file);
 }
 

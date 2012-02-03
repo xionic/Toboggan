@@ -8,20 +8,6 @@ require_once("include/functions.php");
 
 class userLogin {
 
-	public static function getUserRow($username){
-
-		$db = new PDO(PDO_DSN);
-		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-		$stmt = $db->prepare("SELECT * FROM User WHERE username=:username;");
-		$stmt->bindValue(":username",$username);
-		$stmt->execute();
-
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-		return(isset($rows[0])?$rows[0]:null);
-	}
-	
 	/**
 	* checks if a user is logged in and returns the userid
 	*/
@@ -33,31 +19,7 @@ class userLogin {
 		}
 		//if no session then look at HTTP header auth
 		else{
-			$headers = apache_request_headers();
-			if(!isset($headers['X-US-Authorization']))
-			{
-				return false;
-			}
-			list($method, $authData) = explode(" ", $headers['X-US-Authorization']);
-			
-			switch($method)
-			{
-				case "US-Auth1":
-					list($sentUsername, $sentPassHash) = explode("|",$authData);
-					$sentUsername = base64_decode($sentUsername);
-					
-					$rows = userLogin::getUserRow($sentUsername);
-					$passhash = $rows['password'];
-					
-					$ourPassStr = base64_encode(hash("sha256",getConfig("passwordSalt").$sentPassHash, true));
-					if($ourPassStr!==$passhash)
-					{
-						return false;
-					}
-					
-					return $rows['idUser'];
-					break;
-			}			
+			return userLogin::checkHeaderAuth();
 		}
 		
 		//user is not authenticated
@@ -74,29 +36,39 @@ class userLogin {
 	/**
 	* check sent login credentials and return user id
 	*/
-	public static function validate(){
-				
+	public static function validate()
+	{			echo "here";
 		//try POST VAR auth
 		if(isset($_POST["username"]) && isset($_POST["password"]))
 		{
-			$userRows = userLogin::getUserRow($_POST["username"]);
-			$passhash = $userRows['password'];
-			$ourPassStr = base64_encode(hash("sha256",getConfig("passwordSalt").$_POST["password"], true));
-			if($ourPassStr!==$passhash)
+			$sentUsername = $_POST["username"];
+			$sentPassword = $_POST["password"];
+			
+			$userid = userLogin::checkUserCredsValid($sentUsername, $sentPassword);
+			if($userid)
 			{
-				reportError("Authentication failed", 401, "text/plain");
-				return false;
+				//store userid
+				$_SESSION["userid"] = $userid;
 			}
 			
-			//store userid
-			$_SESSION["userid"] = $userRows["idUser"];
-			
 			//return userid
-			return $userRows["idUser"];
+			return $userid;
 		}
 		//if not session and no POST vars try HTTP header auth
 		else{
-			$headers = apache_request_headers();
+			return userLogin::checkHeaderAuth();			
+		}
+		
+		//No auth sent or no existing sessions 
+		return false;
+		
+	}
+	/**
+	* check if there is auth data in headers and if it is valid
+	*/
+	public static function checkHeaderAuth()
+	{
+		$headers = apache_request_headers();
 			if(!isset($headers['X-US-Authorization']))
 			{
 				reportError("Authentication Required", 401, "text/plain");
@@ -108,26 +80,28 @@ class userLogin {
 			{
 				case "US-Auth1":
 					list($sentUsername, $sentPassHash) = explode("|",$authData);
-					$sentUsername = base64_decode($sentUsername);
-					
-					$rows = userLogin::getUserRow($sentUsername);
-					$passhash = $rows['password'];
-					
-					
-					$ourPassStr = base64_encode(hash("sha256",getConfig("passwordSalt").$sentPassHash, true));
-					if($ourPassStr!==$passhash)
-					{
-						reportError("Authentication failed", 401, "text/plain");
-						return false;
-					}
+					$sentUsername = base64_decode($sentUsername);					
 
-					return $rows['idUser'];
+					return userLogin::checkUserCredsValid($sentUsername, $sentPassHash);
 					break;
-			}			
+			}
+	}
+	
+	/*
+	* check that user credentials are valid and that the user is enabled etc, and return userid on success, false on failure
+	* password should be as received from client, i.e. not rehashed yet
+	*/
+	public static function checkUserCredsValid($username, $password)
+	{
+		$userRows = getUserInfo($username);
+		$passhash = $userRows['password'];
+		$ourPassStr = base64_encode(hash("sha256",getConfig("passwordSalt").$password, true));
+
+		if($ourPassStr===$passhash && $userRows["enabled"] == 1) // passwords match and user not disabled
+		{
+			return $userRows["idUser"];			
 		}
-		
-		//No auth sent or no existing sessions 
+		reportError("Authentication failed", 401, "text/plain");
 		return false;
-		
 	}
 }

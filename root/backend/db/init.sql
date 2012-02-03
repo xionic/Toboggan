@@ -9,14 +9,14 @@ INSERT INTO transcode_cmd(command) VALUES("/usr/bin/ffmpeg -i %path -async 1 -b 
 INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(2,2,2);
 
 INSERT INTO fromExt(Extension, bitrateCmd) VALUES("wma", "/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'");
-INSERT INTO toExt(Extension, MimeType, MediaType) VALUES("mp3", "audio/mp3", "a");
+
 INSERT INTO transcode_cmd(command) VALUES("ffmpeg -i %path -ab %bitrate -v 0 -f mp3 -");
-INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(3,3,3);
+INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(3,1,3);
 
 INSERT INTO fromExt(Extension, bitrateCmd) VALUES("mkv", "/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'");
-INSERT INTO toExt(Extension, MimeType, MediaType) VALUES("flv", "video/flv", "v");
+
 INSERT INTO transcode_cmd(command) VALUES("/usr/bin/ffmpeg -i %path -async 1 -b %bitrate -vf 'scale=320:trunc((320/a)/2)*2' -ar 44100 -ac 2 -v 0 -f flv -vcodec libx264 -preset superfast -");
-INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(4,4,4);
+INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(4,2,4);
 
 
 
@@ -29,6 +29,11 @@ INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBi
 INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth)
 	VALUES ("testuser2", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "test2@test.com", 1, 128, 300, 75);
 	
-INSERT INTO ClientSettings(apikey, settings, idUser) VALUES("{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}", "", 1);
-INSERT INTO ClientSettings(apikey, settings, idUser) VALUES("testkey1", "", 1);
-INSERT INTO ClientSettings(apikey, settings, idUser) VALUES("testkey2", "", 2);
+INSERT INTO APIKey(apikey, displayName) VALUES("{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}", "Main frontend");
+INSERT INTO APIKey(apikey, displayName) VALUES("testkey1", "Testing apikey 1");
+INSERT INTO APIKey(apikey, displayName) VALUES("testkey2", "Testing apikey2");
+
+INSERT INTO ClientSettings(idAPIKey, settings, idUser) VALUES(1, "", 1);
+INSERT INTO ClientSettings(idAPIKey, settings, idUser) VALUES(2, "", 1);
+INSERT INTO ClientSettings(idAPIKey, settings, idUser) VALUES(1, "", 2);
+INSERT INTO ClientSettings(idAPIKey, settings, idUser) VALUES(3, "", 2);

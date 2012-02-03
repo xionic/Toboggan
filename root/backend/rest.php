@@ -81,17 +81,22 @@ switch($action)
 		}
 		break;
 		
-	case "login":
+	case "login":	echo "test";
 		if(!userLogin::validate())
 		{
 			reportError("Login failed", 401, "text/plain");
 			exit();
 		}
-		restTools::sendResponse("", 200, "test/plain");
+		restTools::sendResponse("Login successful", 200, "test/plain");
 		break;
 		
 	case "saveClientSettings": 
 		//args validation
+		$args = $av->validateArgs($_GET, array(
+			"settingsBlob" => "string",
+		),true);
+		
+	//	saveClientSettings
 		
 		break;
 		

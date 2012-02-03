@@ -215,13 +215,12 @@ function checkAPIKey($apikey)
 	try
 	{
 		$conn = getDBConnection();
-		$stmt = $conn->prepare("SELECT 1 FROM ClientSettings WHERE apikey = :apikey ");
+		$stmt = $conn->prepare("SELECT 1 FROM APIKey WHERE apikey = :apikey ");
 		$stmt->bindValue("apikey",$apikey, PDO::PARAM_STR);
 		$stmt->execute();
 
 		$result = $stmt->fetch(PDO::FETCH_ASSOC);
 		closeDBConnection($conn);
-		
 		return $result ? true:false;
 	}
 	catch (PDOException $e)
@@ -230,6 +229,28 @@ function checkAPIKey($apikey)
 		return false;
 	}
 }
+/**
+* get a user's info
+*/
+function getUserInfo($username)
+{
+
+	$db = new PDO(PDO_DSN);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+	$stmt = $db->prepare("SELECT * FROM User WHERE username=:username;");
+	$stmt->bindValue(":username",$username);
+	$stmt->execute();
+
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+	return(isset($rows[0])?$rows[0]:null);
+}
+
+/**
+* Save a client's settings blob
+*/
+//function saveClientSettings($settings, $apikey, $user)
 
 
 ?>

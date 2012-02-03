@@ -11,6 +11,12 @@ There are 2 methods to authenticate:
 	X-US-Authorization: method userStr|passStr
 
 	where method is US-Auth1, userStr is the username base64 encoded, and passStr is a sha256 hash of the password encoded in base64
+	
+######################################################
+# API Keys :								 		 #
+######################################################
+
+Access to the REST api requires an apikey. Every request must include an apikey={yourapikey} argument or the request will be rejected.
 
 ######################################################
 # List of API methods exposed by the backend:		 #

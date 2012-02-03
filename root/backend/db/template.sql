@@ -26,32 +26,32 @@ CREATE TABLE `extensionMap` (
 CREATE TABLE `fromExt` (
 	`idfromExt` INTEGER PRIMARY KEY AUTOINCREMENT ,
 	`Extension` VARCHAR(8) NOT NULL ,
-	`bitrateCmd` MEDIUMTEXT NOT NULL
+	`bitrateCmd` MEDIUMTEXT NOT NULL ,
+	CONSTRAINT `Ext`
+		UNIQUE (`Extension`)
+		ON CONFLICT ROLLBACK
 );
 
+CREATE TABLE `toExt` (
+	`idtoExt` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`Extension` VARCHAR(8) NOT NULL ,
+	`MimeType` VARCHAR(32) NOT NULL ,
+	`MediaType` VARCHAR(1) NOT NULL ,
+	CONSTRAINT `Ext`
+		UNIQUE (`Extension`)
+		ON CONFLICT ROLLBACK
+);
 
 CREATE TABLE `mediaSource` (
 	`idmediaSource` INTEGER PRIMARY KEY AUTOINCREMENT,
 	`path` VARCHAR(64) NOT NULL,
 	`displayName` VARCHAR(32) NOT NULL
 );
-
-
-CREATE TABLE `toExt` (
-	`idtoExt` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`Extension` VARCHAR(8) NOT NULL ,
-	`MimeType` VARCHAR(32) NOT NULL ,
-	`MediaType` VARCHAR(1) NOT NULL
-);
-
   
 CREATE TABLE `transcode_cmd` (
 	`idtranscode_cmd` INTEGER PRIMARY KEY AUTOINCREMENT,
 	command TEXT NOT NULL
 );
-
-
-
 
 CREATE TABLE `User` (
 	`idUser` INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -69,7 +69,7 @@ CREATE TABLE `User` (
 
 CREATE TABLE `ClientSettings` (
 	`idClientSettings` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`apikey` VARCHAR(40),
+	`idAPIKey` INTEGER,
 	`settings` TEXT,
 	`idUser` INTEGER,
 	CONSTRAINT `User`
@@ -78,7 +78,16 @@ CREATE TABLE `ClientSettings` (
 		ON DELETE NO ACTION
 		ON UPDATE NO ACTION
 	CONSTRAINT `apiUserMap`
-		UNIQUE (`apikey`, idUser)
+		UNIQUE (`idAPIKey`, idUser)
+		ON CONFLICT ROLLBACK
+);
+
+CREATE TABLE `APIKey` (
+	`idAPIKey` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`apikey` VARCHAR(40),
+	`displayName` VARCHAR(64),
+	CONSTRAINT `apikey`
+		UNIQUE (`apikey`)
 		ON CONFLICT ROLLBACK
 );
 

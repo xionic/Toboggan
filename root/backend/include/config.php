@@ -7,7 +7,7 @@ $config = array();
 require_once("config.fromDB.php");
 
 //db 
-define("DBPATH", "/var/wwws/projects/ultrasonic/root/backend/db/nick-dev.db");
+define("DBPATH", "db/nick-dev.db");
 define("PDO_DSN", "sqlite:".DBPATH);
 
 //logging
