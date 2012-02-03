@@ -24,7 +24,7 @@
 			var playingObject = $("#playlistTracks .jPlaying");
 			playingObject.removeClass("jPlaying");
 			
-			var nextObjectSpan = playingObject.parent().next("li").children("a");
+			var nextObjectSpan = playingObject.parent().next("li").children("a.playNow");
 			if(!nextObjectSpan)
 				return;
 			
@@ -35,7 +35,7 @@
 			//if there is no track being played then play the first
 			if($("#playlistTracks .jPlaying").length == 0)
 			{
-				$("#playlistTracks li:first a").click();
+				$("#playlistTracks li:first a.playNow").click();
 			}
 		});
 
