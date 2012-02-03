@@ -207,6 +207,29 @@ function getCurrentMaxBitrate($type){
 		return false;
 	}
 }
+/**
+* check an api key is valid
+*/
+function checkAPIKey($apikey)
+{
+	try
+	{
+		$conn = getDBConnection();
+		$stmt = $conn->prepare("SELECT 1 FROM ClientSettings WHERE apikey = :apikey ");
+		$stmt->bindValue("apikey",$apikey, PDO::PARAM_STR);
+		$stmt->execute();
+
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+		closeDBConnection($conn);
+		
+		return $result ? true:false;
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		return false;
+	}
+}
 
 
 ?>

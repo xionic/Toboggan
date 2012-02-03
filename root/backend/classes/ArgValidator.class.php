@@ -8,9 +8,9 @@ class ArgValidator{
 	
 	public $argArray, $argDesc, $errCallback;
 	
-	public function __construct($argArray, $argDesc, $errCallback){
-		$this->argArray = $argArray;
-		$this->argDesc = $argDesc;
+	public function __construct($errCallback){
+		// $this->argArray = $argArray;
+		// $this->argDesc = $argDesc;
 		$this->errCallback = $errCallback;
 	}
 	/**
@@ -23,8 +23,10 @@ class ArgValidator{
 	* string		-	must be string
 	* array			- 	must be array
 	*/
-	public function validateArgs()
+	public function validateArgs($argArray, $argDesc, $urldecode = false)
 	{
+		$this->argArray = $argArray;
+		$this->argDesc = $argDesc;
 		if(!is_array($this->argDesc))
 		{
 			throw new Exception("Arguments Description must be an array");
@@ -44,7 +46,7 @@ class ArgValidator{
 		{	
 			//get the constraints for the current arg
 			$tempconstraints = explode(",", $constraintString);
-			
+
 			//preprocess constraints to trim and apply optional constraint
 			$constraints = array();
 			foreach($tempconstraints as $tc)
@@ -97,7 +99,10 @@ class ArgValidator{
 					
 				}
 			}
-			$retArr[$arg] = $curValue;
+			if($urldecode)
+				$retArr[$arg] = urldecode($curValue);
+			else
+				$retArr[$arg] = $curValue;
 		}
 		return $retArr;
 	}	

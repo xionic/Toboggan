@@ -8,6 +8,18 @@ require_once("include/functions.php");
 require_once("classes/REST_Helpers.class.php");
 require_once("classes/userLogin.class.php");
 
+//argument validator
+$av = new ArgValidator("handleArgValidationError");
+
+//check API key
+$apiargs = $av->validateArgs($_GET, array(
+	"apikey" => "string",
+), true);
+if(!checkAPIKey($apiargs["apikey"]))
+{ // invalid api key
+	reportError("Invalid API Key", 412, "text/plain");
+}
+
 //start session
 session_name(getConfig("sessionName"));
 session_start();
@@ -26,23 +38,24 @@ if(isset($_GET["action"]) && $_GET["action"] != "login") // special case
 $action = @$_GET["action"];
 appLog("Received request for action ". $action, appLog_DEBUG);
 
+
+
+
 switch($action)
 {
-	case "listMediaSources":
+	case "listMediaSources":		
 		restTools::sendResponse(getMediaSourceID_JSON(),200);
 		break;
 		
 	case "listDirContents":
-		if(empty($_GET["dir"]))
-		{
-			$dir = "";
-		}
-		else
-		{
-			$dir = urldecode($_GET["dir"]);
-		}
+		//validate args		
+		$args = $av->validateArgs($_GET, array(
+			"dir" => "string",
+			"mediaSourceID"	=>	"int, notzero",
+		), true);
+		
 			
-		getDirContents_JSON(urldecode($dir), $_GET["mediaSourceID"]);
+		getDirContents_JSON($args["dir"], $args["mediaSourceID"]);
 		break;
 		
 	case "downloadFile": //download a file unmodified
@@ -50,31 +63,19 @@ switch($action)
 		
 	case "getStream": // INPUT VALIDITY CHECKING SHOULD BE BETTER HERE
 		
-		/*$args = validateGETArgs(array(
-			"dir" => "",
-			"filename" => "notblank",
-			"mediaSourceID" => "int, notzero",					
-			"streamerID" => "int",
-		));*/
-	
-		$partialfilepath	= @$_GET["dir"]; // can be empty
-		$filename			= @$_GET["filename"];
-		$mediaSourceID		= @$_GET["mediaSourceID"];
-		$streamerID			= @$_GET["streamerID"];
-		
-		// check inputs validity		
-		if(!$mediaSourceID || ((int)$mediaSourceID) == 0)
-			restTools::sendResponse("mediaSourceID is invalid", 400, "text/plain");
-		elseif(!is_numeric($streamerID))
-			restTools::sendResponse("streamerID is invalid", 400, "text/plain");
-		elseif(!$filename)
-			restTools::sendResponse("filename is invalid", 400, "text/plain");
-		
+		//validate arguments
+		$args = $av->validateArgs($_GET, array(
+			"dir" 				=> "string",
+			"mediaSourceID"		=> "int, notzero",
+			"filename"			=> "string, notblank",
+			"streamerID" 		=> "int"
+		), true);
+				
 		//get full path to file
-		$fullfilepath = getMediaSourcePath($mediaSourceID).normalisePath($partialfilepath.$filename);
+		$fullfilepath = getMediaSourcePath($args["mediaSourceID"]).normalisePath($args["dir"].$args["filename"]);
 		
 		//output the media stream via a streamer
-		if(!outputStream($streamerID, $fullfilepath))
+		if(!outputStream($args["streamerID"], $fullfilepath))
 		{
 			return; //error outputting stream - error should have been reported by outputStream()
 		}
@@ -89,11 +90,10 @@ switch($action)
 		restTools::sendResponse("", 200, "test/plain");
 		break;
 		
-	/*case "saveClientSettings": 
+	case "saveClientSettings": 
 		//args validation
 		
-		
-		break;*/
+		break;
 		
 	case "":
 		restTools::sendResponse("No action specified", 400, "text/plain");

@@ -40,7 +40,7 @@ function outputStream($streamerID, $file){
 			return false;
 		}
 		//check that the extension is compatible with the streamer
-		if($streamerObj->fromExt != $filepathInfo["extension"])
+		if(strtolower($streamerObj->fromExt) != strtolower($filepathInfo["extension"]))
 		{
 			appLog("Streamer does not support this extension", appLog_INFO);
 			reportError("Streamer specified by streamerID does not support this file");

@@ -30,3 +30,5 @@ INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBi
 	VALUES ("testuser2", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "test2@test.com", 1, 128, 300, 75);
 	
 INSERT INTO ClientSettings(apikey, settings, idUser) VALUES("{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}", "", 1);
+INSERT INTO ClientSettings(apikey, settings, idUser) VALUES("testkey1", "", 1);
+INSERT INTO ClientSettings(apikey, settings, idUser) VALUES("testkey2", "", 2);

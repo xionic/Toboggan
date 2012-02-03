@@ -12,7 +12,7 @@ function appLog($message, $level = -1){
 	else
 		$callingfn = "[origin unknown]";
 	$file = fopen($config["logFile"], "a");
-	fwrite($file, date("Y/m/d H:i:s") . ": ". $level. ": " . $callingfn . ": " . $message."\n");
+	fwrite($file, date("Y/m/d H:i:s") . ": ". $level. ": " . $callingfn . "\t: (Userid ". userLogin::getCurrentUserID() ."): " . $message."\n");
 	fclose($file);
 }
 
@@ -119,6 +119,11 @@ function reportError($errMsg, $httpcode = 400, $mime = 'text/plain'){
 	if($mime != "text/json") // injection protection
 		$errMsg = htmlentities($errMsg);
 	restTools::sendResponse	($errMsg,$httpcode, $mime);
+}
+
+function handleArgValidationError($msg, $argName="", $argValue="")
+{
+	reportError($msg, 400, "text/plain");
 }
 
 
