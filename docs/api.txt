@@ -79,3 +79,16 @@ login
 		None (see authentication section above)
 	Authenticates the user and starts a session 
 	Note: Only for use with form based authentication
+	
+saveClientSettngs
+	args:
+		settingsBlob - a string representing the settings to be saved
+	A method to save client specific settings on the server. These are saved per user and per apikey, such that multiple of the same client can share settings
+	to allow portability.
+	
+	retrieveClientSettings
+	args:
+		None
+	A method to retrieve previously saved settings for the client. These are saved per user and per apikey, such that multiple of the same client can share settings
+	to allow portability
+		

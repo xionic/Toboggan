@@ -32,8 +32,3 @@ INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBi
 INSERT INTO APIKey(apikey, displayName) VALUES("{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}", "Main frontend");
 INSERT INTO APIKey(apikey, displayName) VALUES("testkey1", "Testing apikey 1");
 INSERT INTO APIKey(apikey, displayName) VALUES("testkey2", "Testing apikey2");
-
-INSERT INTO ClientSettings(idAPIKey, settings, idUser) VALUES(1, "", 1);
-INSERT INTO ClientSettings(idAPIKey, settings, idUser) VALUES(2, "", 1);
-INSERT INTO ClientSettings(idAPIKey, settings, idUser) VALUES(1, "", 2);
-INSERT INTO ClientSettings(idAPIKey, settings, idUser) VALUES(3, "", 2);

@@ -234,23 +234,116 @@ function checkAPIKey($apikey)
 */
 function getUserInfo($username)
 {
+	try
+	{
+		$conn = getDBConnection();
 
-	$db = new PDO(PDO_DSN);
-	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+		$stmt = $conn->prepare("SELECT * FROM User WHERE username=:username;");
+		$stmt->bindValue(":username",$username,PDO::PARAM_STR);
+		$stmt->execute();
 
-	$stmt = $db->prepare("SELECT * FROM User WHERE username=:username;");
-	$stmt->bindValue(":username",$username);
-	$stmt->execute();
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		closeDBConnection($conn);
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		return false;
+	}
+	
+	return(isset($rows[0])?$rows[0]:null);
+}
+/**
+* Get a user's info from an id
+*/
+function getUserInfoFromID($userid)
+{	
+	try
+	{
+		$conn = getDBConnection();
 
-	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$stmt = $conn->prepare("SELECT * FROM User WHERE idUser=:idUser;");
+		$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
+		$stmt->execute();
 
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		closeDBConnection($conn);
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		return false;
+	}
 	return(isset($rows[0])?$rows[0]:null);
 }
 
 /**
 * Save a client's settings blob
 */
-//function saveClientSettings($settings, $apikey, $user)
+function saveClientSettings($settings, $apikey, $userid)
+{
+	try
+	{
+		$conn = getDBConnection();
+
+		//check this client and user already have settings saved
+		$stmt = $conn->prepare("SELECT idClientSettings FROM ClientSettings INNER JOIN User USING (idUser) INNER JOIN APIKey USING(idAPIKey) WHERE idUser = :idUser AND apikey = :apikey");
+		$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
+		$stmt->bindValue(":apikey",$apikey,PDO::PARAM_STR);
+		$stmt->execute();
+
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		if(!$row)
+		{
+			$stmt = $conn->prepare("INSERT INTO ClientSettings(idAPIKey, settings, idUser) SELECT idAPIKey, :settings, :idUser FROM APIKey WHERE apikey = :apikey");
+			$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
+			$stmt->bindValue(":settings",$settings,PDO::PARAM_STR);
+			$stmt->bindValue(":apikey",$apikey,PDO::PARAM_STR);
+			$stmt->execute();
+		}
+		else
+		{
+			$stmt = $conn->prepare("UPDATE ClientSettings SET settings = :settings WHERE idClientSettings = :idClientSettings");
+			$stmt->bindValue(":idClientSettings",$row["idClientSettings"],PDO::PARAM_INT);
+			$stmt->bindValue(":settings",$settings,PDO::PARAM_STR);
+			$stmt->execute();
+		}
+
+		closeDBConnection($conn);
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		return false;
+	}
+}
+
+function getClientSettings($apikey, $userid){
+	try
+	{
+		$conn = getDBConnection();
+		
+		//check this client and user already have settings saved
+		$stmt = $conn->prepare("SELECT settings FROM ClientSettings INNER JOIN User USING (idUser) INNER JOIN APIKey USING(idAPIKey) WHERE idUser = :idUser AND apikey = :apikey");
+		$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
+		$stmt->bindValue(":apikey",$apikey,PDO::PARAM_STR);
+		$stmt->execute();	 
+		
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		
+		closeDBConnection($conn);
+		
+		if($row)
+			return $row["settings"];
+		else 
+			return false; // no settings
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		return false;
+	}
+}
 
 
 ?>

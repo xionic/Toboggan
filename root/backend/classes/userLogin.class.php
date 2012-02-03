@@ -69,22 +69,22 @@ class userLogin {
 	public static function checkHeaderAuth()
 	{
 		$headers = apache_request_headers();
-			if(!isset($headers['X-US-Authorization']))
-			{
-				reportError("Authentication Required", 401, "text/plain");
-				return false;
-			}
-			list($method, $authData) = explode(" ", $headers['X-US-Authorization']);
-			
-			switch($method)
-			{
-				case "US-Auth1":
-					list($sentUsername, $sentPassHash) = explode("|",$authData);
-					$sentUsername = base64_decode($sentUsername);					
+		if(!isset($headers['X-US-Authorization']))
+		{
+			reportError("Authentication Required", 401, "text/plain");
+			return false;
+		}
+		list($method, $authData) = explode(" ", $headers['X-US-Authorization']);
+		
+		switch($method)
+		{
+			case "US-Auth1":
+				list($sentUsername, $sentPassHash) = explode("|",$authData);
+				$sentUsername = base64_decode($sentUsername);					
 
-					return userLogin::checkUserCredsValid($sentUsername, $sentPassHash);
-					break;
-			}
+				return userLogin::checkUserCredsValid($sentUsername, $sentPassHash);
+				break;
+		}
 	}
 	
 	/*
@@ -103,5 +103,28 @@ class userLogin {
 		}
 		reportError("Authentication failed", 401, "text/plain");
 		return false;
+	}
+	
+	/**
+	* log a user out if they have a session
+	*/
+	public static function logout()
+	{
+		// Unset all of the session variables.
+		$_SESSION = array();
+		
+		// If it's desired to kill the session, also delete the session cookie.
+		// Note: This will destroy the session, and not just the session data!
+		if(ini_get("session.use_cookies"))
+		{
+			$params = session_get_cookie_params();
+			setcookie(session_name(), '', time() - 42000,
+				$params["path"], $params["domain"],
+				$params["secure"], $params["httponly"]
+			);
+		}
+		
+		// Finally, destroy the session.
+		session_destroy();
 	}
 }
