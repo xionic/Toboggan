@@ -13,7 +13,7 @@ $av = new ArgValidator("handleArgValidationError");
 
 //check API key
 $apiargs = $av->validateArgs($_GET, array(
-	"apikey" => "string",
+	"apikey" => "string, notblank",
 ), true);
 if(!checkAPIKey($apiargs["apikey"]))
 { // invalid api key
@@ -81,23 +81,46 @@ switch($action)
 		}
 		break;
 		
-	case "login":	echo "test";
+	case "login":	
 		if(!userLogin::validate())
 		{
 			reportError("Login failed", 401, "text/plain");
 			exit();
 		}
-		restTools::sendResponse("Login successful", 200, "test/plain");
+		restTools::sendResponse("Login successful", 200, "text/plain");
 		break;
 		
+	case "logout":
+		userLogin::logout();
+		
+		break;
 	case "saveClientSettings": 
 		//args validation
 		$args = $av->validateArgs($_GET, array(
 			"settingsBlob" => "string",
+			"apikey"		=> "string, notblank"
 		),true);
+		//save the settings
+		saveClientSettings($args["settingsBlob"], $args["apikey"], userLogin::getCurrentUserID());
 		
-	//	saveClientSettings
+		break;
 		
+	case "retrieveClientSettings":
+		$args = $av->validateArgs($_GET, array(
+			"apikey"		=> "string, notblank"
+		),true);
+
+		$clientSettings = getClientSettings($args["apikey"], userLogin::getCurrentUserID());
+		if(!$clientSettings) // no settings to retrieve
+		{
+			appLog("No Client settings saved for apikey:'".$args['apikey']."' and userid:".userLogin::getCurrentUserID(), appLog_DEBUG);
+			restTools::sendResponse("No client settings to return", 204, "text/plain");
+		}
+		else
+		{
+			appLog("Returning Client settings for apikey:'".$args['apikey']."' and userid:".userLogin::getCurrentUserID(), appLog_DEBUG);
+			restTools::sendResponse($clientSettings,200, "text/json");
+		}
 		break;
 		
 	case "":
