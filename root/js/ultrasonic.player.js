@@ -7,6 +7,10 @@
 		jQuery Entry Point
 	*/
 	$(document).ready(function(){
+	
+		/** Hide the video pane **/
+		showHideVideoPane("a");
+	
 		/** Setup the jPlayer */
 		$("#jquery_jplayer_1").jPlayer({
 			ready: function () {
@@ -108,8 +112,17 @@
 			mediaType = streamerObject[x].mediaType=="v"?"v":"a";
 		}
 		
-		console.log(mediaType);
-		//is only based on the last mediaType:
+		showHideVideoPane(mediaType);
+		
+		$("#jquery_jplayer_1").jPlayer( "setMedia", mediaObject).jPlayer("play");
+	}
+	
+	/**
+		Shows or hides the videopane depending on the passed mediaType (a/v)
+	*/
+	function showHideVideoPane(mediaType)
+	{
+			//is only based on the last mediaType:
 		if(mediaType=="v")
 		{
 			$("#centerPlayerContainer").height("auto");
@@ -121,7 +134,6 @@
 			$("#centerTrackContainer").css({ 'bottom':"3px"});
 		}
 
-		$("#jquery_jplayer_1").jPlayer( "setMedia", mediaObject).jPlayer("play");
 	}
 	
 	/**
