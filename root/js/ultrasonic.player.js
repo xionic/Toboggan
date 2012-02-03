@@ -2,6 +2,7 @@
 	Holds the JS used for the player system, playlist management etc
 */
 (function(){
+	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}';
 	/**
 		jQuery Entry Point
 	*/
@@ -37,6 +38,11 @@
 				$("#playlistTracks li:first a").click();
 			}
 		});
+
+		//add an additional handler onto the stop buttn
+		$("#jp_container_1 ul.jp-controls .jp-stop").click(function(){
+			//reset the media if it's a video
+		});
 		
 		$("#mediaSourceSelector").change(function(event){
 			updateFolderBrowser($("#mediaSourceSelector").val());
@@ -52,7 +58,7 @@
 				'Login': function(){
 					var hash = new jsSHA($("#passwordInput").val()).getHash("SHA-256","B64");
 					$.ajax({
-						url:'backend/rest.php?action=login',
+						url:'backend/rest.php?action=login&apikey='+apikey,
 						type: 'POST',
 						data: {
 							'username': $("#username").val(),
@@ -62,7 +68,8 @@
 							$("#loginFormContainer").dialog("close");
 							getMediaSources();
 						},
-						error: function(){
+						error: function(jqhxr,textstatus,errorthrown){
+							console.debug(jqhxr,textstatus,errorthrown);
 							alert("Login Failed");							
 						}
 					});
@@ -89,15 +96,16 @@
 		
 		//console.debug(remote_filename,remote_directory,remote_mediaSource,remote_streamers);
 		
-		var streamerObject = $.parseJSON(remote_streamers), mediaObject = {}, mediaType="";
+		var streamerObject = $.parseJSON(remote_streamers), mediaObject = {}, mediaType="a";
 		for(var x=0; x<streamerObject.length; ++x)
 		{
 			mediaObject[streamerObject[x].extension] = g_ultrasonic_basePath+"/backend/rest.php"+"?action=getStream"+
 														"&filename="+encodeURIComponent(remote_filename)+
 														"&dir="+encodeURIComponent(remote_directory)+
 														"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
-														"&streamerID="+streamerObject[x].streamerID;
-			mediaType = streamerObject[x].mediaType;
+														"&streamerID="+streamerObject[x].streamerID+
+														"&apikey="+apikey;
+			mediaType = streamerObject[x].mediaType=="v"?"v":"a";
 		}
 		
 		console.log(mediaType);
@@ -135,7 +143,8 @@
 			var url = g_ultrasonic_basePath+"/backend/rest.php"+"?action=downloadFile"+
 					"&filename="+encodeURIComponent(remote_filename)+
 			    	"&dir="+encodeURIComponent(remote_directory)+
-		    		"&mediaSourceID="+encodeURIComponent(remote_mediaSource);
+		    		"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
+		    		"&apikey="+apikey;
 		    		
 			window.open(url);	//open in new window
 		});
@@ -252,7 +261,7 @@
 		//retrieve a list of new folders
 		$.ajax({
 			cache: false,
-			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listDirContents",
+			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listDirContents&apikey="+apikey,
 			type: "GET",
 			data: { 
 				'dir' : folderName, 
@@ -315,7 +324,7 @@
 	{
 		$.ajax({
 			cache: false,
-			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listMediaSources",
+			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listMediaSources&apikey="+apikey,
 			type: "GET",
 			complete: function(jqhxr,status) {},
 			error: function(jqxhr, status, errorThrown) {
