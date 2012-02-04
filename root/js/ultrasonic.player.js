@@ -71,6 +71,10 @@
 						success: function(){
 							$("#loginFormContainer").dialog("close");
 							getMediaSources();
+							
+							//load the nowPlaying from localStorage
+							loadNowPlaying();
+							
 						},
 						error: function(jqhxr,textstatus,errorthrown){
 							console.debug(jqhxr,textstatus,errorthrown);
@@ -80,9 +84,71 @@
 				}
 			}
 		});
-		
+
 	});
 
+	/**
+		Load the now playing list from HTML5 LocalStorage
+	*/
+	function loadNowPlaying()
+	{
+		var nowPlaying = localStorage.getItem("nowPlaying");
+		
+		if(typeof nowPlaying === "undefined" || !nowPlaying)
+			return;
+		
+		var trackList = $.parseJSON(nowPlaying);
+		for(var x=0; x<trackList.length; ++x)
+		{
+			addToNowPlaying(trackList[x]);
+		}
+		addNowPlayingClickHandlers();
+	}
+	
+	
+	/**
+		Saves the now playing list to HTML5 LocalStorage
+	*/
+	function saveNowPlaying()
+	{
+		var trackList = $("#playlistTracks li a.playNow"),
+			nowPlaying = [];
+		
+		for(var x=0; x<trackList.length; ++x)
+		{
+			nowPlaying.push({
+				'text': $(trackList[x]).text(),
+				'filename': $(trackList[x]).attr("data-filename"),
+				'dir': $(trackList[x]).attr("data-dir"),
+				'streamers':$(trackList[x]).attr("data-streamers"),
+				'media_source':$(trackList[x]).attr("data-media_source"),
+			});
+		}
+		
+		localStorage.setItem("nowPlaying", JSON.stringify(nowPlaying));
+	}
+	
+	/**
+		Add a track to the now playing list
+	*/
+	function addToNowPlaying(trackObject)
+	{	
+		$("#playlistTracks").append(		
+			$("<li></li>").append(
+				$("<a href='javascript:;' class='removeFromPlaylist'>R</a>")
+			).append(
+				"|"
+			).append(
+				$("<a href='javascript:;' class='playNow'></a>")
+					.text( trackObject.text )
+					.attr( "data-filename", trackObject.filename )
+					.attr( "data-dir", trackObject.dir )
+					.attr( "data-streamers", trackObject.streamers )
+					.attr( "data-media_source", trackObject.media_source )
+			)
+		);
+	}
+	
 	/**
 		Make the jquery player play a track from the passed object
 	*/
@@ -168,20 +234,17 @@
 			if(parentObj.hasClass("unplayable"))
 				return false;
 			
-			$("<li></li>").append(
-				$("<a href='javascript:;' class='removeFromPlaylist'>R</a>")
-			).append(
-				"|"
-			).append(
-				$("<a href='javascript:;' class='playNow'></a>")
-					.text( trackTagObject.text() )
-					.attr( "data-filename", trackTagObject.attr("data-filename") )
-					.attr( "data-dir", trackTagObject.attr("data-dir") )
-					.attr( "data-streamers", trackTagObject.attr("data-streamers") )
-					.attr( "data-media_source", trackTagObject.attr("data-media_source") )
-			).appendTo( $("#playlistTracks") );
+			trackObject = {
+				'text': $(trackTagObject).text(),
+				'filename': $(trackTagObject).attr("data-filename"),
+				'dir': $(trackTagObject).attr("data-dir"),
+				'streamers': $(trackTagObject).attr("data-streamers"),
+				'media_source': $(trackTagObject).attr("data-media_source")
+			}
 			
-			addPlaylistClickHandlers();
+			addToNowPlaying(trackObject);
+			saveNowPlaying();
+			addNowPlayingClickHandlers();
 		});
 		
 		$( "#tracklist li" ).draggable({
@@ -207,20 +270,18 @@
 				//or some sort of deep clone:
 				//$(ui.draggable).clone().appendTo(this);
 				var trackTagObject = $(ui.draggable).children("span.trackName");
-				$("<li></li>").append(
-					$("<a href='javascript:;' class='removeFromPlaylist'>R</a>")
-				).append(
-					"|"
-				).append(
-					$("<a href='javascript:;' class='playNow'></a>")
-						.text( trackTagObject.text() )
-						.attr( "data-filename", trackTagObject.attr("data-filename"))
-						.attr( "data-dir", trackTagObject.attr("data-dir"))
-						.attr( "data-streamers", trackTagObject.attr("data-streamers"))
-						.attr( "data-media_source", trackTagObject.attr("data-media_source"))
-				).appendTo(this);
+							
+				trackObject = {
+					'text': $(trackTagObject).text(),
+					'filename': $(trackTagObject).attr("data-filename"),
+					'dir': $(trackTagObject).attr("data-dir"),
+					'streamers': $(trackTagObject).attr("data-streamers"),
+					'media_source': $(trackTagObject).attr("data-media_source")
+				}
 				
-				addPlaylistClickHandlers();
+				addToNowPlaying(trackObject);
+				saveNowPlaying();
+				addNowPlayingClickHandlers();
 			}
 		}).sortable({
 			items: "li:not(.placeholder)",
@@ -231,7 +292,7 @@
 			}
 		});
 		
-		addPlaylistClickHandlers();
+		addNowPlayingClickHandlers();
 		
 	}
 	
@@ -248,7 +309,7 @@
 	/**
 		Click Handler for tracks in the playlist
 	*/
-	function addPlaylistClickHandlers()
+	function addNowPlayingClickHandlers()
 	{
 		$("#playlistTracks li a").unbind("click");
 		$("#playlistTracks li a.playNow").click(function(){
@@ -257,6 +318,7 @@
 		$("#playlistTracks li a.removeFromPlaylist").click(function(){
 			//play_jPlayerTrack(this);
 			$(this).parent().remove();
+			saveNowPlaying();
 		});
 	}
 	
