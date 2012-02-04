@@ -52,39 +52,8 @@
 			updateFolderBrowser($("#mediaSourceSelector").val());
 		});
 		
-		//present the login form:
+		getMediaSources();
 		
-		$("#loginFormContainer").dialog({
-			autoOpen: true,
-			modal: true,
-			title: 'Login',
-			buttons: {
-				'Login': function(){
-					var hash = new jsSHA($("#passwordInput").val()).getHash("SHA-256","B64");
-					$.ajax({
-						url:'backend/rest.php?action=login&apikey='+apikey,
-						type: 'POST',
-						data: {
-							'username': $("#username").val(),
-							'password': hash
-						},
-						success: function(){
-							$("#loginFormContainer").dialog("close");
-							getMediaSources();
-							
-							//load the nowPlaying from localStorage
-							loadNowPlaying();
-							
-						},
-						error: function(jqhxr,textstatus,errorthrown){
-							console.debug(jqhxr,textstatus,errorthrown);
-							alert("Login Failed");							
-						}
-					});
-				}
-			}
-		});
-
 	});
 
 	/**
@@ -163,8 +132,6 @@
 		$("#playlistTracks .jPlaying").removeClass("jPlaying");
 		
 		$(trackObject).addClass("jPlaying");
-		
-		//console.debug(remote_filename,remote_directory,remote_mediaSource,remote_streamers);
 		
 		var streamerObject = $.parseJSON(remote_streamers), mediaObject = {}, mediaType="a";
 		for(var x=0; x<streamerObject.length; ++x)
@@ -400,10 +367,12 @@
 			cache: false,
 			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listMediaSources&apikey="+apikey,
 			type: "GET",
-			complete: function(jqhxr,status) {},
+			complete: function(jqxhr,status) {},
 			error: function(jqxhr, status, errorThrown) {
-				alert("AJAX ERROR - check the console!");
-				console.error(jqxhr, status, errorThrown);
+				
+				//if not logged in, display the login form
+				if(jqxhr.status==401)
+					doLogin();
 			},
 			success: function(data, status, jqxhr) {		
 				for (var x=0; x<data.length; ++x)
@@ -416,4 +385,41 @@
 		});	
 	}
 	
+	/**
+		display and handle the login form if required
+	*/
+	function doLogin()
+	{
+		//present the login form:
+		$("#loginFormContainer").dialog({
+			autoOpen: true,
+			modal: true,
+			title: 'Login',
+			buttons: {
+				'Login': function(){
+					var hash = new jsSHA($("#passwordInput").val()).getHash("SHA-256","B64");
+					$.ajax({
+						url:'backend/rest.php?action=login&apikey='+apikey,
+						type: 'POST',
+						data: {
+							'username': $("#username").val(),
+							'password': hash
+						},
+						success: function(){
+							$("#loginFormContainer").dialog("close");
+							getMediaSources();
+							
+							//load the nowPlaying from localStorage
+							loadNowPlaying();
+							
+						},
+						error: function(jqhxr,textstatus,errorthrown){
+							console.debug(jqhxr,textstatus,errorthrown);
+							alert("Login Failed");							
+						}
+					});
+				}
+			}
+		});
+	}
 })();
