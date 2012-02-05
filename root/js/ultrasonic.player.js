@@ -268,7 +268,13 @@
 	*/
 	function addFolderClickHandlers()
 	{
-		$("#folderlist").children("li").children("a").click(function(){
+		//updated to include sub-directory browsing, now slower than before as it
+		// is forced to recurse through subdirectories etc, 
+		// unbind is now required as the tree structure is now no longer entirely 
+		// replaced with the new one
+		$("#folderlist li a").unbind('click').click(function(){	
+			$("#folderlist .currentlySelected").removeClass("currentlySelected");
+			$(this).parent().addClass("currentlySelected");
 			updateFolderBrowser($(this).attr("data-media_source"),this);
 		});
 	}
@@ -294,10 +300,23 @@
 	*/
 	function updateFolderBrowser(mediaSourceID, clickedObj)
 	{
-		var folderName = "";
+		var folderName = "", appendTarget;
 		
-		if(clickedObj)
+		if(clickedObj)	// if it's a subfolder, else it's the root
+		{
 			folderName = $(clickedObj).attr("data-parent")+""+$(clickedObj).text();
+			
+			appendTarget = $(clickedObj).siblings("ul.subdir");
+			if(appendTarget.length==0)
+			{
+				appendTarget = $("<ul class='subdir'></ul>");
+				$(clickedObj).parent().append(appendTarget);
+			}
+		}
+		else
+		{
+			appendTarget = $("#folderlist");
+		}		
 		
 		//retrieve a list of new folders
 		$.ajax({
@@ -316,7 +335,7 @@
 			success: function(data, status, jqxhr) {
 				
 				$("#tracklist").empty();
-				$("#folderlist").empty();
+				$(appendTarget).empty();
 				
 				for (dir in data.Directories)
 				{
@@ -326,7 +345,7 @@
 							.attr("data-parent", data.CurrentPath)
 							.attr("data-media_source", mediaSourceID)
 					)
-					.appendTo($("#folderlist"));
+					.appendTo(appendTarget);
 				}
 				addFolderClickHandlers();
 

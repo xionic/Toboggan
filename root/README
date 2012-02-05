@@ -5,14 +5,21 @@ Root directory for frontend-backend interaction
 =============
  Add to playlist buttons
  Control Panel
- Remove from playlist
- Visible notification of what directory is being browsed
- Expandable Tree structure for directories?
+ Improve Visible notification of what directory is being browsed
  Better location for the video playback
  Download as X (using streamer settings)
- Handlers for different systems
 
 ==
 Useful addition for right click menus:
 https://github.com/basti1253/jQueryUI-contextmenu
 
+== RE's problem files:
+Ghost In The Shell 2 - Innocence.avi
+Office Space.avi
+Shooting Stars.avi
+The Birds.avi
+Taxi Driver.avi
+The Company Of Wolves.avi
+The Hunt For Red October (1990).avi
+The Wind That Shakes The Barley.avi
+Who Framed Roger Rabbit.avi

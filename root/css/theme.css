@@ -72,6 +72,28 @@ html, #loginForm
 	background: -o-linear-gradient(#d4d4d4,#ddd);
 }
 
+//For Subdirectories:
+#folderlist ul.subdir li:nth-of-type(odd)
+{
+	background: -o-linear-gradient(rgba(10,10,10,0.1),rgba(0,0,0,0.1));
+}
+
+#folderlist ul.subdir li:nth-of-type(even)
+{
+	background: -o-linear-gradient(rgba(255,255,255,0.1),rgba(245,245,245,0.1));
+}
+
+//Currently selected folder
+#folderlist .currentlySelected
+{
+	font-weight: bold;
+}
+#folderlist .currentlySelected ul
+{
+	font-weight: normal;	//override font-weight bubbling from above
+	
+}
+
 #folderlist li a,
 #folderlist li a:link,
 #folderlist li a:visited

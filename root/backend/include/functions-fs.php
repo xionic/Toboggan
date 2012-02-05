@@ -24,7 +24,7 @@ function getDirContents_JSON($dir, $mediaSourceID){
 	
 	while (($occurrence = readdir($dh)) !== false)
 	{
-		if($occurrence == "." || $occurrence == "index.php")
+		if($occurrence == "." || $occurrence == ".." || $occurrence == "index.php" )
 		{
 			continue;
 		}

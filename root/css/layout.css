@@ -148,6 +148,11 @@ ol#playlistTracks .ui-state-highlight {
 	line-height: 2.2ex; 
 }
 
+#folderlist ul.subdir li
+{
+	padding-left: 1ex;
+}
+
 /** helper classes **/
 .float-container {
 	overflow: auto;
