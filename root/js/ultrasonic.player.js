@@ -53,7 +53,8 @@
 		});
 		
 		getMediaSources();
-		
+		//load the nowPlaying from localStorage
+		loadNowPlaying();
 	});
 
 	/**
@@ -429,10 +430,6 @@
 						success: function(){
 							$("#loginFormContainer").dialog("close");
 							getMediaSources();
-							
-							//load the nowPlaying from localStorage
-							loadNowPlaying();
-							
 						},
 						error: function(jqhxr,textstatus,errorthrown){
 							console.debug(jqhxr,textstatus,errorthrown);
