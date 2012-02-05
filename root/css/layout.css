@@ -177,3 +177,17 @@ p label
 {
 	width: 10em;
 }
+
+/*
+#jPlayerInspector
+{
+	position: fixed;
+	top: 0px;
+	right: 20em;
+	top: 0px;
+	width: 100ex;
+	height: 50ex;
+	overflow-y: scroll;
+	background: white;
+	border: 1px solid red;
+}*/

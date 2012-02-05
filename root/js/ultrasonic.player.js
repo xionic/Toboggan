@@ -3,6 +3,7 @@
 */
 (function(){
 	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}';
+	var initialProgressEvent=false;	//used to ensure that the initial progress event is the only one handled
 	/**
 		jQuery Entry Point
 	*/
@@ -17,10 +18,19 @@
 				$(this).jPlayer("setMedia", {
 					mp3: "",
 					flv: ""
-				});
+				});		
+			},
+			progress: function(event) {	
+				//if this is the first time the progress event has been handled				
+				if(!initialProgressEvent)
+				{
+ 					$("#jquery_jplayer_1").jPlayer("play");
+ 					initialProgressEvent=true;
+ 				}
 			},
 			swfPath: "./js/jQuery.jPlayer.2.1.0/",
 			supplied: "mp3,flv",
+			preload: "none",
 			wmode: "window"
 		}).bind($.jPlayer.event.ended, function(event){
 
@@ -60,7 +70,8 @@
 		//load the nowPlaying from localStorage
 		loadNowPlaying();
 		
-		
+		//load jPlayer Inspector
+	//	$("#jPlayerInspector").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
 	});
 
 	/**
@@ -154,7 +165,18 @@
 		
 		showHideVideoPane(mediaType);
 		
-		$("#jquery_jplayer_1").jPlayer( "setMedia", mediaObject).jPlayer("play");
+		if(mediaType=="a")
+		{
+			initialProgressEvent=true;
+			$("#jquery_jplayer_1").jPlayer( "setMedia", mediaObject).jPlayer("play");
+		}
+		else
+		{
+			//play event is actually handled by the progress event
+			initialProgressEvent=false;
+			$("#jquery_jplayer_1").jPlayer( "setMedia", mediaObject ).jPlayer("load");
+		}
+		
 	}
 	
 	/**
@@ -344,7 +366,7 @@
 				$("#tracklist").empty();
 				$(appendTarget).empty();
 				
-				$("#tracklistHeader").text(folderName==""?"/":folderName);
+				$("#tracklistHeader").text($("#mediaSourceSelector option:selected").text()+""+(folderName==""?"/":folderName));
 				
 				for (dir in data.Directories)
 				{
