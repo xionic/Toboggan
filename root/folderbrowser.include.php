@@ -1,4 +1,4 @@
-<div class='containerPadding'>
+<div class=''>
 	<ul id='folderlist'>
 		
 	</ul>

@@ -34,7 +34,7 @@
 
 <div id='folderbrowserContainer'>
 	<select id='mediaSourceSelector'>
-		<option> -- Select one -- </option>
+		<option class='placeholder'> -- Select one -- </option>
 	</select>
 	<?php include 'folderbrowser.include.php'; ?>
 </div>

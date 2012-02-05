@@ -133,3 +133,27 @@ html, #loginForm
 	background-image: none;
 	background-color: black;
 }
+
+
+//
+select#mediaSourceSelector
+{
+	display: block;
+	width: 100%;
+}
+
+#folderlist>li
+{
+	padding-left: 1ex;
+}
+// for ellipsis wrapping
+#folderlist, #folderlist *
+{
+	overflow-x: hidden;
+}
+
+#folderlist *
+{
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}

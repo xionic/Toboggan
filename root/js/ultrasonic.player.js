@@ -394,12 +394,14 @@
 					doLogin();
 			},
 			success: function(data, status, jqxhr) {		
+				$("#mediaSourceSelector").empty();
 				for (var x=0; x<data.length; ++x)
 				{
 					$("#mediaSourceSelector").append(
 						$("<option>").val(data[x].mediaSourceID).text(data[x].displayName)
 					);
 				}
+				$("#mediaSourceSelector").change();
 			},
 		});	
 	}
