@@ -171,3 +171,9 @@ p label
 	width: 6em;
 	
 }
+
+//labels for the config dialog
+#configDialog p label
+{
+	width: 10em;
+}

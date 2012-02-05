@@ -52,9 +52,15 @@
 			updateFolderBrowser($("#mediaSourceSelector").val());
 		});
 		
+		//initialise the click handler for config
+		$("#configButton").button().click(displayConfig);
+		
+		
 		getMediaSources();
 		//load the nowPlaying from localStorage
 		loadNowPlaying();
+		
+		
 	});
 
 	/**
@@ -442,4 +448,66 @@
 			}
 		});
 	}
+	
+	
+	/******************************************************************
+		Configuration Functions
+	*******************************************************************/
+	
+	function displayConfig(event)
+	{
+		console.log(this);
+		//generate a dialog and display it
+		if($("#configDialog").length==0)
+			$("<div id='configDialog' />")
+				.append(
+					$("<ul id='configTabs'/>")
+						.append($("<li><a href='#tab_client'>Client</a></li>"))
+						.append($("<li><a href='#tab_server'>Server</a></li>"))
+				)
+				.append(
+					$("<div id='tab_client'></div>")
+						.append($("<fieldset><legend>OptionGroup</legend>\
+								<p><label>Option Label</label><input type='text' /></p>\
+								<p><label>Option Label</label><input type='text' /></p>\
+								</fieldset>"))
+						.append($("<fieldset><legend>OptionGroup</legend>\
+								<p><label>Option Label</label><input type='text' /></p>\
+								<p><label>Option Label</label><input type='text' /></p>\
+								<p><label>Option Label</label><input type='text' /></p>\
+								<p><label>Option Label</label><input type='text' /></p>\
+								</fieldset>"))
+						.append($("<fieldset><legend>OptionGroup</legend>\
+								<p><label>Option Label</label><input type='text' /></p>\
+								<p><label>Option Label</label><input type='text' /></p>\
+								</fieldset>"))
+				)
+				.append(
+					$("<div id='tab_server'></div>")
+						.append($("<fieldset><legend>Settings!</legend>\
+							<p><label>Server Option</label><input type='text' /></p>\
+							<p><label>Server Option</label><input type='text' /></p>\
+						</fieldset>"))
+				)
+				.appendTo("body");
+		
+		$("#configDialog").dialog({
+			autoOpen: true,
+			modal: true,
+			title: 'Ultrasonic Configuration - Mockup',
+			width: "500px",
+			buttons: {
+				'Save' : function(){
+					console.log("AJAX Save the settings!");
+					$( this ).dialog( "close" );
+				},
+				Cancel: function(){
+					$( this ).dialog( "close" );
+				}
+			}
+		}).tabs({
+			selected: 0
+		});
+	}
+	
 })();
