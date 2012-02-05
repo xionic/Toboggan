@@ -157,3 +157,10 @@ select#mediaSourceSelector
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+
+#tracklistHeader
+{
+	font-weight: bold;
+	font-size: larger;
+	border-bottom: 1px solid grey;
+}

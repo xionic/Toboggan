@@ -338,6 +338,8 @@
 				$("#tracklist").empty();
 				$(appendTarget).empty();
 				
+				$("#tracklistHeader").text(folderName==""?"/":folderName);
+				
 				for (dir in data.Directories)
 				{
 					$("<li></li>").append(
