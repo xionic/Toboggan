@@ -45,7 +45,7 @@ html, #loginForm
 {
 	min-height: 2.2ex;
 	border: 0px solid grey;
-	padding: 1ex;
+	//padding	: 1ex;
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -55,7 +55,15 @@ html, #loginForm
 
 #playlistTracks li 
 {
-	margin-bottom: 0.5ex;
+	padding-top: 0.3ex;
+	padding-left: 0.5ex;
+	padding-bottom: 0.3ex;
+}
+
+#playlistTracks li a
+{
+	text-decoration: none;
+	color: inherit;
 }
 
 #folderlist li, #tracklist li
@@ -70,6 +78,14 @@ html, #loginForm
 {
 //	background: #ddd;
 	background: -o-linear-gradient(#d4d4d4,#ddd);
+}
+
+#folderlist li:nth-of-type(odd),
+#playlistTracks li:nth-of-type(odd),
+#tracklist li:nth-of-type(odd)
+{
+//	background: #fff;
+	background: -o-linear-gradient(#f4f4f4,#ffffff);
 }
 
 //For Subdirectories:
