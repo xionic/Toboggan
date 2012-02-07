@@ -369,6 +369,9 @@
 			appendTarget = $("#folderlist");
 		}		
 		
+		//display loading placeholder
+		displayLoading();
+		
 		//retrieve a list of new folders
 		$.ajax({
 			cache: false,
@@ -385,6 +388,7 @@
 			},
 			success: function(data, status, jqxhr) {
 				
+				//remove loading placeholder
 				$("#tracklist").empty();
 				$(appendTarget).empty();
 				
@@ -464,11 +468,18 @@
 		});	
 	}
 	
+	function displayLoading()
+	{
+		$("#tracklist").empty().append();
+		$("#tracklistHeader").html("Loading..."+"<img src='img/ajax.gif' alt='loading' class='loading' />");
+	}	
+	
 	/**
 		Search the backend for media
 	*/
 	function searchForMedia(mediaSourceID,dir,query)
 	{
+		displayLoading();
 		$.ajax({
 			cache: false,
 			url: g_ultrasonic_basePath+"/backend/rest.php?apikey="+apikey+"&action=search&mediaSourceID="+mediaSourceID+"&query="+query+"&dir="+dir,
