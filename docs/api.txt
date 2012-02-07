@@ -104,22 +104,45 @@ retrieveClientSettings
 	
 search
 	args:
-		mediaSourceID - a mediaSourceID of a media source to search with in or 'all' for all media sources
-		dir - a directory relative to the mediaSourceID's root to confine to search to. If mediaSourceID it is relative to all of them.
+		mediaSourceID - a mediaSourceID of a media source to search within or 'all' for all media sources
+		dir - a directory relative to the mediaSourceID's root to confine to search to. If mediaSourceID is 'all', dir is relative to all of them.
 		query - a string to match against file and directory names
 	Returns a JSON object in the form:
 	[
 		{
 			"mediaSourceID": "id"
-			"results":[
-				{
-					"type": "filetype" // filetype is either 'file' or 'dir'
-					"path": "path of the file" // path relative to the mediaSource root (does not include the filename/dirname which matched the query)
-					"name": "filename" // the name of the file/dir which matched the query
-				}
-				...
+			"results":
+			[
+				"dirs":
+				[
+					{
+						"path": "path of the dir" // path relative to the mediaSource root (does not include the dirname which matched the query)
+						"name": "filename" // the name of the dir which matched the query
+					}
+					...
+				]
+				"files":
+				[
+					{
+						"path": "path of the file" // path relative to the mediaSource root (does not include the filename which matched the query)
+						"fileObject": 
+						{
+							filename: "nameOfFile",
+							displayName: "givenNameOfFileWhichShouldBeDisplayed",
+							streamers: [
+								{
+									extension: "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
+									streamerID: "ID number of streamer",
+									mediaType: "The media type which this streamer outputs",
+								}
+								...
+							]
+						},
+					},
+					...
+				]
 			]
-		}
+		},
 		...
 	]
 		

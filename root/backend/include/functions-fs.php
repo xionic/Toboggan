@@ -11,10 +11,7 @@ function outputDirContents_JSON($dir, $mediaSourceID){
 	}
 
 	$mediaSourcePath = normalisePath(getMediaSourcePath($mediaSourceID))."/";
-	$dir = normalisePath($dir);
-
-	if(substr($dir,-1)!="/")
-		$dir .= "/";
+	$dir = normalisePath($dir)."/";
 
 	$dh = opendir($mediaSourcePath.$dir) or die("opendir failed:".$mediaSourcePath.$dir);
 
@@ -24,7 +21,7 @@ function outputDirContents_JSON($dir, $mediaSourceID){
 	
 	while (($occurrence = readdir($dh)) !== false)
 	{
-		if($occurrence == ".")
+		if($occurrence == "." || $occurrence == "..")
 		{
 			continue;
 		}
@@ -91,11 +88,12 @@ function outputSearchResults_JSON($mediaSourceID, $dir, $query)
 		);
 		//return json_encode(getSearchResults($path.normalisePath($dir),$query, true));
 	}
+	//var_dump_pre($results);
 	restTools::sendResponse(json_encode($results), 200, "text/json");
 }
 
 /**
-* Do a search and return a result structure
+* Do a search and return a result structure - returns an array(dirResultsArray, fileResultsArray)
 */
 function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 {
@@ -107,7 +105,8 @@ function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 		return false;
 	}
 	$dirHandle = opendir($path);
-	$results = array();
+	$fileResults = array();
+	$dirResults = array();
 	
 	//loop through all "files" in the dir
 	while(($file = readdir($dirHandle)) !== false)
@@ -119,13 +118,14 @@ function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 			if($recurse)// recurse into subdirs
 			{
 				//echo "recusring into $filepath <br>";
-				$results = array_merge($results, getSearchResults($mediaSourcePath, $relPath."/".$file, $query, $recurse)); // merge results into our results array - flat structure	
+				$subResults = getSearchResults($mediaSourcePath, $relPath."/".$file, $query, $recurse);  // do subdir search
+				$dirResults = array_merge($dirResults, $subResults["dirs"]);// merge results into our results array - flat structure	
+				$fileResults = array_merge($fileResults, $subResults["files"]);
 			}
 			//check the dir name
 			if(stristr($filepath, $query) !== false)
 			{
-				$results[] = array( // add to results
-					"type"	=> "dir",
+				$dirResults[] = array( // add to results
 					"path"	=> $relPath,
 					"name"	=> $file,
 				);
@@ -135,17 +135,16 @@ function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 		{//echo stristr($filepath, $query);
 			if(stristr($filepath, $query) !== false)
 			{
-				$results[] = array( // add to results
-					"type"	=> "file",
-					"path"	=> $relPath,
-					"name"	=> $file,
+				$fileResults[] = array(
+					"path" 	=> $relPath,
+					"fileObject" => getFileObject($filepath),
 				);
 			}
 		}
 	}
 	
 	closedir($dirHandle);
-	return $results;
+	return array("dirs" => $dirResults, "files" => $fileResults);
 }
 
 
