@@ -188,15 +188,28 @@ select#mediaSourceSelector
 	border-bottom: 1px solid grey;
 }
 
+//Bar to contain all the buttons!
+#controlButtonBar
+{
+	position: absolute;
+	right: 8px;
+	bottom: 10px;
+}
+
 //Config Styles
 #configButton
 {
 	width: 32px; 
 	height: 32px;
 	background: url('../img/cog.png');
-	position: absolute;
-	right: 8px;
-	bottom: 10px;
+	cursor: pointer;
+}
+
+#searchButton
+{
+	width: 32px; 
+	height: 32px;
+	background: url('../img/find.png');
 	cursor: pointer;
 }
 
@@ -212,4 +225,41 @@ select#mediaSourceSelector
 {
 	margin-left: 2ex;
 	padding: 0ex 1ex;
+}
+
+#searchContainer
+{
+	padding: 1ex;
+	background: -o-linear-gradient(rgba(250,250,250,1),rgba(238,238,238,1));
+	border-bottom: 1px solid grey;
+}
+#search_query
+{
+	width: 40em;
+	display: inline-block;
+}
+
+#searchContainer input, 
+#searchContainer select, 
+#searchContainer button, 
+#searchContainer span.selectWrapper
+{
+	border: 1px solid grey;
+	border-radius: 5px;
+	background: -o-linear-gradient(#f4f4f4,#ffffff);
+}
+#searchContainer input, #searchContainer button
+{
+	padding: 5px;
+}
+span.selectWrapper
+{
+	padding: 4px;
+}
+#searchContainer span.selectWrapper select
+{
+	padding: 0px;
+	border-radius: 0px;
+	background: rgba(255,255,255,0);
+	border: 0px;
 }

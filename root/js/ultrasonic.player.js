@@ -62,8 +62,30 @@
 			updateFolderBrowser($("#mediaSourceSelector").val());
 		});
 		
+		$("#searchForm").submit(function(event){
+			event.preventDefault();
+			event.stopPropagation();
+			
+			searchForMedia(	
+				$("#search_mediaSourceSelector").val(), 
+				$("#search_dir").val(), 
+				$("#search_query").val()
+			);			
+		});
+		
+		/**
+			Add handlers for buttons
+		**/
 		//initialise the click handler for config
 		$("#configButton").button().click(displayConfig);
+		
+		//init for search functionality
+		$("#searchButton").button().click(function(){
+			$("#searchContainer").slideDown("fast",function(){
+				$("#search_query").focus();
+			});
+			
+		});
 		
 		
 		getMediaSources();
@@ -383,23 +405,7 @@
 				//data.Files
 				for (file in data.Files)
 				{	
-					$("<li></li>").append(
-						$("<a href='javascript:;' class='addToPlaylistButton'>+</a>")
-					).append(
-						$("<a href='javascript:;' class='downloadButton'>D</a>")
-					).append(
-						"|"
-					).append(
-						$("<span></span>")
-							.text(data.Files[file].displayName)
-							.addClass("trackName")
-							.attr("data-dir", folderName+"/")
-							.attr("data-filename", data.Files[file].filename)					
-							.attr("data-streamers", JSON.stringify(data.Files[file].streamers))
-							.attr("data-media_source", mediaSourceID)
-					)
-					.addClass((data.Files[file].streamers.length == 0)?"unplayable":"playable")
-					.appendTo($("#tracklist"));
+					addTrackToFileList(data.Files[file], folderName, mediaSourceID);
 				}
 				addTrackClickHandlers();
 				
@@ -407,10 +413,30 @@
 		});
 	}
 	
+	function addTrackToFileList(file, folderName, mediaSourceID)
+	{
+		$("<li></li>").append(
+				$("<a href='javascript:;' class='addToPlaylistButton'>+</a>")
+			).append(
+				$("<a href='javascript:;' class='downloadButton'>D</a>")
+			).append(
+				"|"
+			).append(
+				$("<span></span>")
+					.text(file.displayName)
+					.addClass("trackName")
+					.attr("data-dir", folderName+"/")
+					.attr("data-filename", file.filename)					
+					.attr("data-streamers", JSON.stringify(file.streamers))
+					.attr("data-media_source", mediaSourceID)
+			)
+			.addClass((file.streamers.length == 0)?"unplayable":"playable")
+			.appendTo($("#tracklist"));
+	}
+	
 	/**
 		Get the list of media Sources from the backend
 	*/
-	
 	function getMediaSources()
 	{
 		$.ajax({
@@ -425,14 +451,54 @@
 					doLogin();
 			},
 			success: function(data, status, jqxhr) {		
-				$("#mediaSourceSelector").empty();
+				$("#mediaSourceSelector, #search_mediaSourceSelector").empty();
+				$("#search_mediaSourceSelector").append("<option value='all'>All</option>");
 				for (var x=0; x<data.length; ++x)
 				{
-					$("#mediaSourceSelector").append(
+					$("#mediaSourceSelector, #search_mediaSourceSelector").append(
 						$("<option>").val(data[x].mediaSourceID).text(data[x].displayName)
 					);
 				}
 				$("#mediaSourceSelector").change();
+			},
+		});	
+	}
+	
+	/**
+		Search the backend for media
+	*/
+	function searchForMedia(mediaSourceID,dir,query)
+	{
+		$.ajax({
+			cache: false,
+			url: g_ultrasonic_basePath+"/backend/rest.php?apikey="+apikey+"&action=search&mediaSourceID="+mediaSourceID+"&query="+query+"&dir="+dir,
+			type: "GET",
+			complete: function(jqxhr,status) {},
+			error: function(jqxhr, status, errorThrown) {
+				alert("AJAX Error - check the console");
+				console.error(jqxhr, status, errorThrown);
+			},
+			success: function(data, status, jqxhr) {	
+			
+				$("#tracklist").empty();
+				
+				$("#tracklistHeader").text("Search Results Within "+$("#search_mediaSourceSelector option:selected").text()+" For: "+query);
+				
+				for (var x=0; x<data.length; ++x)
+				{
+					//data[x].mediaSourceID
+					//data[x].results.dirs
+					for (var fx=0; fx<data[x].results.files.length; ++fx)
+					{
+						addTrackToFileList(data[x].results.files[fx].fileObject, data[x].results.files[fx].path, data[x].mediaSourceID);
+					}
+				}
+				addTrackClickHandlers();
+				
+				//reset the search bar
+				$("#searchContainer").slideUp();
+				$("#search_mediaSourceSelector option[value='all']").attr("selected","selected");
+				$("#search_query").val("");
 			},
 		});	
 	}

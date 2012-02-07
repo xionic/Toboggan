@@ -51,5 +51,8 @@
 			</div>
 		</div>
 	</div>
-	<div id='configButton'></div>
+	<div id='controlButtonBar'>
+		<div id='searchButton'></div>	
+		<div id='configButton'></div>	
+	</div>
 </div>

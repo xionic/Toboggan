@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="./js/jQuery/jQuery.1.7.1.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery-ui.1.8.17/jquery-ui-1.8.17.custom.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery.jPlayer.2.1.0/jquery.jplayer.min.js"></script>
+	<script type="text/javascript" src="./js/jQuery.jPlayer.2.1.0/add-on/jquery.jplayer.inspector.js"></script>
 	<script type="text/javascript">
 <?php
 	//TODO: make this handle if the URI was accessed via index.php
@@ -50,6 +51,8 @@
 <div id='loginFormContainer'>
 	<?php include 'loginForm.include.php'; ?>
 </div>
+
+<div id='jPlayerInspector'></div>
 
 </body>
 </html>

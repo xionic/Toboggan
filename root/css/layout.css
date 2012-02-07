@@ -191,3 +191,8 @@ p label
 	background: white;
 	border: 1px solid red;
 }*/
+
+#searchContainer
+{
+	display: none;
+}
