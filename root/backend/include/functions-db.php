@@ -121,11 +121,10 @@ function getMediaSourcePath($mediaSourceID)
 		return false;
 	}
 }
-
 /**
-* get a JSON string representing a list of mediaSources
+* get an array of media sources
 */
-function getMediaSourceID_JSON(){
+function getMediaSources(){
 	try
 	{
 		$conn = getDBConnection();
@@ -140,7 +139,7 @@ function getMediaSourceID_JSON(){
 		{
 			$mediaSources[]  =  array("mediaSourceID" => $row["idmediaSource"], "displayName" => $row["displayName"]);
 		}
-		return json_encode($mediaSources);
+		return $mediaSources;
 	}
 	catch (PDOException $e)
 	{

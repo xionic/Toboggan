@@ -44,7 +44,7 @@ appLog("Received request for action ". $action, appLog_DEBUG);
 switch($action)
 {
 	case "listMediaSources":		
-		restTools::sendResponse(getMediaSourceID_JSON(),200);
+		restTools::sendResponse(json_encode(getMediaSources(),200));
 		break;
 		
 	case "listDirContents":
@@ -55,7 +55,7 @@ switch($action)
 		), true);
 		
 			
-		getDirContents_JSON($args["dir"], $args["mediaSourceID"]);
+		outputDirContents_JSON($args["dir"], $args["mediaSourceID"]);
 		break;
 		
 	case "downloadFile": //download a file unmodified
@@ -121,6 +121,16 @@ switch($action)
 			appLog("Returning Client settings for apikey:'".$args['apikey']."' and userid:".userLogin::getCurrentUserID(), appLog_DEBUG);
 			restTools::sendResponse($clientSettings,200, "text/json");
 		}
+		break;
+	
+	case "search":
+		$args = $av->validateArgs($_GET, array(
+			"mediaSourceID"		=> "string, notblank", //string to allow for 'all'
+			"dir"				=> "string",
+			"query"				=> "string, notblank",
+		),true);
+		
+		outputSearchResults_JSON($args["mediaSourceID"], $args["dir"], $args["query"]);
 		break;
 		
 	case "":

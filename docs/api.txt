@@ -80,6 +80,11 @@ login
 	Authenticates the user and starts a session 
 	Note: Only for use with form based authentication
 	
+logout
+	args:
+		none
+	destroy a session created using the login method
+	
 saveClientSettngs
 	args:
 		settingsBlob - a string representing the settings to be saved
@@ -91,4 +96,31 @@ saveClientSettngs
 		None
 	A method to retrieve previously saved settings for the client. These are saved per user and per apikey, such that multiple of the same client can share settings
 	to allow portability
+
+retrieveClientSettings
+	args:
+		none
+	Retrieves the settings blob previously saved by a client using the same apikey and user. If none have been saved it returns a 204 'No Content' HTTP status
+	
+search
+	args:
+		mediaSourceID - a mediaSourceID of a media source to search with in or 'all' for all media sources
+		dir - a directory relative to the mediaSourceID's root to confine to search to. If mediaSourceID it is relative to all of them.
+		query - a string to match against file and directory names
+	Returns a JSON object in the form:
+	[
+		{
+			"mediaSourceID": "id"
+			"results":[
+				{
+					"type": "filetype" // filetype is either 'file' or 'dir'
+					"path": "path of the file" // path relative to the mediaSource root (does not include the filename/dirname which matched the query)
+					"name": "filename" // the name of the file/dir which matched the query
+				}
+				...
+			]
+		}
+		...
+	]
+		
 		
