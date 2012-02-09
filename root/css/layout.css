@@ -4,6 +4,7 @@ $Directory_columnWidth = 20em;
 $playerHeight = 8ex;
 $Playlist_columnWidth = 20em;
 $playWindowHeight = 270px;
+$topbarHeight = 2.5ex;
 */
 
 /* Reset CSS */
@@ -55,12 +56,17 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-
+/* A colouring and styles*/
+a, a:link, a:visited
+{
+	color: inherit;
+	text-decoration: none;
+}
 /** Layout **/
 #playlistContainer 
 {
 	position: fixed;
-	top: 0px;
+	top: $topbarHeight;
 	bottom: $playerHeight;
 	right: 0px;
 
@@ -73,7 +79,7 @@ table {
 #folderbrowserContainer
 {
 	position: fixed;
-	top: 0px;
+	top: $topbarHeight;
 	left: 0px;
 	bottom: $playerHeight;
 	width: $Directory_columnWidth;
@@ -85,7 +91,7 @@ table {
 #centreContainer
 {
 	position: fixed;
-	top: 0px;
+	top: $topbarHeight;
 	bottom: $playerHeight;
 	right: $Playlist_columnWidth;
 	left: $Directory_columnWidth;
@@ -121,6 +127,18 @@ table {
 	right: $Playlist_columnWidth;
 	height: $playWindowHeight;
 }
+
+#topBarContainer
+{
+	top: 0px;
+	right: 0px;
+	left: 0px;
+	height: $topbarHeight;
+	line-height: $topbarHeight;
+	position: fixed;
+	z-index: 2;
+}
+                                            
 
 #jquery_jplayer_1
 {

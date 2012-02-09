@@ -29,6 +29,10 @@
 </head>
 <body>
 
+<div id='topBarContainer'>
+	<?php include 'topbar.include.php'; ?>
+</div>
+
 <div id='playlistContainer'>
 	<?php include 'playlist.include.php'; ?>
 </div>

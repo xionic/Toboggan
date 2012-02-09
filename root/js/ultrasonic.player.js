@@ -77,16 +77,43 @@
 			Add handlers for buttons
 		**/
 		//initialise the click handler for config
-		$("#configButton").button().click(displayConfig);
+		$("#configButton_txt").click(displayConfig);
 		
 		//init for search functionality
-		$("#searchButton").button().click(function(){
+		$("#searchButton_txt").click(function(){
 			$("#searchContainer").slideDown("fast",function(){
 				$("#search_query").focus();
 			});
 			
 		});
-		
+
+		//logout button handling
+		$("#logoutButton").click(function(){
+
+	        $.ajax({
+	            cache: false,
+	            url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=logout&apikey="+apikey,
+   		        type: "GET",
+            	complete: function(jqxhr, status) {},
+            	error: function(jqxhr, status, errorThrown) {
+            	    alert("AJAX ERROR - check the console!");
+            	    console.error(jqxhr, status, errorThrown);
+            	},
+            	success: function(data, status, jqxhr) {
+					$("<div id='logoutNotification'>Successfully Logged Out</div>").appendTo($("body")).dialog({
+						modal: true,
+						closeOnEscape: false,
+						draggable: false,
+						resizable: false,
+						dialogClass: "loggedout",
+						height: 60,
+						width: 180,
+						title: "Information",
+					});
+				},
+			});
+			return false;
+		});		
 		
 		getMediaSources();
 		//load the nowPlaying from localStorage
