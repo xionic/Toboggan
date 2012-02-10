@@ -1,10 +1,10 @@
 /**ARGS_DEFINITION
 
-$Directory_columnWidth = 20em;
-$playerHeight = 8ex;
-$Playlist_columnWidth = 20em;
+$Directory_columnWidth = 200px;
+$playerHeight = 53px;
+$Playlist_columnWidth = 250px;
 $playWindowHeight = 270px;
-$topbarHeight = 2.5ex;
+$topbarHeight = 18px;
 */
 
 /* Reset CSS */
@@ -133,8 +133,10 @@ a, a:link, a:visited
 	top: 0px;
 	right: 0px;
 	left: 0px;
+
 	height: $topbarHeight;
 	line-height: $topbarHeight;
+
 	position: fixed;
 	z-index: 2;
 }
