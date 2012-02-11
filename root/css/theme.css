@@ -71,6 +71,17 @@ html, #loginForm
 	color: black;
 }
 
+#trackListAddControls
+{
+	font-size: x-small;
+}
+
+#trackListAddControls a
+{
+	font-weight: bold;
+	color: black;
+}
+
 #playlistTracks li 
 {
 	padding-top: 0.3ex;
@@ -292,8 +303,6 @@ span.selectWrapper
 	padding: 4px;
 	padding-top: 4px;
 }
-
-
 
 #searchContainer span.selectWrapper select
 {

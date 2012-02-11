@@ -40,6 +40,8 @@ footer, header, hgroup, menu, nav, section {
 }
 body {
 	line-height: 1;
+	overflow-x: hidden;
+	overflow-y: hidden;
 }
 ol, ul {
 	list-style: none;
@@ -215,4 +217,11 @@ p label
 #searchContainer
 {
 	display: none;
+}
+
+#trackListAddControls
+{
+	top: 0.5ex;
+	right: 0.5ex;
+	position: absolute;
 }

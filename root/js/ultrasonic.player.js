@@ -87,6 +87,11 @@
 			
 		});
 
+		//addSelectedToPlaylist handling
+		$("#addSelectedToPlaylist").click(function(){
+			$("#tracklist input[type='checkbox'][name='trackCheckbox']:checked").siblings("a.addToPlaylistButton").click();
+		});
+		
 		//logout button handling
 		$("#logoutButton").click(function(){
 
@@ -184,7 +189,33 @@
 			)
 		);
 	}
-	
+	/**
+		Add a track to the list of playable files (centre container)
+	*/
+	function addTrackToFileList(file, folderName, mediaSourceID)
+	{
+		var className = (file.streamers.length == 0)?"unplayable":"playable";
+		
+		$("<li></li>").append(
+				$("<input type='checkbox' name='trackCheckbox'/>")
+			).append(
+				$("<a href='javascript:;' class='addToPlaylistButton'>+</a>")
+			).append(
+				$("<a href='javascript:;' class='downloadButton'>D</a>")
+			).append(
+				"|"
+			).append(
+				$("<span></span>")
+					.text(file.displayName)
+					.addClass("trackName")
+					.attr("data-dir", folderName+"/")
+					.attr("data-filename", file.filename)					
+					.attr("data-streamers", JSON.stringify(file.streamers))
+					.attr("data-media_source", mediaSourceID)
+			)
+			.addClass(className)
+			.appendTo($("#tracklist"));
+	}	
 	/**
 		Make the jquery player play a track from the passed object
 	*/
@@ -443,28 +474,7 @@
 			},
 		});
 	}
-	
-	function addTrackToFileList(file, folderName, mediaSourceID)
-	{
-		$("<li></li>").append(
-				$("<a href='javascript:;' class='addToPlaylistButton'>+</a>")
-			).append(
-				$("<a href='javascript:;' class='downloadButton'>D</a>")
-			).append(
-				"|"
-			).append(
-				$("<span></span>")
-					.text(file.displayName)
-					.addClass("trackName")
-					.attr("data-dir", folderName+"/")
-					.attr("data-filename", file.filename)					
-					.attr("data-streamers", JSON.stringify(file.streamers))
-					.attr("data-media_source", mediaSourceID)
-			)
-			.addClass((file.streamers.length == 0)?"unplayable":"playable")
-			.appendTo($("#tracklist"));
-	}
-	
+		
 	/**
 		Get the list of media Sources from the backend
 	*/
@@ -579,7 +589,6 @@
 	/******************************************************************
 		Configuration Functions
 	*******************************************************************/
-	
 	function displayConfig(event)
 	{
 		console.log(this);

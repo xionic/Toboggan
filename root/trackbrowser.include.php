@@ -11,6 +11,9 @@
 	</div>
 	<div class='containerPadding'>
 		<h1 id='tracklistHeader'></h1>
+		<div id='trackListAddControls'>
+			<a href='#' id='addSelectedToPlaylist'>Add Selected to Playlist</a>
+		</div>
 		<ol id='tracklist' class='' >
 		</ol>
 	</div>
