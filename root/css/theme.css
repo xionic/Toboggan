@@ -95,10 +95,16 @@ html, #loginForm
 	color: inherit;
 }
 
-#folderlist li, #tracklist li
+#folderlist li
 {
 	padding-top: 0.5ex;
 	padding-bottom: 0.5ex;
+}
+
+#tracklist li 
+{
+	padding-top: 0.125ex;
+	padding-bottom: 0.125ex;
 }
 
 #folderlist li:nth-of-type(even),
