@@ -218,10 +218,3 @@ p label
 {
 	display: none;
 }
-
-#trackListAddControls
-{
-	top: 0.5ex;
-	right: 0.5ex;
-	position: absolute;
-}

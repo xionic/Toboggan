@@ -87,6 +87,13 @@
 			
 		});
 
+		//Add handling for "select all" box
+		$("#selectAll_inputs").click(function(){
+			var checkStat = Boolean($(this).attr("checked"));
+			console.log(checkStat);
+			$("#tracklist input[type='checkbox'][name='trackCheckbox']").attr("checked",checkStat);
+		});
+		
 		//addSelectedToPlaylist handling
 		$("#addSelectedToPlaylist").click(function(){
 			$("#tracklist input[type='checkbox'][name='trackCheckbox']:checked").siblings("a.addToPlaylistButton").click();
@@ -178,8 +185,6 @@
 			$("<li></li>").append(
 				$("<a href='javascript:;' class='removeFromPlaylist'>R</a>")
 			).append(
-				"|"
-			).append(
 				$("<a href='javascript:;' class='playNow'></a>")
 					.text( trackObject.text )
 					.attr( "data-filename", trackObject.filename )
@@ -202,8 +207,6 @@
 				$("<a href='javascript:;' class='addToPlaylistButton'>+</a>")
 			).append(
 				$("<a href='javascript:;' class='downloadButton'>D</a>")
-			).append(
-				"|"
 			).append(
 				$("<span></span>")
 					.text(file.displayName)
@@ -449,6 +452,9 @@
 				//remove loading placeholder
 				$("#tracklist").empty();
 				$(appendTarget).empty();
+				
+				//reset the checkbox in the file header
+				$("#selectAll_inputs").attr("checked", false);
 				
 				$("#tracklistHeader").text($("#mediaSourceSelector option:selected").text()+""+(folderName==""?"/":folderName));
 				
