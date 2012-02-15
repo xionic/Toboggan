@@ -84,7 +84,7 @@
 			$("#searchContainer").slideDown("fast",function(){
 				$("#search_query").focus();
 			});
-			
+			return false;
 		});
 
 		//Add handling for "select all" box
@@ -97,6 +97,7 @@
 		//addSelectedToPlaylist handling
 		$("#addSelectedToPlaylist").click(function(){
 			$("#tracklist input[type='checkbox'][name='trackCheckbox']:checked").siblings("a.addToPlaylistButton").click();
+			return false;
 		});
 		
 		//logout button handling
@@ -597,7 +598,6 @@
 	*******************************************************************/
 	function displayConfig(event)
 	{
-		console.log(this);
 		//generate a dialog and display it
 		if($("#configDialog").length==0)
 			$("<div id='configDialog' />")
@@ -649,6 +649,8 @@
 		}).tabs({
 			selected: 0
 		});
+		
+		return false;
 	}
 	
 })();
