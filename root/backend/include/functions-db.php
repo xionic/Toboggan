@@ -349,7 +349,7 @@ function getClientSettings($apikey, $userid){
 function outputServerSettings_JSON()
 {
 	$settings = getServerSettings();
-	var_dump_pre($settings);
+	//var_dump_pre($settings);
 	restTools::sendResponse(json_encode($settings), 200, "text/json");
 }
 /**
