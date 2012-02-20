@@ -119,6 +119,7 @@ function reportError($errMsg, $httpcode = 400, $mime = 'text/plain'){
 	if($mime != "text/json") // injection protection
 		$errMsg = htmlentities($errMsg);
 	restTools::sendResponse	($errMsg,$httpcode, $mime);
+	exit;
 }
 
 function handleArgValidationError($msg, $argName="", $argValue="")

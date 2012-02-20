@@ -1,3 +1,5 @@
+Ultrasonic REST API Documentation for API Version 0.5
+
 ######################################################
 # API Authentication:								 #
 ######################################################
@@ -11,7 +13,14 @@ There are 2 methods to authenticate:
 	X-US-Authorization: method userStr|passStr
 
 	where method is US-Auth1, userStr is the username base64 encoded, and passStr is a sha256 hash of the password encoded in base64
-	
+
+######################################################
+# API Versions :							 		 #
+######################################################
+
+Every request must include an apiver={apiversion} argument or the request will be rejected. If the version sent by the client is unsupported a 
+412 Precondition failed HTTP response will be sent.
+
 ######################################################
 # API Keys :								 		 #
 ######################################################

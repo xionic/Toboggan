@@ -3,12 +3,15 @@ require_once("constants.php");
 
 $config = array();
 
-//to be replaced by config crom the db
-require_once("config.fromDB.php");
-
 //db 
 define("DBPATH", "db/nick-dev.db");
 define("PDO_DSN", "sqlite:".DBPATH);
+
+//api version
+define("APIVERSION","0.5");
+
+//file to log messages to
+$config["logFile"] = "/tmp/ultrasonic.log";
 
 //logging
 $config["logLevel"] = appLog_DEBUG2;
@@ -22,6 +25,7 @@ $config["passwordSalt"] = "JbC^*(I4GJbgz7V)";
 
 //sesssion data
 $config["sessionName"] = "Ultrasonic";
+
 
 
 ?>

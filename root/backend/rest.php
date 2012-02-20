@@ -8,13 +8,22 @@ require_once("include/functions.php");
 require_once("classes/REST_Helpers.class.php");
 require_once("classes/userLogin.class.php");
 
+
+
 //argument validator
 $av = new ArgValidator("handleArgValidationError");
 
-//check API key
+//check API version and key
 $apiargs = $av->validateArgs($_GET, array(
 	"apikey" => "string, notblank",
+	"apiver" => "numeric",
 ), true);
+//api version
+if($apiargs["apiver"] != APIVERSION)
+{//unsupported api version
+	reportError("Invalid API Version. This server uses version ". APIVERSION, 412, "text/plain");
+}
+//apikey
 if(!checkAPIKey($apiargs["apikey"]))
 { // invalid api key
 	reportError("Invalid API Key", 412, "text/plain");
