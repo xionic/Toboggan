@@ -3,6 +3,7 @@
 */
 (function(){
 	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}';
+	var apiversion='0.5';
 	var initialProgressEvent=false;	//used to ensure that the initial progress event is the only one handled
 	/**
 		jQuery Entry Point
@@ -105,7 +106,7 @@
 
 	        $.ajax({
 	            cache: false,
-	            url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=logout&apikey="+apikey,
+	            url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=logout&apikey="+apikey+"&apiver="+apiversion,
    		        type: "GET",
             	complete: function(jqxhr, status) {},
             	error: function(jqxhr, status, errorThrown) {
@@ -243,7 +244,8 @@
 														"&dir="+encodeURIComponent(remote_directory)+
 														"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
 														"&streamerID="+streamerObject[x].streamerID+
-														"&apikey="+apikey;
+														"&apikey="+apikey+
+														"&apiver="+apiversion;
 			mediaType = streamerObject[x].mediaType=="v"?"v":"a";
 		}
 		
@@ -302,7 +304,8 @@
 					"&filename="+encodeURIComponent(remote_filename)+
 			    	"&dir="+encodeURIComponent(remote_directory)+
 		    		"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
-		    		"&apikey="+apikey;
+		    		"&apikey="+apikey+
+					"&apiver="+apiversion;
 		    		
 			window.open(url);	//open in new window
 		});
@@ -437,7 +440,7 @@
 		//retrieve a list of new folders
 		$.ajax({
 			cache: false,
-			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listDirContents&apikey="+apikey,
+			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listDirContents&apikey="+apikey+"&apiver="+apiversion,
 			type: "GET",
 			data: { 
 				'dir' : folderName, 
@@ -489,7 +492,7 @@
 	{
 		$.ajax({
 			cache: false,
-			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listMediaSources&apikey="+apikey,
+			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listMediaSources&apikey="+apikey+"&apiver="+apiversion,
 			type: "GET",
 			complete: function(jqxhr,status) {},
 			error: function(jqxhr, status, errorThrown) {
@@ -526,7 +529,7 @@
 		displayLoading();
 		$.ajax({
 			cache: false,
-			url: g_ultrasonic_basePath+"/backend/rest.php?apikey="+apikey+"&action=search&mediaSourceID="+mediaSourceID+"&query="+query+"&dir="+dir,
+			url: g_ultrasonic_basePath+"/backend/rest.php?apikey="+apikey+"&apiver="+apiversion+"&action=search&mediaSourceID="+mediaSourceID+"&query="+query+"&dir="+dir,
 			type: "GET",
 			complete: function(jqxhr,status) {},
 			error: function(jqxhr, status, errorThrown) {
@@ -572,7 +575,7 @@
 				'Login': function(){
 					var hash = new jsSHA($("#passwordInput").val()).getHash("SHA-256","B64");
 					$.ajax({
-						url:'backend/rest.php?action=login&apikey='+apikey,
+						url:'backend/rest.php?action=login&apikey='+apikey+"&apiver="+apiversion,
 						type: 'POST',
 						data: {
 							'username': $("#username").val(),
