@@ -133,6 +133,10 @@ switch($action)
 		outputSearchResults_JSON($args["mediaSourceID"], $args["dir"], $args["query"]);
 		break;
 		
+	case "retrieveServerSettings":
+		outputServerSettings_JSON();
+		break;
+		
 	case "":
 		restTools::sendResponse("No action specified", 400, "text/plain");
 		break;

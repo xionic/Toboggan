@@ -127,13 +127,13 @@ search
 						"path": "path of the file" // path relative to the mediaSource root (does not include the filename which matched the query)
 						"fileObject": 
 						{
-							filename: "nameOfFile",
-							displayName: "givenNameOfFileWhichShouldBeDisplayed",
-							streamers: [
+							"filename": "nameOfFile",
+							"displayName": "givenNameOfFileWhichShouldBeDisplayed",
+							"streamers": [
 								{
-									extension: "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
-									streamerID: "ID number of streamer",
-									mediaType: "The media type which this streamer outputs",
+									"extension": "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
+									"streamerID": "ID number of streamer",
+									"mediaType": "The media type which this streamer outputs",
 								}
 								...
 							]
@@ -145,5 +145,41 @@ search
 		},
 		...
 	]
+	
+retrieveServerSettings
+	args:
+		None
+	Retrieves a data structure representing the backend server settings. These can be altered/added to 
+	and sent back in the same format to the "saveServerSettings" action. The structure is of the form:
+	{
+		"streamers":
+		[
+			{
+				  "fromExtension":	"value",
+				  "bitrateCmd":		"value",
+				  "toExtension":	"value",
+				  "MimeType":		"value",
+				  "MediaType":		"value",
+				  "command":		"value",
+			}
+			...
+		]
+		"users":
+		[
+			{
+				"username":				"value",
+				"email":				"value",
+				"enabled":				"value",
+				"maxAudioBitrate":		"value",
+				"maxVideoBitrate":		"value",
+				"maxBandwidth":			"value",
+			}
+			...
+		]
+	}
+	
+saveServerSettings
+	Not yet implemented
+	
 		
 		

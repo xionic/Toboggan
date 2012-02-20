@@ -343,6 +343,54 @@ function getClientSettings($apikey, $userid){
 		return false;
 	}
 }
+/**
+* output a JSON object representing all changable server settings
+*/
+function outputServerSettings_JSON()
+{
+	$settings = getServerSettings();
+	var_dump_pre($settings);
+	restTools::sendResponse(json_encode($settings), 200, "text/json");
+}
+/**
+* get an object representing the server settings
+*/
+function getServerSettings()
+{
+	//results structure
+	$results = array();
+
+	//db connection
+	$conn = getDBConnection();
+		
+	//get streamer settings
+	$stmt = $conn->prepare("SELECT fromExt.Extension AS fromExtension, fromExt.bitrateCmd,
+	toExt.Extension AS toExtension, toExt.MimeType, toExt.MediaType, transcode_cmd.command
+	FROM fromExt
+	INNER JOIN extensionMap USING(idfromExt)
+	INNER JOIN toExt USING(idtoExt)
+	INNER JOIN transcode_cmd USING(idtranscode_cmd);
+	");
+	$stmt->execute();	 
+	
+	//get streamer results
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$results["streamers"] = $rows;
+	
+	//get user settings
+	$stmt = $conn->prepare("SELECT username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth FROM User");
+	$stmt->execute();	
+	
+	//get user results
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$results["users"] = $rows;
+	
+	closeDBConnection($conn);
+	return $results;
+}
+
+
+
 
 
 ?>

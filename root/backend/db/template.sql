@@ -50,7 +50,7 @@ CREATE TABLE `mediaSource` (
   
 CREATE TABLE `transcode_cmd` (
 	`idtranscode_cmd` INTEGER PRIMARY KEY AUTOINCREMENT,
-	command TEXT NOT NULL
+	`command` TEXT NOT NULL
 );
 
 CREATE TABLE `User` (
@@ -78,7 +78,7 @@ CREATE TABLE `ClientSettings` (
 		ON DELETE NO ACTION
 		ON UPDATE NO ACTION
 	CONSTRAINT `apiUserMap`
-		UNIQUE (`idAPIKey`, idUser)
+		UNIQUE (`idAPIKey`, `idUser`)
 		ON CONFLICT ROLLBACK
 );
 
@@ -90,5 +90,14 @@ CREATE TABLE `APIKey` (
 		UNIQUE (`apikey`)
 		ON CONFLICT ROLLBACK
 );
+
+CREATE TABLE `Role` (
+	`idRole` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`roleName` VARCHAR(45) NOT NULL ,
+	CONSTRAINT `rolename`
+		UNIQUE (`roleName`)
+		ON CONFLICT ROLLBACK
+)
+
 
 
