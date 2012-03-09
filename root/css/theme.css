@@ -236,6 +236,8 @@ select#mediaSourceSelector
 	font-weight: bold;
 	font-size: larger;
 	border-bottom: 1px solid grey;
+	min-height: 20px;
+	line-height: 20px;
 }
 
 //Bar to contain all the buttons!
