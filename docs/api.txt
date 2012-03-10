@@ -194,5 +194,16 @@ saveServerSettings
 		}
 	Saves streamer settings. The streamer settings on the server will be entirely replaced by those given here.
 	
+listUsers
+	args:
+		None
+	Returns a JSON object representing the users of the system in the format:
+	[
+		{
+			"idUser":"theuserid",
+			"username":"theusername",
+		}
+		...
+	]
 		
 		
