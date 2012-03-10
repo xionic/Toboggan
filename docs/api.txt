@@ -216,5 +216,37 @@ retrieveUserSettings
 		}
 		...
 	]
+	
+updateUserSettings
+	args:
+		settings - (POST) an object representing the user's setting in the following format
+			[
+				{
+					"username"				=> "theusername",
+					"email"					=> "theemail",
+					"enabled"				=> "theenabled",
+					"maxAudioBitrate"		=> "themaxAudioBitrate",
+					"maxVideoBitrate"		=> "themaxVideoBitrate",
+					"maxBandwidth"			=> "themaxBandwidth",
+				}
+				...
+			]
+		userid - a user id of the user to update as retrieved with listUsers
+	Updates an existing user's settings
 		
+addUser
+	args:
+		settings - (POST) an object representing the user's setting in the following format
+			[
+				{
+					"username"				=> "theusername",
+					"password"				=> "thepassword",
+					"email"					=> "theemail",
+					"enabled"				=> "theenabled",
+					"maxAudioBitrate"		=> "themaxAudioBitrate",
+					"maxVideoBitrate"		=> "themaxVideoBitrate",
+					"maxBandwidth"			=> "themaxBandwidth",
+				}
+				...
+			]
 		

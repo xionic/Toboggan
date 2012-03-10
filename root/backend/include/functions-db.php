@@ -686,6 +686,7 @@ function updateUser($userid, $json_settings){
 	try
 	{
 		$conn = getDBConnection();
+		$conn->beginTransaction();
 		
 		$stmt = $conn->prepare("UPDATE User SET 
 			username = :username,
@@ -722,6 +723,67 @@ function updateUser($userid, $json_settings){
 	closeDBConnection($conn);
 }
 
+function addUser($json_settings)
+{
+
+	$userSettings = (array)json_decode($json_settings);
+	
+	$av = new ArgValidator("handleArgValidationError");
+	
+	$av->validateArgs($userSettings, array(
+		"username"				=> "string, notblank",
+		"password"				=> "string, notblank",
+		"email"					=> "string",
+		"enabled"				=> "int",
+		"maxAudioBitrate"		=> "int",
+		"maxVideoBitrate"		=> "int",
+		"maxBandwidth"			=> "int",
+	), true);
+	
+	$conn = null;
+	try
+	{
+		$conn = getDBConnection();
+		$conn->beginTransaction();
+		
+		$stmt = $conn->prepare("INSERT INTO User(idRole,username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth) VALUES
+			(
+				:idRole,
+				:username,
+				:password,
+				:email,
+				:enabled,
+				:maxAudioBitrate,
+				:maxVideoBitrate,
+				:maxBandwidth
+			)
+		");
+		
+		$stmt->bindValue(":idRole", 0, PDO::PARAM_STR); // hack in later
+		$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
+		$stmt->bindValue(":password", userLogin::hashPassword($userSettings["password"]), PDO::PARAM_STR);
+		$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
+		$stmt->bindValue(":enabled", $userSettings["enabled"], PDO::PARAM_INT);
+		$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
+		$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
+		$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
+		$stmt->execute();
+		
+		$conn->commit();
+		
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		if(isset($conn) && $conn && $conn->inTransaction())
+		{
+			$conn->rollBack();
+		}		
+		return false;
+	}
+	closeDBConnection($conn);
+	
+}
 
 
 

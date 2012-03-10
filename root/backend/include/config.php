@@ -8,7 +8,7 @@ define("DBPATH", "db/nick-dev.db");
 define("PDO_DSN", "sqlite:".DBPATH);
 
 //api version
-define("APIVERSION","0.57");
+define("APIVERSION","0.58");
 
 //file to log messages to
 $config["logFile"] = "/tmp/ultrasonic.log";
