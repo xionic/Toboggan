@@ -147,6 +147,7 @@ switch($action)
 		break;
 		
 	case "saveStreamerSettings":
+	$_POST["settings"] = json_encode(getStreamerSettings());
 		$args = $av->validateArgs($_POST, array(			
 			"settings"		=> "string, notblank",
 		),true);
