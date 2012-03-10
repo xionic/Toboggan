@@ -50,7 +50,7 @@ CREATE TABLE `mediaSource` (
   
 CREATE TABLE `transcode_cmd` (
 	`idtranscode_cmd` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`command` TEXT NOT NULL
+	`command` MEDIUMTEXT NOT NULL
 );
 
 CREATE TABLE `User` (

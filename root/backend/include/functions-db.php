@@ -349,8 +349,8 @@ function getClientSettings($apikey, $userid){
 function outputStreamerSettings_JSON()
 {
 	$settings = getStreamerSettings();
-	//var_dump_pre($settings);
-	restTools::sendResponse(json_encode($settings), 200, "text/json");
+	var_dump_pre($settings);
+	//restTools::sendResponse(json_encode($settings), 200, "text/json");
 }
 /**
 * get an object representing the server settings
@@ -366,19 +366,38 @@ function getStreamerSettings()
 		$conn = getDBConnection();
 			
 		//get streamer settings
-		$stmt = $conn->prepare("SELECT fromExt.Extension AS fromExtension, fromExt.bitrateCmd,
-		toExt.Extension AS toExtension, toExt.MimeType, toExt.MediaType, transcode_cmd.command
-		FROM fromExt
-		INNER JOIN extensionMap USING(idfromExt)
-		INNER JOIN toExt USING(idtoExt)
-		INNER JOIN transcode_cmd USING(idtranscode_cmd);
+		$stmt = $conn->prepare("SELECT DISTINCT fromExt.bitrateCmd,
+			toExt.Extension AS toExtension, toExt.MimeType, toExt.MediaType, transcode_cmd.command
+			FROM fromExt
+			INNER JOIN extensionMap USING(idfromExt)
+			INNER JOIN toExt USING(idtoExt)
+			INNER JOIN transcode_cmd USING(idtranscode_cmd);
 		");
-		$stmt->execute();	 
+		$stmt->execute();
 		
-		//get streamer results
+		//get streamer results and for each toext query which from ext go to it to aggregate
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$results = $rows;		
-		
+		foreach($rows as &$streamer)
+		{
+			$stmt = $conn->prepare("SELECT fromExt.Extension as fromExtension
+				FROM fromExt 
+				INNER JOIN ExtensionMap USING(idfromExt)
+				INNER JOIN toExt USING(idtoExt)
+				WHERE toExt.Extension = :toExt
+			");
+			$stmt->bindValue(":toExt", $streamer["toExtension"]);
+			$stmt->execute();
+			
+			$fromExtStr = "";
+			while(($fromExt = $stmt->fetch(PDO::FETCH_ASSOC)) !== false){
+				$fromExtStr .= $fromExt["fromExtension"] . ",";
+			}
+			$fromExtStr = substr($fromExtStr, 0, -1); 
+			
+			//update main resuklt set
+			$streamer["fromExtensions"] = $fromExtStr;
+			
+		}		
 		closeDBConnection($conn);
 	}
 	catch (PDOException $e)
@@ -386,7 +405,7 @@ function getStreamerSettings()
 		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
 		return false;
 	}
-	return $results;
+	return $rows;
 }
 
 function saveStreamerSettings($settings_JSON)
@@ -396,19 +415,15 @@ function saveStreamerSettings($settings_JSON)
 	//get object
 	$settings = json_decode($settings_JSON, true);
 	
-	
 	//validate the bitch!
 	//basic validation
 	$av = new ArgValidator("handleArgValidationError");
-	$av->validateArgs($settings, array(
-		"streamers"	=> "array",
-	),false);	
-	
+		
 	//validate streamer section
-	foreach($settings["streamers"] as $streamer)
+	foreach($settings as $streamer)
 	{
 		$av->validateArgs($streamer, array(
-			"fromExtension"		=>		"string, notblank",
+			"fromExtensions"	=>		"string, notblank",
 			"bitrateCmd"		=>		"string, notblank",
 			"toExtension"		=>		"string, notblank",
 			"MimeType"			=>		"string, notblank",
@@ -417,6 +432,28 @@ function saveStreamerSettings($settings_JSON)
 		),false);
 	}
 	//TODO - add more validation
+	
+	//explode fromExt grouping for db entry
+	$expandedStreamers = array();
+	foreach($settings as $streamer)
+	{
+		$fromExtArr = explode(",", $streamer["fromExtensions"]);
+		//loop through each fromext and create a copy of the streamer for it
+		//var_dump_pre($fromExtArr);
+		foreach($fromExtArr as $fromExt)
+		{
+			$expandedStreamers[] = array(
+			"fromExtension"		=>		$fromExt,
+			"bitrateCmd"		=>		$streamer["bitrateCmd"],
+			"toExtension"		=>		$streamer["toExtension"],
+			"MimeType"			=>		$streamer["MimeType"],
+			"MediaType"			=>		$streamer["MediaType"],
+			"command"			=>		$streamer["command"],
+			);
+		}		
+	}
+	//replace old streamers with explanded ones
+	$settings = $expandedStreamers;
 	
 	$conn = null;
 	try
@@ -444,7 +481,7 @@ function saveStreamerSettings($settings_JSON)
 		appLog("Inserting new settings into the db", appLog_DEBUG);	
 		
 		//insert the new streamers
-		foreach($settings["streamers"] as $streamer)
+		foreach($settings as $streamer)
 		{
 			updateStreamer($streamer, $conn);		
 		}

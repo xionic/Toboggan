@@ -160,38 +160,32 @@ retrieveStreamerSettings
 		None
 	Retrieves a data structure representing the backend Streamer settings. These can be altered/added to 
 	and sent back in the same format to the "saveStreamerSettings" action. The structure is of the form:
-	{
-		"streamers":
-		[
-			{
-				  "fromExtension":	"value",
-				  "bitrateCmd":		"value",
-				  "toExtension":	"value",
-				  "MimeType":		"value",
-				  "MediaType":		"value",
-				  "command":		"value",
-			}
-			...
-		]			
-	}
-	
-saveServerSettings
-	args:
-		settings - a json string representing the streamer settings to be saved in the following form:
+	[
 		{
-			"streamers":
-			[
-				{
-					  "fromExtension":	"value",
-					  "bitrateCmd":		"value",
-					  "toExtension":	"value",
-					  "MimeType":		"value",
-					  "MediaType":		"value",
-					  "command":		"value",
-				}
-				...
-			]
+			  "fromExtension":	"value",
+			  "bitrateCmd":		"value",
+			  "toExtension":	"value",
+			  "MimeType":		"value",
+			  "MediaType":		"value",
+			  "command":		"value",
 		}
+		...
+	]
+	
+saveStreamersSettings
+	args:
+		settings - (POST) a json string representing the streamer settings to be saved in the following form:
+	[
+		{
+			  "fromExtension":	"value",
+			  "bitrateCmd":		"value",
+			  "toExtension":	"value",
+			  "MimeType":		"value",
+			  "MediaType":		"value",
+			  "command":		"value",
+		}
+		...
+	]
 	Saves streamer settings. The streamer settings on the server will be entirely replaced by those given here.
 	
 listUsers
