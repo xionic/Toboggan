@@ -349,8 +349,7 @@ function getClientSettings($apikey, $userid){
 function outputStreamerSettings_JSON()
 {
 	$settings = getStreamerSettings();
-	var_dump_pre($settings);
-	//restTools::sendResponse(json_encode($settings), 200, "text/json");
+	restTools::sendResponse(json_encode($settings), 200, "text/json");
 }
 /**
 * get an object representing the server settings
@@ -617,16 +616,26 @@ function getUsers()
 	return $results;
 }
 /**
-* outputs a 
+* outputs a json representation of a user
 */
 function outputUserSettings_JSON($userid)
 {
-	
+	$user = getUserObject($userid);
+	var_dump_pre($user);
 }
-
-function getUserObject()
+/**
+* returns an array representing a user
+*/
+function getUserObject($userid)
 {
-
+	$conn = getDBConnection();
+	
+	$stmt = $conn->prepare("SELECT idUser, username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth
+	FROM User WHERE idUser = :userid");
+	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
+	$stmt->execute();
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	return $results;
 }
 
 

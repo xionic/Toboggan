@@ -199,5 +199,22 @@ listUsers
 		}
 		...
 	]
+	
+retrieveUserSettings
+	args:
+		userid - a user id as retrieved with listUsers
+	Returns a JSON object representing a user in the following format:
+	[
+		{
+			"idUser"				=> "theuserid",
+			"username"				=> "theusername",
+			"email"					=> "theemail",
+			"enabled"				=> "theenabled",
+			"maxAudioBitrate"		=> "themaxAudioBitrate",
+			"maxVideoBitrate"		=> "themaxVideoBitrate",
+			"maxBandwidth"			=> "themaxBandwidth",
+		}
+		...
+	]
 		
 		
