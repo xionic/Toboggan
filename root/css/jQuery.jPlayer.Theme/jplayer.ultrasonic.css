@@ -163,7 +163,6 @@ a.jp-next:hover {
 
 div.jp-progress {
 	overflow:hidden;
-	background-color: #ddd;
 	display: inline-block;
 }
 div.jp-audio div.jp-progress {

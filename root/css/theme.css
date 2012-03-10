@@ -1,14 +1,15 @@
 
 #centreContainer
 {
-	border-right: 1px solid grey;
-	border-left: 1px solid grey;
+//	border-right: 1px solid grey;
+//	border-left: 1px solid grey;
 }
 
 #playerControlsContainer
 {
-	border-top: 1px solid grey;
+//	border-top: 1px solid grey;
 	//font-size: larger;
+	background: -o-linear-gradient(rgba(0,0,0,1),rgba(40,40,40,1));
 }
 
 div.containerPadding 
@@ -23,14 +24,20 @@ html, #loginForm
 	font-size: small;
 }
 
-#playerControlsContainer
+#playerControlsContainer, #topBarContainer
 {
-	background-color:#eee;
+	color: white;
+	text-shadow: grey 1px -1px 1px;
 }
 
 #playlistContainer, #folderbrowserContainer, #centreContainer
 {
 	background-color: #fafafa;
+}
+
+#folderbrowserContainer, #playlistContainer 
+{
+	border-bottom: 3px solid black;
 }
 
 #playlistTracks, #folderbrowserContainer
@@ -65,14 +72,17 @@ html, #loginForm
 
 #topBarContainer 
 {
+	border-bottom: 0px;
 	padding: 0ex 1ex;
 	text-align: right;
+	background: -o-linear-gradient(rgba(40,40,40,1), rgba(30,30,30,1));
+	color: white;
 }
 
 #topBarContainer a, #trackListAddControls a
 {
 	font-weight: bold;
-	color: black;
+	color: inherit;
 }
 
 #trackListAddControls
