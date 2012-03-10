@@ -346,16 +346,16 @@ function getClientSettings($apikey, $userid){
 /**
 * output a JSON object representing all changable server settings
 */
-function outputServerSettings_JSON()
+function outputStreamerSettings_JSON()
 {
-	$settings = getServerSettings();
+	$settings = getStreamerSettings();
 	//var_dump_pre($settings);
 	restTools::sendResponse(json_encode($settings), 200, "text/json");
 }
 /**
 * get an object representing the server settings
 */
-function getServerSettings()
+function getStreamerSettings()
 {
 	//results structure
 	$results = array();
@@ -377,15 +377,7 @@ function getServerSettings()
 		
 		//get streamer results
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$results["streamers"] = $rows;
-		
-		//get user settings
-		$stmt = $conn->prepare("SELECT username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth FROM User");
-		$stmt->execute();	
-		
-		//get user results
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$results["users"] = $rows;
+		$results["streamers"] = $rows;		
 		
 		closeDBConnection($conn);
 	}
@@ -397,7 +389,7 @@ function getServerSettings()
 	return $results;
 }
 
-function saveServerSettings($settings_JSON)
+function saveStreamerSettings($settings_JSON)
 {
 
 	appLog("Saving new server settings", appLog_VERBOSE);
@@ -410,7 +402,6 @@ function saveServerSettings($settings_JSON)
 	$av = new ArgValidator("handleArgValidationError");
 	$av->validateArgs($settings, array(
 		"streamers"	=> "array",
-		"users"		=> "array",
 	),false);	
 	
 	//validate streamer section
@@ -425,19 +416,6 @@ function saveServerSettings($settings_JSON)
 			"command"			=>		"string, notblank",
 		),false);
 	}
-	
-	//validate user section
-	foreach($settings["users"] as $user)
-	{
-		$av->validateArgs($user, array(
-			"username"			=>	"string, notblank",
-			"enabled"			=>	"int",
-			"maxAudioBitrate"	=>	"int",
-			"maxVideoBitrate"	=>	"int",
-			"maxBandwidth"		=>	"int",
-		),false);
-	}
-	
 	//TODO - add more validation
 	
 	try
@@ -459,9 +437,6 @@ function saveServerSettings($settings_JSON)
 		$stmt = $conn->prepare("DELETE FROM transcode_cmd");
 		$stmt->execute();
 		
-		// $stmt = $conn->prepare("DELETE FROM User");
-		// $stmt->execute();
-		
 		//prepare the data to be inserted
 		
 		
@@ -472,8 +447,6 @@ function saveServerSettings($settings_JSON)
 		{
 			updateStreamer($streamer, $conn);		
 		}
-		
-		//NOTE: decided to have separate API calls for user actions
 		
 		appLog("commiting");
 		$conn->commit();

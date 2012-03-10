@@ -142,17 +142,16 @@ switch($action)
 		outputSearchResults_JSON($args["mediaSourceID"], $args["dir"], $args["query"]);
 		break;
 		
-	case "retrieveServerSettings":
-		outputServerSettings_JSON();
+	case "retrieveStreamerSettings":
+		outputStreamerSettings_JSON();
 		break;
 		
-	case "saveServerSettings":
-		/*$args = $av->validateArgs($_GET, array(			
+	case "saveStreamerSettings":
+		$args = $av->validateArgs($_POST, array(			
 			"settings"		=> "string, notblank",
-		),true);*/
-		$args["settings"] = json_encode(getServerSettings());
+		),true);
 		
-		saveServerSettings($args["settings"]);
+		saveStreamerSettings($args["settings"]);
 		break;
 		
 	case "":
