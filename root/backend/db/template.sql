@@ -55,6 +55,7 @@ CREATE TABLE `transcode_cmd` (
 
 CREATE TABLE `User` (
 	`idUser` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`idRole` INTEGER NOT NULL,
 	`username` VARCHAR(32) NOT NULL,
 	`password` CHAR(64) NOT NULL,
 	`email` VARCHAR(256),
@@ -65,6 +66,11 @@ CREATE TABLE `User` (
 	CONSTRAINT `uniqueUsername`
 		UNIQUE (`username`)
 		ON CONFLICT ROLLBACK
+	CONSTRAINT `UserRole`
+		FOREIGN KEY (`idRole` )
+		REFERENCES `Role` (`idRole` )
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
 );
 
 CREATE TABLE `ClientSettings` (
@@ -97,7 +103,7 @@ CREATE TABLE `Role` (
 	CONSTRAINT `rolename`
 		UNIQUE (`roleName`)
 		ON CONFLICT ROLLBACK
-)
+);
 
 
 

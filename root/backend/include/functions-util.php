@@ -125,6 +125,7 @@ function reportError($errMsg, $httpcode = 400, $mime = 'text/plain'){
 function handleArgValidationError($msg, $argName="", $argValue="")
 {
 	reportError($msg, 400, "text/plain");
+	exit;
 }
 
 

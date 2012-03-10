@@ -360,33 +360,223 @@ function getServerSettings()
 	//results structure
 	$results = array();
 
-	//db connection
-	$conn = getDBConnection();
+	try
+	{
+		//db connection
+		$conn = getDBConnection();
+			
+		//get streamer settings
+		$stmt = $conn->prepare("SELECT fromExt.Extension AS fromExtension, fromExt.bitrateCmd,
+		toExt.Extension AS toExtension, toExt.MimeType, toExt.MediaType, transcode_cmd.command
+		FROM fromExt
+		INNER JOIN extensionMap USING(idfromExt)
+		INNER JOIN toExt USING(idtoExt)
+		INNER JOIN transcode_cmd USING(idtranscode_cmd);
+		");
+		$stmt->execute();	 
 		
-	//get streamer settings
-	$stmt = $conn->prepare("SELECT fromExt.Extension AS fromExtension, fromExt.bitrateCmd,
-	toExt.Extension AS toExtension, toExt.MimeType, toExt.MediaType, transcode_cmd.command
-	FROM fromExt
-	INNER JOIN extensionMap USING(idfromExt)
-	INNER JOIN toExt USING(idtoExt)
-	INNER JOIN transcode_cmd USING(idtranscode_cmd);
-	");
-	$stmt->execute();	 
-	
-	//get streamer results
-	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$results["streamers"] = $rows;
-	
-	//get user settings
-	$stmt = $conn->prepare("SELECT username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth FROM User");
-	$stmt->execute();	
-	
-	//get user results
-	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$results["users"] = $rows;
-	
-	closeDBConnection($conn);
+		//get streamer results
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$results["streamers"] = $rows;
+		
+		//get user settings
+		$stmt = $conn->prepare("SELECT username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth FROM User");
+		$stmt->execute();	
+		
+		//get user results
+		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$results["users"] = $rows;
+		
+		closeDBConnection($conn);
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		return false;
+	}
 	return $results;
+}
+
+function saveServerSettings($settings_JSON)
+{
+
+	appLog("Saving new server settings", appLog_VERBOSE);
+	//get object
+	$settings = json_decode($settings_JSON, true);
+	
+	
+	//validate the bitch!
+	//basic validation
+	$av = new ArgValidator("handleArgValidationError");
+	$av->validateArgs($settings, array(
+		"streamers"	=> "array",
+		"users"		=> "array",
+	),false);	
+	
+	//validate streamer section
+	foreach($settings["streamers"] as $streamer)
+	{
+		$av->validateArgs($streamer, array(
+			"fromExtension"		=>		"string, notblank",
+			"bitrateCmd"		=>		"string, notblank",
+			"toExtension"		=>		"string, notblank",
+			"MimeType"			=>		"string, notblank",
+			"MediaType"			=>		"string, notblank",
+			"command"			=>		"string, notblank",
+		),false);
+	}
+	
+	//validate user section
+	foreach($settings["users"] as $user)
+	{
+		$av->validateArgs($user, array(
+			"username"			=>	"string, notblank",
+			"enabled"			=>	"int",
+			"maxAudioBitrate"	=>	"int",
+			"maxVideoBitrate"	=>	"int",
+			"maxBandwidth"		=>	"int",
+		),false);
+	}
+	
+	//TODO - add more validation
+	
+	try
+	{
+		appLog("Clearing old settings from the db", appLog_DEBUG);
+		//clear out the db in preparation for the new settings
+		$conn = getDBConnection();
+		$conn->beginTransaction();
+		
+		$stmt = $conn->prepare("DELETE FROM extensionMap");
+		$stmt->execute();
+		
+		$stmt = $conn->prepare("DELETE FROM fromExt");
+		$stmt->execute();
+		
+		$stmt = $conn->prepare("DELETE FROM toExt");
+		$stmt->execute();
+		
+		$stmt = $conn->prepare("DELETE FROM transcode_cmd");
+		$stmt->execute();
+		
+		// $stmt = $conn->prepare("DELETE FROM User");
+		// $stmt->execute();
+		
+		//prepare the data to be inserted
+		
+		
+		appLog("Inserting new settings into the db", appLog_DEBUG);	
+		
+		//insert the new streamers
+		foreach($settings["streamers"] as $streamer)
+		{
+			updateStreamer($streamer, $conn);		
+		}
+		
+		//NOTE: decided to have separate API calls for user actions
+		
+		appLog("commiting");
+		$conn->commit();
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		if(isset($conn) && $conn && $conn->inTransaction())
+		{
+			$conn->rollBack();
+		}		
+		return false;
+	}
+}
+
+/**
+* update (or inserts) a streamer - (has to work inside an existing transaction, hence the $conn)
+*/
+function updateStreamer($streamer, $conn)
+{
+	$stmt = $conn->prepare("SELECT idfromExt FROM fromExt WHERE Extension = :fromExt");
+	$stmt->bindValue(":fromExt", $streamer["fromExtension"]);
+	$stmt->execute();
+	
+	$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$fromExtID = 0; //init var
+	
+	if(count($result) == 0) // need to insert
+	{
+		$stmt = $conn->prepare("INSERT INTO fromExt(Extension, bitrateCmd) VALUES(:ext, :bcmd)");
+		$stmt->bindValue(":ext", $streamer["fromExtension"]);
+		$stmt->bindValue(":bcmd", $streamer["bitrateCmd"]);
+		$stmt->execute();
+		$fromExtID = $conn->lastInsertId();
+	}
+	else //need to update
+	{
+		$stmt = $conn->prepare("UPDATE fromExt SET bitrateCmd = :bcmd WHERE Extension = :ext");
+		$stmt->bindValue(":ext", $streamer["fromExtension"]);
+		$stmt->bindValue(":bcmd", $streamer["bitrateCmd"]);
+		$stmt->execute();
+		
+		$fromExtID = $result[0]["fromextid"]; // id for later from original result
+	}
+		
+	//toExt
+	$stmt = $conn->prepare("SELECT idtoExt FROM toExt WHERE Extension = :toExt");
+	$stmt->bindValue(":toExt", $streamer["toExtension"]);
+	$stmt->execute();
+	
+	$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$toExtID = 0; //init var
+	
+	if(count($result) == 0) // need to insert
+	{
+		$stmt = $conn->prepare("INSERT INTO toExt(Extension, MimeType, MediaType) VALUES(:ext, :mime, :mediatype)");
+		$stmt->bindValue(":ext", $streamer["toExtension"]);
+		$stmt->bindValue(":mime", $streamer["MimeType"]);
+		$stmt->bindValue(":mediatype", $streamer["MediaType"]);
+		$stmt->execute();
+		$toExtID = $conn->lastInsertId();
+		
+	}
+	else //need to update
+	{
+		$stmt = $conn->prepare("UPDATE toExt SET MimeType = :mime, MediaType = :mediatype WHERE Extension = :ext");
+		$stmt->bindValue(":ext", $streamer["toExtension"]);
+		$stmt->bindValue(":mime", $streamer["MimeType"]);
+		$stmt->bindValue(":mediatype", $streamer["MediaType"]);
+		$stmt->execute();
+		$toExtID = $result[0]["idtoExt"]; // id for later from original result
+	}
+	
+	//transcodeCmd
+	$stmt = $conn->prepare("SELECT idtranscode_cmd FROM transcode_cmd WHERE command = :command");
+	$stmt->bindValue(":command", $streamer["command"]);
+	$stmt->execute();
+	
+	$result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$transcode_cmdID = 0; //init var
+	
+	if(count($result) == 0) // need to insert
+	{
+		$stmt = $conn->prepare("INSERT INTO transcode_cmd(command) VALUES(:command)");
+		$stmt->bindValue(":command", $streamer["command"]);
+		$stmt->execute();
+		$transcode_cmdID = $conn->lastInsertId();
+		
+	}
+	else //need to update
+	{
+		$transcode_cmdID = $result[0]["idtranscode_cmd"];
+		//nothing to update
+	}
+	
+	//extensionMap
+	
+	$stmt = $conn->prepare("INSERT INTO extensionMap(idfromExt, idtoExt, idtranscode_cmd) VALUES(:idfrom, :idto, :idtrans)");
+	$stmt->bindValue(":idfrom", $fromExtID);
+	$stmt->bindValue(":idto", $toExtID);
+	$stmt->bindValue(":idtrans", $transcode_cmdID);
+	$stmt->execute();
+	
 }
 
 

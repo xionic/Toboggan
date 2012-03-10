@@ -96,6 +96,10 @@ class ArgValidator{
 					case "array":
 						$this->checkIsArray($curValue, $arg);
 						break;
+						
+					default:
+						throw new Exception("Constraint ". htmlentities($c) . " is unsupported");
+						break;
 					
 				}
 			}

@@ -19,7 +19,8 @@ INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(4,2,2);
 INSERT INTO mediaSource(path, displayName) VALUES("/mnt/storage/music", "Music");
 INSERT INTO mediaSource(path, displayName) VALUES("/mnt/storage/video", "Video");
 
-INSERT INTO Role(roleName) VALUES("Admin", "User");
+INSERT INTO Role(roleName) VALUES("Admin");
+INSERT INTO Role(roleName) VALUES("User");
 
 INSERT INTO User(idRole, username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth)
 	VALUES (0, "testuser", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "test@test.com", 1, 320, 1000, 100);
