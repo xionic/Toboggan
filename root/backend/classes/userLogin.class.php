@@ -95,7 +95,7 @@ class userLogin {
 	{
 		$userRows = getUserInfo($username);
 		$passhash = $userRows['password'];
-		$ourPassStr = base64_encode(hash("sha256",getConfig("passwordSalt").$password, true));
+		$ourPassStr = userLogin::hashPassword($password);
 
 		if($ourPassStr===$passhash && $userRows["enabled"] == 1) // passwords match and user not disabled
 		{
@@ -126,5 +126,13 @@ class userLogin {
 		
 		// Finally, destroy the session.
 		session_destroy();
+	}
+	
+	/**
+	* returns a hashed, base64 encoded value of the password with the salt
+	*/
+	public static function hashPassword($cleartextPassword)
+	{
+		return base64_encode(hash("sha256",getConfig("passwordSalt").$cleartextPassword, true));
 	}
 }

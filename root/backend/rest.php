@@ -176,6 +176,13 @@ switch($action)
 		updateUser($argsGET["userid"], $argsPOST["settings"]);
 	break;
 	
+	case "addUser":
+		$args = $av->validateArgs($_POST, array(			
+			"settings"	=> "string, notblank",
+		),true);
+		addUser($args["settings"]);
+	break;
+	
 	case "":
 		restTools::sendResponse("No action specified", 400, "text/plain");
 		break;
