@@ -188,7 +188,23 @@ retrieveServerSettings
 	}
 	
 saveServerSettings
-	Not yet implemented
+	args:
+		settings - a json string representing the server settings to be saved in the following form:
+		{
+			"streamers":
+			[
+				{
+					  "fromExtension":	"value",
+					  "bitrateCmd":		"value",
+					  "toExtension":	"value",
+					  "MimeType":		"value",
+					  "MediaType":		"value",
+					  "command":		"value",
+				}
+				...
+			]
+		}
+	Saves server settings.
 	
 		
 		
