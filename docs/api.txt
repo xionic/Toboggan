@@ -162,7 +162,7 @@ retrieveStreamerSettings
 	and sent back in the same format to the "saveStreamerSettings" action. The structure is of the form:
 	[
 		{
-			  "fromExtension":	"value",
+			  "fromExtensions":	"value",
 			  "bitrateCmd":		"value",
 			  "toExtension":	"value",
 			  "MimeType":		"value",
@@ -177,7 +177,7 @@ saveStreamersSettings
 		settings - (POST) a json string representing the streamer settings to be saved in the following form:
 	[
 		{
-			  "fromExtension":	"value",
+			  "fromExtensions":	"value",
 			  "bitrateCmd":		"value",
 			  "toExtension":	"value",
 			  "MimeType":		"value",

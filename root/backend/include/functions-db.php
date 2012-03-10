@@ -605,13 +605,26 @@ function outputUserList_JSON()
 */
 function getUsers()
 {
-	$conn = getDBConnection();
+	try
+	{
+		$conn = getDBConnection();
+		
+		$stmt = $conn->prepare("SELECT idUser, username FROM User");
+		$stmt->execute();
+		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		
+		closeDBConnection($conn);
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		if(isset($conn) && $conn && $conn->inTransaction())
+		{
+			$conn->rollBack();
+		}		
+		return false;
+	}
 	
-	$stmt = $conn->prepare("SELECT idUser, username FROM User");
-	$stmt->execute();
-	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	
-	closeDBConnection($conn);
 	
 	return $results;
 }
@@ -621,21 +634,92 @@ function getUsers()
 function outputUserSettings_JSON($userid)
 {
 	$user = getUserObject($userid);
-	var_dump_pre($user);
+	echo json_encode($user);
 }
 /**
 * returns an array representing a user
 */
 function getUserObject($userid)
 {
-	$conn = getDBConnection();
+	try
+	{
+		$conn = getDBConnection();
+		
+		$stmt = $conn->prepare("SELECT idUser, username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth
+		FROM User WHERE idUser = :userid");
+		$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
+		$stmt->execute();
+		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		return $results[0];
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		if(isset($conn) && $conn && $conn->inTransaction())
+		{
+			$conn->rollBack();
+		}		
+		return false;
+	}
+}
+
+/**
+* updates an existing user's settings
+
+*/
+function updateUser($userid, $json_settings){
+
+	$userSettings = (array)json_decode($json_settings);
+
+	$av = new ArgValidator("handleArgValidationError");
 	
-	$stmt = $conn->prepare("SELECT idUser, username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth
-	FROM User WHERE idUser = :userid");
-	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
-	$stmt->execute();
-	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	return $results;
+	$av->validateArgs($userSettings, array(
+		"username"				=> "string, notblank",
+		"email"					=> "string",
+		"enabled"				=> "int",
+		"maxAudioBitrate"		=> "int",
+		"maxVideoBitrate"		=> "int",
+		"maxBandwidth"			=> "int",
+	), true);
+	
+	$conn = null;
+	try
+	{
+		$conn = getDBConnection();
+		
+		$stmt = $conn->prepare("UPDATE User SET 
+			username = :username,
+			email = :email,
+			enabled = :enabled,
+			maxAudioBitrate = :maxAudioBitrate,
+			maxVideoBitrate = :maxVideoBitrate,
+			maxBandwidth = :maxBandwidth
+			WHERE idUser = :idUser
+			
+		");
+		
+		$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT);
+		$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
+		$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
+		$stmt->bindValue(":enabled", $userSettings["enabled"], PDO::PARAM_INT);
+		$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
+		$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
+		$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
+		$stmt->execute();
+		
+		$conn->commit();
+		
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		if(isset($conn) && $conn && $conn->inTransaction())
+		{
+			$conn->rollBack();
+		}		
+		return false;
+	}
+	closeDBConnection($conn);
 }
 
 

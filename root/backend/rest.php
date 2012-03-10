@@ -160,10 +160,22 @@ switch($action)
 		
 	case "retrieveUserSettings":
 		$args = $av->validateArgs($_GET, array(			
-			"userid"	=> "string, notblank",
+			"userid"	=> "int, notblank",
 		),true);
 		outputUserSettings_JSON($args["userid"]);
-	break;	
+	break;
+	
+	case "updateUserSettings":
+		$argsPOST = $av->validateArgs($_POST, array(			
+			"settings"	=> "string, notblank",
+		),true);
+		$argsGET = $av->validateArgs($_GET, array(			
+			"userid"	=> "int, notblank",
+		),true);
+		
+		updateUser($argsGET["userid"], $argsPOST["settings"]);
+	break;
+	
 	case "":
 		restTools::sendResponse("No action specified", 400, "text/plain");
 		break;

@@ -37,7 +37,7 @@ class userLogin {
 	* check sent login credentials and return user id
 	*/
 	public static function validate()
-	{			echo "here";
+	{			
 		//try POST VAR auth
 		if(isset($_POST["username"]) && isset($_POST["password"]))
 		{
