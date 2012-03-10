@@ -190,6 +190,22 @@ switch($action)
 		deleteUser($args["userid"]);
 	break;
 	
+	case "changeUserPassword":
+		$argsGET = $av->validateArgs($_GET, array(
+			"userid"	=> "int, notblank, optional",
+		),true);
+		$argsPOST = $av->validateArgs($_POST, array(			
+			"password"	=> "string, notblank",
+		),true);
+		
+		if(!isset($argsGET["userid"])) // it's optional - if not set use current userid
+			$userid = userLogin::getCurrentUserID();
+		else
+			$userid = $argsGET["userid"];
+		changeUserPassword($userid, $argsPOST["password"]);
+	break;
+	
+	
 	case "":
 		restTools::sendResponse("No action specified", 400, "text/plain");
 		break;

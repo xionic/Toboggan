@@ -823,6 +823,39 @@ function deleteUser($userid)
 	closeDBConnection($conn);
 }
 
+/**
+* update a user's password
+*/
+function changeUserPassword($userid, $password)
+{
+	$conn = null;
+	try
+	{
+		$conn = getDBConnection();
+		$conn->beginTransaction();
+		
+		$stmt = $conn->prepare("UPDATE User SET Password = :password WHERE idUser = :idUser");
+		
+		$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT);
+		$stmt->bindValue(":password", userLogin::hashPassword($password), PDO::PARAM_STR);
+	
+		$stmt->execute();
+		
+		$conn->commit();
+		
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		if(isset($conn) && $conn && $conn->inTransaction())
+		{
+			$conn->rollBack();
+		}		
+		return false;
+	}
+	closeDBConnection($conn);
+}
+
 
 
 
