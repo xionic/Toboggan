@@ -460,26 +460,10 @@ div.jp-jplayer {
 
 ul.jp-toggles {
 	list-style-type:none;
-	margin:0 auto;
-	overflow:hidden;
+	position: absolute;
+	right: 2ex;
 }
 
-div.jp-audio .jp-type-single ul.jp-toggles {
-	width:25px;
-}
-div.jp-audio .jp-type-playlist ul.jp-toggles {
-	width:55px;
-}
-
-div.jp-video ul.jp-toggles {
-	margin-top:10px;
-	width:100px;
-}
-
-ul.jp-toggles li {
-	display:block;
-	float:right;
-}
 
 ul.jp-toggles li a {
 	display:block;

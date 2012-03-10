@@ -38,12 +38,11 @@
 						<div class="jp-volume-bar-value"></div>
 					</div>
 				</div>
-				<!--
 				<ul class="jp-toggles">
-					<li><a href="javascript:;" class="jp-repeat" tabindex="1" title="repeat">repeat</a></li>
-					<li><a href="javascript:;" class="jp-repeat-off" tabindex="1" title="repeat off">repeat off</a></li>
+					<li><a href="javascript:;" class="jp-full-screen" tabindex="1" title="fullscreen">fullscreen</a></li>
+					<li><a href="javascript:;" class="jp-restore-screen" tabindex="1" title="restore">restore</a></li>
+<!--					<li><a href="javascript:;" class="jp-repeat-off" tabindex="1" title="repeat off">repeat off</a></li>		-->
 				</ul>
-				-->
 			</div>
 			<div class="jp-no-solution">
 				<span>Update Required</span>

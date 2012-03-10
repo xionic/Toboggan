@@ -3,8 +3,9 @@
 */
 (function(){
 	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}';
-	var apiversion='0.56';
+	var apiversion='0.57';
 	var initialProgressEvent=false;	//used to ensure that the initial progress event is the only one handled
+	var playerCSSProperties = {};
 	/**
 		jQuery Entry Point
 	*/
@@ -19,7 +20,44 @@
 				$(this).jPlayer("setMedia", {
 					mp3: "",
 					flv: ""
-				});		
+				});	
+				
+				//Enormous hack for fullscreen to apply custom css to it
+				$("#jp_container_1 .jp-full-screen").click(function(){
+					playerCSSProperties = {
+											'position':$("#centerPlayerContainer").css("position"),
+											'top':$("#centerPlayerContainer").css("top"),
+											'bottom': $("#centerPlayerContainer").css("bottom"),
+											'left': $("#centerPlayerContainer").css("left"),
+											'right': $("#centerPlayerContainer").css("right"),
+											'background': $("#centerPlayerContainer").css("background"),
+											'z-index': $("#centerPlayerContainer").css("z-index")
+										};
+					
+					$("#centerPlayerContainer").css({
+														'position':'fixed',
+														'top':'0px',
+														'bottom': $("#playerControlsContainer").height(),
+														'left': '0px',
+														'right': '0px',
+														'background':'black',
+														'zIndex': '10'
+													});
+				});
+				
+				//Enormous hack to remove the above hack's results
+				$("#jp_container_1 .jp-restore-screen").click(function(){
+					$("#centerPlayerContainer").css({
+														'position':playerCSSProperties.position,
+														'top':playerCSSProperties.top,
+														'bottom': playerCSSProperties.bottom,
+														'left': playerCSSProperties.left,
+														'right': playerCSSProperties.right,
+														'background':playerCSSProperties.black,
+														'z-index': playerCSSProperties.zIndex
+													});
+				});
+				
 			},	//hack/workaround for the nightmarish streamed video layback stopping issue!
 			progress: function(event) {	
 				//if this is the first time the progress event has been handled				
@@ -91,7 +129,7 @@
 		//Add handling for "select all" box
 		$("#selectAll_inputs").click(function(){
 			var checkStat = Boolean($(this).attr("checked"));
-			console.log(checkStat);
+
 			$("#tracklist input[type='checkbox'][name='trackCheckbox']").attr("checked",checkStat);
 		});
 		
@@ -667,8 +705,6 @@
 						})
 					});
 					
-					console.log(streamersArray);
-					
 					$.ajax({
 						url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=saveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
 						type: 'POST',
@@ -704,7 +740,6 @@
 								
 								for (var x=0; x<data.length; ++x)
 								{
-									console.log(data);
 									outputUL.append(
 										$("<li/>").addClass('streamer').append(
 											$("<input type='text' name='fromExt' />").val(data[x].fromExtensions),
