@@ -3,7 +3,7 @@
 */
 (function(){
 	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}';
-	var apiversion='0.57';
+	var apiversion='0.58';
 	var initialProgressEvent=false;	//used to ensure that the initial progress event is the only one handled
 	var playerCSSProperties = {};
 	/**
@@ -684,7 +684,7 @@
 			autoOpen: true,
 			modal: true,
 			title: 'Ultrasonic Configuration - Mockup',
-			width: "500px",
+			width: "800px",
 			buttons: {
 				'Save' : function(){
 					
@@ -751,12 +751,40 @@
 												$("<option value='a'>Audio</option>").attr('selected',(data[x].MediaType=='a')?'selected':false),
 												$("<option value='v'>Video</option>").attr('selected',(data[x].MediaType=='v')?'selected':false)
 											),
-											$("<input type='text' name='outputMimeType' maxlength='32' />").val(data[x].MimeType)
+											$("<input type='text' name='outputMimeType' maxlength='32' />").val(data[x].MimeType),
+											$("<a href='#'>Del</a>").click(function(){
+												$(this).parent().remove();
+												return false;
+											})
+											
 										)
 									);
 								}
 								
-								$(ui.panel).append(outputUL);
+								$(ui.panel)
+									.append(outputUL)
+									.append($("<a href='#' class='add' >Add</a>").click(function(){
+											$("#tab_server_streamers ul").append(
+												$("<li/>").addClass('streamer').append(
+													$("<input type='text' name='fromExt' />"),
+													$("<input type='text' name='bitrateCmd' />"),
+													$("<input type='text' name='command' />"),
+													$("<input type='text' name='toExt' maxlength='8' />"),
+													$("<select name='outputMediaType'/>").append(
+														$("<option value='a'>Audio</option>"),
+														$("<option value='v'>Video</option>")
+													),
+													$("<input type='text' name='outputMimeType' maxlength='32' />"),
+													$("<a href='#'>Del</a>").click(function(){
+														$(this).parent().remove();
+														return false;
+													})
+												)
+											);
+											
+											return false;
+										})
+									);
 							},
 							error: function(jqHXR, textStatus, errorThrown){
 								alert("An error occurred while retrieving the streamer settings");
