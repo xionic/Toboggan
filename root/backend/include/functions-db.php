@@ -665,7 +665,6 @@ function getUserObject($userid)
 
 /**
 * updates an existing user's settings
-
 */
 function updateUser($userid, $json_settings){
 
@@ -723,6 +722,9 @@ function updateUser($userid, $json_settings){
 	closeDBConnection($conn);
 }
 
+/**
+* adds a new user given settings
+*/
 function addUser($json_settings)
 {
 
@@ -759,7 +761,7 @@ function addUser($json_settings)
 			)
 		");
 		
-		$stmt->bindValue(":idRole", 0, PDO::PARAM_STR); // hack in later
+		$stmt->bindValue(":idRole", 0, PDO::PARAM_INT); // hack in later
 		$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
 		$stmt->bindValue(":password", userLogin::hashPassword($userSettings["password"]), PDO::PARAM_STR);
 		$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
@@ -783,6 +785,42 @@ function addUser($json_settings)
 	}
 	closeDBConnection($conn);
 	
+}
+
+/**
+* removes a user's account 
+*/
+function deleteUser($userid)
+{
+	$conn = null;
+	try
+	{
+		$conn = getDBConnection();
+		$conn->beginTransaction();
+		
+		//remove client settings for the user 
+		$stmt = $conn->prepare("DELETE FROM ClientSettings WHERE idUser = :idUser");		
+		$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT); 
+		$stmt->execute();
+		
+		//remove the user
+		$stmt = $conn->prepare("DELETE FROM User WHERE idUser = :idUser");		
+		$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT); 
+		$stmt->execute();
+		
+		$conn->commit();
+		
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		if(isset($conn) && $conn && $conn->inTransaction())
+		{
+			$conn->rollBack();
+		}		
+		return false;
+	}
+	closeDBConnection($conn);
 }
 
 

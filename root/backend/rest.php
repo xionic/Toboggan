@@ -183,6 +183,13 @@ switch($action)
 		addUser($args["settings"]);
 	break;
 	
+	case "deleteUser";
+		$args = $av->validateArgs($_GET, array(			
+			"userid"	=> "int, notblank",
+		),true);
+		deleteUser($args["userid"]);
+	break;
+	
 	case "":
 		restTools::sendResponse("No action specified", 400, "text/plain");
 		break;

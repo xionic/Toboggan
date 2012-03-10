@@ -249,4 +249,9 @@ addUser
 				}
 				...
 			]
+			
+deleteUser
+	args:
+		userid - a user id of the user to delete
+	Removes a user
 		
