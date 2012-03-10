@@ -155,11 +155,11 @@ search
 		...
 	]
 	
-retrieveServerSettings
+retrieveStreamerSettings
 	args:
 		None
-	Retrieves a data structure representing the backend server settings. These can be altered/added to 
-	and sent back in the same format to the "saveServerSettings" action. The structure is of the form:
+	Retrieves a data structure representing the backend Streamer settings. These can be altered/added to 
+	and sent back in the same format to the "saveStreamerSettings" action. The structure is of the form:
 	{
 		"streamers":
 		[
@@ -172,24 +172,12 @@ retrieveServerSettings
 				  "command":		"value",
 			}
 			...
-		]
-		"users":
-		[
-			{
-				"username":				"value",
-				"email":				"value",
-				"enabled":				"value",
-				"maxAudioBitrate":		"value",
-				"maxVideoBitrate":		"value",
-				"maxBandwidth":			"value",
-			}
-			...
-		]
+		]			
 	}
 	
 saveServerSettings
 	args:
-		settings - a json string representing the server settings to be saved in the following form:
+		settings - a json string representing the streamer settings to be saved in the following form:
 		{
 			"streamers":
 			[
@@ -204,7 +192,7 @@ saveServerSettings
 				...
 			]
 		}
-	Saves server settings.
+	Saves streamer settings. The streamer settings on the server will be entirely replaced by those given here.
 	
 		
 		
