@@ -154,6 +154,16 @@ switch($action)
 		saveStreamerSettings($args["settings"]);
 		break;
 		
+	case "listUsers":
+		outputUserList_JSON();
+		break;
+		
+	case "retrieveUserSettings":
+		$args = $av->validateArgs($_GET, array(			
+			"userid"	=> "string, notblank",
+		),true);
+		outputUserSettings_JSON($args["userid"]);
+		
 	case "":
 		restTools::sendResponse("No action specified", 400, "text/plain");
 		break;

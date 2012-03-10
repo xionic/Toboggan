@@ -377,7 +377,7 @@ function getStreamerSettings()
 		
 		//get streamer results
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		$results["streamers"] = $rows;		
+		$results = $rows;		
 		
 		closeDBConnection($conn);
 	}
@@ -418,6 +418,7 @@ function saveStreamerSettings($settings_JSON)
 	}
 	//TODO - add more validation
 	
+	$conn = null;
 	try
 	{
 		appLog("Clearing old settings from the db", appLog_DEBUG);
@@ -460,6 +461,8 @@ function saveStreamerSettings($settings_JSON)
 		}		
 		return false;
 	}
+	
+	closeDBConnection($conn);
 }
 
 /**
@@ -551,6 +554,45 @@ function updateStreamer($streamer, $conn)
 	$stmt->execute();
 	
 }
+
+/**
+* outputs a JSON object of a all the userid and usernames
+*/
+function outputUserList_JSON()
+{
+	$users = getUsers();
+	echo json_encode($users);
+}
+
+/**
+* returns an array of users with userid and username
+*/
+function getUsers()
+{
+	$conn = getDBConnection();
+	
+	$stmt = $conn->prepare("SELECT idUser, username FROM User");
+	$stmt->execute();
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	
+	closeDBConnection($conn);
+	
+	return $results;
+}
+/**
+* outputs a 
+*/
+function outputUserSettings_JSON($userid)
+{
+	
+}
+
+function getUserObject()
+{
+
+}
+
+
 
 
 
