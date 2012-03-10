@@ -146,6 +146,15 @@ switch($action)
 		outputServerSettings_JSON();
 		break;
 		
+	case "saveServerSettings":
+		/*$args = $av->validateArgs($_GET, array(			
+			"settings"		=> "string, notblank",
+		),true);*/
+		$args["settings"] = json_encode(getServerSettings());
+		
+		saveServerSettings($args["settings"]);
+		break;
+		
 	case "":
 		restTools::sendResponse("No action specified", 400, "text/plain");
 		break;
