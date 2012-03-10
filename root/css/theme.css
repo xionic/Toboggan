@@ -379,3 +379,17 @@ img.loading
 {
 	margin-right: 0.3ex;
 }
+
+/**
+	Styles for the configuration dialog
+*/
+#configDialog li.streamer
+{
+	font-size: smaller;
+}
+#configDialog li.streamer input[name=fromExt],
+#configDialog li.streamer input[name=toExt]
+{
+	width: 6em;
+	font-family: "consolas", monospace;
+}

@@ -3,7 +3,7 @@
 */
 (function(){
 	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}';
-	var apiversion='0.5';
+	var apiversion='0.56';
 	var initialProgressEvent=false;	//used to ensure that the initial progress event is the only one handled
 	/**
 		jQuery Entry Point
@@ -20,7 +20,7 @@
 					mp3: "",
 					flv: ""
 				});		
-			},
+			},	//hack/workaround for the nightmarish streamed video layback stopping issue!
 			progress: function(event) {	
 				//if this is the first time the progress event has been handled				
 				if(!initialProgressEvent)
@@ -196,6 +196,7 @@
 			)
 		);
 	}
+	
 	/**
 		Add a track to the list of playable files (centre container)
 	*/
@@ -220,7 +221,8 @@
 			)
 			.addClass(className)
 			.appendTo($("#tracklist"));
-	}	
+	}
+	
 	/**
 		Make the jquery player play a track from the passed object
 	*/
@@ -601,13 +603,16 @@
 	*******************************************************************/
 	function displayConfig(event)
 	{
-		//generate a dialog and display it
+	
+				
 		if($("#configDialog").length==0)
 			$("<div id='configDialog' />")
 				.append(
 					$("<ul id='configTabs'/>")
 						.append($("<li><a href='#tab_client'>Client</a></li>"))
-						.append($("<li><a href='#tab_server'>Server</a></li>"))
+						.append($("<li><a href='#tab_server_streamers'>Streamers</a></li>"))
+						.append($("<li><a href='#tab_server_users'>Users</a></li>"))
+						.append($("<li><a href='#tab_server_mediaSources'>Media Sources</a></li>"))
 				)
 				.append(
 					$("<div id='tab_client'></div>")
@@ -627,11 +632,13 @@
 								</fieldset>"))
 				)
 				.append(
-					$("<div id='tab_server'></div>")
-						.append($("<fieldset><legend>Settings!</legend>\
-							<p><label>Server Option</label><input type='text' /></p>\
-							<p><label>Server Option</label><input type='text' /></p>\
-						</fieldset>"))
+					$("<div id='tab_server_streamers'></div>")
+				)
+				.append(
+					$("<div id='tab_server_users'></div>")
+				)
+				.append(
+					$("<div id='tab_server_mediaSources'></div>")
 				)
 				.appendTo("body");
 		
@@ -642,17 +649,93 @@
 			width: "500px",
 			buttons: {
 				'Save' : function(){
-					console.log("AJAX Save the settings!");
-					$( this ).dialog( "close" );
+					
+					//get the currently selected tab and update the settings accordingly
+					//atm this will just save the streamer settings#
+					
+					//build an array of streamers
+					var streamersArray = [];
+					
+					$("#tab_server_streamers ul li").each(function(){
+						streamersArray.push({
+							'fromExtensions' : $(this).children('input[name=fromExt]').val(),
+							'bitrateCmd' : $(this).children('input[name=bitrateCmd]').val(),
+							'toExtension' : $(this).children('input[name=toExt]').val(),
+							'MimeType' : $(this).children('input[name=outputMimeType]').val(),
+							'MediaType' : $(this).children('select[name=outputMediaType]').children('option:selected').val(),
+							'command' : $(this).children('input[name=command]').val(),
+						})
+					});
+					
+					console.log(streamersArray);
+					
+					$.ajax({
+						url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=saveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
+						type: 'POST',
+						data: {settings: JSON.stringify(streamersArray)},
+						success: function(data, textStatus, jqXHR){
+							$( "#configDialog" ).dialog( "close" );
+						},
+						error: function(jqHXR, textStatus, errorThrown){
+							alert("A mild saving catastrophe has occurred, please check the error log");
+							console.error(jqHXR, textStatus, errorThrown);
+						}
+					})
 				},
 				Cancel: function(){
 					$( this ).dialog( "close" );
 				}
 			}
 		}).tabs({
-			selected: 0
+			selected: 0,
+			select: function(event, ui){
+				
+				//display loading placeholder here
+				switch(ui.panel.id)
+				{
+					case 'tab_server_streamers':
+						$(ui.panel).empty();
+						
+						$.ajax({
+							url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=retrieveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
+							success: function(data, textStatus, jqXHR){
+								
+								var outputUL = $("<ul/>");
+								
+								for (var x=0; x<data.length; ++x)
+								{
+									console.log(data);
+									outputUL.append(
+										$("<li/>").addClass('streamer').append(
+											$("<input type='text' name='fromExt' />").val(data[x].fromExtensions),
+											$("<input type='text' name='bitrateCmd' />").val(data[x].bitrateCmd),
+											$("<input type='text' name='command' />").val(data[x].command),
+											$("<input type='text' name='toExt' maxlength='8' />").val(data[x].toExtension),
+										//	$("<input type='text' name='outputMediaType' />").val(data[x].MediaType),
+											$("<select name='outputMediaType'/>").append(
+												$("<option value='a'>Audio</option>").attr('selected',(data[x].MediaType=='a')?'selected':false),
+												$("<option value='v'>Video</option>").attr('selected',(data[x].MediaType=='v')?'selected':false)
+											),
+											$("<input type='text' name='outputMimeType' maxlength='32' />").val(data[x].MimeType)
+										)
+									);
+								}
+								
+								$(ui.panel).append(outputUL);
+							},
+							error: function(jqHXR, textStatus, errorThrown){
+								alert("An error occurred while retrieving the streamer settings");
+								console.error(jqXHR, textStatus, errorThrown);
+							}
+						})
+						
+					break;
+					default:
+						
+				}
+			}
 		});
-		
+			
 		return false;
 	}
 	
