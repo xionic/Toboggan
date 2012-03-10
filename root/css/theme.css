@@ -383,7 +383,7 @@ img.loading
 /**
 	Styles for the configuration dialog
 */
-#configDialog li.streamer
+#configDialog li.streamer, #configDialog a.add
 {
 	font-size: smaller;
 }
