@@ -2,10 +2,11 @@
 	Holds the JS used for the player system, playlist management etc
 */
 (function(){
-	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}';
-	var apiversion='0.58';
-	var initialProgressEvent=false;	//used to ensure that the initial progress event is the only one handled
-	var playerCSSProperties = {};
+	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}',
+		apiversion='0.58',
+		initialProgressEvent=false,	//used to ensure that the initial progress event is the only one handled
+		playerCSSProperties = {},
+		isFullscreen = {};
 	/**
 		jQuery Entry Point
 	*/
@@ -24,6 +25,7 @@
 				
 				//Enormous hack for fullscreen to apply custom css to it
 				$("#jp_container_1 .jp-full-screen").click(function(){
+					
 					playerCSSProperties = {
 											'position':$("#centerPlayerContainer").css("position"),
 											'top':$("#centerPlayerContainer").css("top"),
@@ -606,35 +608,44 @@
 	*/
 	function doLogin()
 	{
+		$("#loginForm").submit(function(){	//handle pressing enter
+			ajaxLogin();
+			return false;
+		});
 		//present the login form:
 		$("#loginFormContainer").dialog({
 			autoOpen: true,
 			modal: true,
 			title: 'Login',
 			buttons: {
-				'Login': function(){
-					var hash = new jsSHA($("#passwordInput").val()).getHash("SHA-256","B64");
-					$.ajax({
-						url:'backend/rest.php?action=login&apikey='+apikey+"&apiver="+apiversion,
-						type: 'POST',
-						data: {
-							'username': $("#username").val(),
-							'password': hash
-						},
-						success: function(){
-							$("#loginFormContainer").dialog("close");
-							getMediaSources();
-						},
-						error: function(jqhxr,textstatus,errorthrown){
-							console.debug(jqhxr,textstatus,errorthrown);
-							alert("Login Failed");							
-						}
-					});
-				}
+				'Login': ajaxLogin
 			}
 		});
 	}
 	
+	
+	function ajaxLogin()
+	{
+	
+		var hash = new jsSHA($("#passwordInput").val()).getHash("SHA-256","B64");
+		$.ajax({
+			url:'backend/rest.php?action=login&apikey='+apikey+"&apiver="+apiversion,
+			type: 'POST',
+			data: {
+				'username': $("#username").val(),
+				'password': hash
+			},
+			success: function(){
+				$("#loginFormContainer").dialog("close");
+				getMediaSources();
+			},
+			error: function(jqhxr,textstatus,errorthrown){
+				console.debug(jqhxr,textstatus,errorthrown);
+				alert("Login Failed");							
+			}
+		});
+		
+	}
 	
 	/******************************************************************
 		Configuration Functions
@@ -688,35 +699,52 @@
 			buttons: {
 				'Save' : function(){
 					
-					//get the currently selected tab and update the settings accordingly
-					//atm this will just save the streamer settings#
+					//get the index of the selectedtab and look it up by the href on the a inside the li
+					var index = $("#configDialog").tabs('option','selected'),
+						selected = $($("#configDialog ul li").tabs()[index]).find("a").attr('href');
 					
-					//build an array of streamers
-					var streamersArray = [];
+					switch(selected)
+					{
+						case "#tab_server_streamers":
+							//build an array of streamers
+							var streamersArray = [];
+							
+							$("#tab_server_streamers ul li").each(function(){
+								streamersArray.push({
+									'fromExtensions' : $(this).children('input[name=fromExt]').val(),
+									'bitrateCmd' : $(this).children('input[name=bitrateCmd]').val(),
+									'toExtension' : $(this).children('input[name=toExt]').val(),
+									'MimeType' : $(this).children('input[name=outputMimeType]').val(),
+									'MediaType' : $(this).children('select[name=outputMediaType]').children('option:selected').val(),
+									'command' : $(this).children('input[name=command]').val(),
+								})
+							});
+							
+							$.ajax({
+								url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=saveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
+								type: 'POST',
+								data: {settings: JSON.stringify(streamersArray)},
+								success: function(data, textStatus, jqXHR){
+									$( "#configDialog" ).dialog( "close" );
+								},
+								error: function(jqHXR, textStatus, errorThrown){
+									alert("A mild saving catastrophe has occurred, please check the error log");
+									console.error(jqHXR, textStatus, errorThrown);
+								}
+							})
+						break;
+						case 'tab_server_users':
 					
-					$("#tab_server_streamers ul li").each(function(){
-						streamersArray.push({
-							'fromExtensions' : $(this).children('input[name=fromExt]').val(),
-							'bitrateCmd' : $(this).children('input[name=bitrateCmd]').val(),
-							'toExtension' : $(this).children('input[name=toExt]').val(),
-							'MimeType' : $(this).children('input[name=outputMimeType]').val(),
-							'MediaType' : $(this).children('select[name=outputMediaType]').children('option:selected').val(),
-							'command' : $(this).children('input[name=command]').val(),
-						})
-					});
-					
-					$.ajax({
-						url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=saveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
-						type: 'POST',
-						data: {settings: JSON.stringify(streamersArray)},
-						success: function(data, textStatus, jqXHR){
-							$( "#configDialog" ).dialog( "close" );
-						},
-						error: function(jqHXR, textStatus, errorThrown){
-							alert("A mild saving catastrophe has occurred, please check the error log");
-							console.error(jqHXR, textStatus, errorThrown);
-						}
-					})
+						break;
+						case 'tab_server_mediaSources':
+						
+						break;
+						case 'tab_client':
+						
+						break;
+						default:
+						
+					}
 				},
 				Cancel: function(){
 					$( this ).dialog( "close" );
@@ -747,10 +775,11 @@
 											$("<input type='text' name='command' />").val(data[x].command),
 											$("<input type='text' name='toExt' maxlength='8' />").val(data[x].toExtension),
 										//	$("<input type='text' name='outputMediaType' />").val(data[x].MediaType),
-											$("<select name='outputMediaType'/>").append(
-												$("<option value='a'>Audio</option>").attr('selected',(data[x].MediaType=='a')?'selected':false),
-												$("<option value='v'>Video</option>").attr('selected',(data[x].MediaType=='v')?'selected':false)
-											),
+											$("<select name='outputMediaType'/>")
+												.append(
+													$("<option value='a'>Audio</option>").attr('selected',(data[x].MediaType=='a')?'selected':false),
+													$("<option value='v'>Video</option>").attr('selected',(data[x].MediaType=='v')?'selected':false)
+												),
 											$("<input type='text' name='outputMimeType' maxlength='32' />").val(data[x].MimeType),
 											$("<a href='#'>Del</a>").click(function(){
 												$(this).parent().remove();
@@ -770,10 +799,11 @@
 													$("<input type='text' name='bitrateCmd' />"),
 													$("<input type='text' name='command' />"),
 													$("<input type='text' name='toExt' maxlength='8' />"),
-													$("<select name='outputMediaType'/>").append(
-														$("<option value='a'>Audio</option>"),
-														$("<option value='v'>Video</option>")
-													),
+													$("<select name='outputMediaType'/>")
+														.append(
+															$("<option value='a'>Audio</option>"),
+															$("<option value='v'>Video</option>")
+														),
 													$("<input type='text' name='outputMimeType' maxlength='32' />"),
 													$("<a href='#'>Del</a>").click(function(){
 														$(this).parent().remove();
@@ -790,8 +820,25 @@
 								alert("An error occurred while retrieving the streamer settings");
 								console.error(jqXHR, textStatus, errorThrown);
 							}
-						})
-						
+						});
+					break;
+					case 'tab_server_users':
+						$.ajax({
+							url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listUsers&apikey="+apikey+"&apiver="+apiversion,
+							success: function(data, textStatus, jqXHR){
+								console.log(data);
+							},
+							error: function(jqHXR, textStatus, errorThrown){
+								alert("An error occurred while retrieving the streamer settings");
+								console.error(jqXHR, textStatus, errorThrown);
+							}
+						});
+					break;
+					case 'tab_server_mediaSources':
+					
+					break;
+					case 'tab_client':
+					
 					break;
 					default:
 						
