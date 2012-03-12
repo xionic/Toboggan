@@ -597,7 +597,7 @@ function updateStreamer($streamer, $conn)
 function outputUserList_JSON()
 {
 	$users = getUsers();
-	echo json_encode($users);
+	restTools::sendResponse(json_encode($users), 200, "text/json");
 }
 
 /**
@@ -634,7 +634,7 @@ function getUsers()
 function outputUserSettings_JSON($userid)
 {
 	$user = getUserObject($userid);
-	echo json_encode($user);
+	restTools::sendResponse(json_encode($user), 200, "text/json");
 }
 /**
 * returns an array representing a user
