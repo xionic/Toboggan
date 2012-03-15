@@ -597,7 +597,7 @@ function updateStreamer($streamer, $conn)
 function outputUserList_JSON()
 {
 	$users = getUsers();
-	echo json_encode($users);
+	restTools::sendResponse(json_encode($users), 200, "text/json");
 }
 
 /**
@@ -634,7 +634,7 @@ function getUsers()
 function outputUserSettings_JSON($userid)
 {
 	$user = getUserObject($userid);
-	echo json_encode($user);
+	restTools::sendResponse(json_encode($user), 200, "text/json");
 }
 /**
 * returns an array representing a user
@@ -806,6 +806,39 @@ function deleteUser($userid)
 		//remove the user
 		$stmt = $conn->prepare("DELETE FROM User WHERE idUser = :idUser");		
 		$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT); 
+		$stmt->execute();
+		
+		$conn->commit();
+		
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		if(isset($conn) && $conn && $conn->inTransaction())
+		{
+			$conn->rollBack();
+		}		
+		return false;
+	}
+	closeDBConnection($conn);
+}
+
+/**
+* update a user's password
+*/
+function changeUserPassword($userid, $password)
+{
+	$conn = null;
+	try
+	{
+		$conn = getDBConnection();
+		$conn->beginTransaction();
+		
+		$stmt = $conn->prepare("UPDATE User SET Password = :password WHERE idUser = :idUser");
+		
+		$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT);
+		$stmt->bindValue(":password", userLogin::hashPassword($password), PDO::PARAM_STR);
+	
 		$stmt->execute();
 		
 		$conn->commit();

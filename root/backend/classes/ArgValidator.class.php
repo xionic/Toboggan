@@ -51,7 +51,7 @@ class ArgValidator{
 			$constraints = array();
 			foreach($tempconstraints as $tc)
 			{
-				$newtc = trim($tc);
+				$newtc = trim($tc);				
 				if($newtc == "optional" && !isset($this->argArray[$arg])) // check for optional arg
 				{
 					continue 2; // ignore constraints if optional arg is not present
@@ -95,6 +95,8 @@ class ArgValidator{
 						break;
 					case "array":
 						$this->checkIsArray($curValue, $arg);
+						break;
+					case "optional"; // handled above - needed here to prevent exception
 						break;
 						
 					default:
