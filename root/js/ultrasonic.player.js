@@ -896,10 +896,9 @@
 													
 													var saveData = {};
 													$("#opt_usr_rightFrameTarget input").each(function(){
-														var tmpSaveData = $(this).serializeArray();
-														//saveData[$(this).name()] = $(this.val())
-														if(tmpSaveData[0])
-															saveData[tmpSaveData[0].name] = tmpSaveData[0].value;
+														saveData[$(this).attr("name")] = $(this).val();
+														if($(this).attr("type") == "checkbox")
+															saveData[$(this).attr("name")] = $(this).attr("checked")?"1":"0";	
 													});
 													console.debug(saveData);
 													//save the user's settings
@@ -907,7 +906,7 @@
 														url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=updateUserSettings&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
 														type: "POST",
 														data: {
-															settings:	saveData
+															settings:	JSON.stringify(saveData)
 														},
 														success: function(data, textStatus,jqHXR){
 															console.debug(data);
