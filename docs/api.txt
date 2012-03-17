@@ -194,8 +194,8 @@ listUsers
 	Returns a JSON object representing the users of the system in the format:
 	[
 		{
-			"idUser":"theuserid",
-			"username":"theusername",
+			"idUser":	"theuserid",
+			"username":	"theusername",
 		}
 		...
 	]
@@ -206,13 +206,13 @@ retrieveUserSettings
 	Returns a JSON object representing a user in the following format:
 	[
 		{
-			"idUser"				=> "theuserid",
-			"username"				=> "theusername",
-			"email"					=> "theemail",
-			"enabled"				=> "theenabled",
-			"maxAudioBitrate"		=> "themaxAudioBitrate",
-			"maxVideoBitrate"		=> "themaxVideoBitrate",
-			"maxBandwidth"			=> "themaxBandwidth",
+			"idUser": 			"theuserid",
+			"username": 		"theusername",
+			"email": 			"theemail",
+			"enabled": 			"theenabled",
+			"maxAudioBitrate": 	"themaxAudioBitrate (kbps)",
+			"maxVideoBitrate": 	"themaxVideoBitrate (kbps)",
+			"maxBandwidth": 	"themaxBandwidth (kbps)",
 		}
 		...
 	]
@@ -222,12 +222,12 @@ updateUserSettings
 		settings - (POST) an object representing the user's setting in the following format
 			[
 				{
-					"username"				=> "theusername",
-					"email"					=> "theemail",
-					"enabled"				=> "theenabled",
-					"maxAudioBitrate"		=> "themaxAudioBitrate",
-					"maxVideoBitrate"		=> "themaxVideoBitrate",
-					"maxBandwidth"			=> "themaxBandwidth",
+					"username":			"theusername",
+					"email":			"theemail",
+					"enabled":			"theenabled",
+					"maxAudioBitrate":	"themaxAudioBitrate (kbps)",
+					"maxVideoBitrate":	"themaxVideoBitrate (kbps)",
+					"maxBandwidth":		"themaxBandwidth (kbps)",
 				}
 				...
 			]
@@ -239,13 +239,13 @@ addUser
 		settings - (POST) an object representing the user's setting in the following format
 			[
 				{
-					"username"				=> "theusername",
-					"password"				=> "thepassword", #base64 encoded sha256 of the password
-					"email"					=> "theemail",
-					"enabled"				=> "theenabled",
-					"maxAudioBitrate"		=> "themaxAudioBitrate",
-					"maxVideoBitrate"		=> "themaxVideoBitrate",
-					"maxBandwidth"			=> "themaxBandwidth",
+					"username":			"theusername",
+					"password":			"thepassword", #base64 encoded sha256 of the password
+					"email":			"theemail",
+					"enabled":			"theenabled",
+					"maxAudioBitrate":	"themaxAudioBitrate (kbps)",
+					"maxVideoBitrate":	"themaxVideoBitrate (kbps)",
+					"maxBandwidth":		"themaxBandwidth (kbps)",
 				}
 				...
 			]
