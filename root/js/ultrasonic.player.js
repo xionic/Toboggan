@@ -887,7 +887,8 @@
 											}
 											//Add the update button
 											$("#opt_usr_rightFrameTarget").append(
-												$("<button id='opt_usr_input_updateBtn'>Update</button>").click(function(){
+												$("<button id='opt_usr_input_updateBtn'>Update</button>").click(function(e){
+													e.preventDefault();
 													//display indication of it!
 													var btnObj = $(this);
 													btnObj.text("Saving...");
@@ -918,6 +919,33 @@
 															console.error(jqXHR, textStatus, errorThrown);
 														}
 													});
+												})
+											).append(	//add the delete button
+												$("<button id='opt_usr_input_deleteBtn'>Delete User</button>").click(function(e){
+													e.preventDefault();
+													
+													if( confirm("Delete this user?") )
+													{
+														var btnObj = $(this);
+														btnObj.text("Deleting...");
+														btnObj.attr("disabled",true);
+														$("#opt_user_select").attr("disabled",true);
+														
+														$.ajax({
+															url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=deleteUser&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
+															type: "POST",
+															success: function(data, textStatus,jqHXR){
+																btnObj.text("Delete User");
+																btnObj.attr("disabled",false);
+																$("#opt_user_select").attr("disabled",false);
+																alert("User Successfully Deleted");
+															},
+															error: function(jqHXR, textStatus, errorThrown){
+																alert("An error occurred while deleting the user");
+																console.error(jqXHR, textStatus, errorThrown);
+															}
+														});
+													}
 												})
 											);
 											
