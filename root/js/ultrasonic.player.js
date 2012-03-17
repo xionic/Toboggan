@@ -900,7 +900,7 @@
 														if($(this).attr("type") == "checkbox")
 															saveData[$(this).attr("name")] = $(this).attr("checked")?"1":"0";	
 													});
-													console.debug(saveData);
+
 													//save the user's settings
 													$.ajax({
 														url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=updateUserSettings&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
@@ -909,11 +909,9 @@
 															settings:	JSON.stringify(saveData)
 														},
 														success: function(data, textStatus,jqHXR){
-															console.debug(data);
 															btnObj.text("Update");
 															btnObj.attr("disabled",false);
 															$("#opt_user_select").attr("disabled",false);
-															
 														},
 														error: function(jqHXR, textStatus, errorThrown){
 															alert("An error occurred while saving the user settings");
@@ -931,9 +929,93 @@
 									})
 								})
 								
-								$(ui.panel).append($("<div id='opt_usr_leftFrame' />")
-													.append(userList))
-											.append($("<fieldset id='opt_usr_rightFrameFieldset'><legend>User Details</legend><div id='opt_usr_rightFrameTarget'/></fieldset>"));
+								$(ui.panel).append(
+									$("<div id='opt_usr_leftFrame' />")
+										.append(userList)
+										.append(
+											$("<a href='#'>Add</a>").click(function(e){
+												e.preventDefault();
+												$("#opt_usr_rightFrameTarget").empty();
+												
+												var inputNames = new Array("username","password","email","enabled","maxAudioBitrate","maxVideoBitrate","maxBandwidth");
+												var newinputType = "";
+												for (x=0;x<inputNames.length;++x)
+												{
+													switch(inputNames[x])
+													{
+														case "maxAudioBitrate":
+														case "maxVideoBitrate":
+														case "maxBandwidth":
+															newinputType = "number";													
+														break;
+														case "enabled":
+															newinputType = "checkbox";													
+														break;
+														default:
+															newinputType = "text";
+													}
+													
+													newinputID = "opt_usr_input_new"+inputNames[x];
+												
+													$("#opt_usr_rightFrameTarget").append(
+														$("<p>").append(
+															$("<label>").text(inputNames[x]).attr("for", newinputID)
+														).append(
+															$("<input class='opt_usr_input' type='"+newinputType+"'>")
+																.attr({
+																		"id":		newinputID,
+																		"name":		inputNames[x],
+																		"value":	'',
+																		})
+																
+														)
+													);
+												}
+												$("#opt_usr_rightFrameTarget").append(
+													$("<button id='opt_usr_input_addBtn'>Add</button>").click(function(){
+														//display indication of it!
+														var btnObj = $(this);
+														btnObj.text("Saving...");
+														btnObj.attr("disabled",true);
+														$("#opt_user_select").attr("disabled",true);
+														
+														var saveData = {};
+														$("#opt_usr_rightFrameTarget input").each(function(){
+														
+															saveData[$(this).attr("name")] = $(this).val();
+															
+															if($(this).attr("type") == "checkbox")
+																saveData[$(this).attr("name")] = $(this).attr("checked")?"1":"0";
+															else if ($(this).attr("name")=="password")
+															{
+																//SHA256 the password
+																saveData[$(this).attr("name")] = new jsSHA($(this).val()).getHash("SHA-256","B64");
+															}
+														});
+
+														//save the new user
+														$.ajax({
+															url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=addUser&apikey="+apikey+"&apiver="+apiversion,
+															type: "POST",
+															data: {
+																settings:	JSON.stringify(saveData)
+															},
+															success: function(data, textStatus,jqHXR){
+																btnObj.text("Add");
+																btnObj.attr("disabled",false);
+																$("#opt_user_select").attr("disabled",false);
+															},
+															error: function(jqHXR, textStatus, errorThrown){
+																alert("An error occurred while adding the user");
+																console.error(jqXHR, textStatus, errorThrown);
+															}
+														});
+													})
+												);
+											})
+										)
+									)
+									.append($("<fieldset id='opt_usr_rightFrameFieldset'><legend>User Details</legend><div id='opt_usr_rightFrameTarget'/></fieldset>"));
 								//trigger the change to populate the fieldset
 								userList.change();
 							
