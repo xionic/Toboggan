@@ -754,7 +754,7 @@
 			selected: 0,
 			select: function(event, ui){
 				
-				//display loading placeholder here
+				//TODO: display loading placeholder here
 				switch(ui.panel.id)
 				{
 					case 'tab_server_streamers':
@@ -823,13 +823,124 @@
 						});
 					break;
 					case 'tab_server_users':
+						//TODO: display loading placeholder here
 						$.ajax({
 							url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listUsers&apikey="+apikey+"&apiver="+apiversion,
 							success: function(data, textStatus, jqXHR){
-								console.log(data);
+							
+								$(ui.panel).empty();
+								var userList = $("<select name='userList' id='opt_user_select' />");
+								
+								for (var intx=0; intx<data.length; ++intx)
+								{
+									userList.append($("<option></option>")
+														.val(data[intx].idUser)
+														.text(data[intx].username)
+													);
+								}
+
+								userList.change(function(){
+									$("#opt_usr_rightFrameTarget").empty();
+									//TODO: display loading placeholder here
+									$.ajax({
+										url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=retrieveUserSettings&apikey="+apikey+"&apiver="+apiversion,
+										data: { 'userid': $(this).val() },
+										success: function(data, textStatus,jqHXR){
+											
+											//Data driven for now!
+											for (lbl in data)
+											{	
+												var newinputID = "opt_usr_input_"+lbl,
+													newinputType = "",
+													newinputDisabled = (lbl=="idUser")?true:false;		//Hacks for wierd types
+											
+												//if it's a type that should be numerical (bandwidth etc set the type to number
+												switch(lbl)
+												{
+													case "maxAudioBitrate":
+													case "maxVideoBitrate":
+													case "maxBandwidth":
+														newinputType = "number";													
+													break;
+													case "enabled":
+														newinputType = "checkbox";													
+													break;
+													default:
+														newinputType = "text";
+												}
+											
+												$("#opt_usr_rightFrameTarget").append(
+													$("<p>").append(
+														$("<label>").text(lbl).attr("for", newinputID)
+													).append(
+														$("<input class='opt_usr_input' type='"+newinputType+"'>")
+															.attr({
+																	"id": newinputID,
+																	"name": lbl,
+																	"value": data[lbl],
+																	"disabled": newinputDisabled,
+																	"checked": (lbl=="enabled" && data[lbl]=="1")
+																	})
+															
+													)
+												);
+											}
+											//Add the update button
+											$("#opt_usr_rightFrameTarget").append(
+												$("<button id='opt_usr_input_updateBtn'>Update</button>").click(function(){
+													//display indication of it!
+													var btnObj = $(this);
+													btnObj.text("Saving...");
+													btnObj.attr("disabled",true);
+													$("#opt_user_select").attr("disabled",true);
+													
+													var saveData = {};
+													$("#opt_usr_rightFrameTarget input").each(function(){
+														var tmpSaveData = $(this).serializeArray();
+														//saveData[$(this).name()] = $(this.val())
+														if(tmpSaveData[0])
+															saveData[tmpSaveData[0].name] = tmpSaveData[0].value;
+													});
+													console.debug(saveData);
+													//save the user's settings
+													$.ajax({
+														url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=updateUserSettings&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
+														type: "POST",
+														data: {
+															settings:	saveData
+														},
+														success: function(data, textStatus,jqHXR){
+															console.debug(data);
+															btnObj.text("Update");
+															btnObj.attr("disabled",false);
+															$("#opt_user_select").attr("disabled",false);
+															
+														},
+														error: function(jqHXR, textStatus, errorThrown){
+															alert("An error occurred while saving the user settings");
+															console.error(jqXHR, textStatus, errorThrown);
+														}
+													});
+												})
+											);
+											
+										},
+										error: function(jqHXR, textStatus, errorThrown){
+											alert("An error occurred while retrieving the user settings");
+											console.error(jqXHR, textStatus, errorThrown);
+										}
+									})
+								})
+								
+								$(ui.panel).append($("<div id='opt_usr_leftFrame' />")
+													.append(userList))
+											.append($("<fieldset id='opt_usr_rightFrameFieldset'><legend>User Details</legend><div id='opt_usr_rightFrameTarget'/></fieldset>"));
+								//trigger the change to populate the fieldset
+								userList.change();
+							
 							},
 							error: function(jqHXR, textStatus, errorThrown){
-								alert("An error occurred while retrieving the streamer settings");
+								alert("An error occurred while retrieving the user settings");
 								console.error(jqXHR, textStatus, errorThrown);
 							}
 						});
