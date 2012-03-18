@@ -947,7 +947,50 @@
 														});
 													}
 												})
-											);
+											)
+											.append(	//add the fields to change the password
+												$("<div id='opt_usr_input_changePasswd_container' />")
+													.append(
+														$("<p><label for='opt_usr_input_changePass1'>New Password</label><input type='password' id='opt_usr_input_changePass1' name='opt_usr_input_changePass1' /></p>"),
+														$("<p><label for='opt_usr_input_changePass2'>Repeat</label><input type='password' id='opt_usr_input_changePass2' name='opt_usr_input_changePass2' /></p>"),
+														$("<button id='opt_usr_input_changePasswd_button'>Update Password</button>").click(function(e){
+															e.preventDefault();
+															//check the two are the same
+															
+															if($("#opt_usr_input_changePass1").val() != $("#opt_usr_input_changePass2").val() && $("#opt_usr_input_changePass1").val()!="")
+															{
+																alert("Passwords are not equal or 0 characters");
+																return;
+															}
+															//sha512 and then submit!
+															var passwd = new jsSHA($("#opt_usr_input_changePass1").val()).getHash("SHA-256","B64");
+															var btnObj = $(this);
+															
+															btnObj.text("Updating...");
+															btnObj.attr("disabled",false);
+															$("#opt_user_select").attr("disabled",false);
+															
+															$.ajax({
+																url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=changeUserPassword&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
+																type: "POST",
+																data: {
+																	password:	passwd
+																},
+																success: function(data, textStatus,jqHXR){
+																	btnObj.text("Update Password");
+																	btnObj.attr("disabled",false);
+																	$("#opt_user_select").attr("disabled",false);
+																},
+																error: function(jqHXR, textStatus, errorThrown){
+																	alert("An error occurred while saving the user settings");
+																	console.error(jqXHR, textStatus, errorThrown);
+																}
+															});
+
+														})
+
+													)
+											)
 											
 										},
 										error: function(jqHXR, textStatus, errorThrown){
