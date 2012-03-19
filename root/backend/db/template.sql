@@ -105,5 +105,10 @@ CREATE TABLE `Role` (
 		ON CONFLICT ROLLBACK
 );
 
+CREATE TABLE `schema_information` (
+	`idschema_information` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`version` INTEGER NOT NULL
+);
+
 
 

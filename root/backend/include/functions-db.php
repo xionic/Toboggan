@@ -91,6 +91,29 @@ function getDBConnection()
 }
 
 /**
+* checks that the code and the DB are using the same DB schema version - returns boolean
+*/
+function validateDBVersion()
+{
+	try
+	{
+		$conn = getDBConnection();
+		$stmt = $conn->prepare("SELECT version FROM schema_information");
+		$stmt->execute();
+
+		$row = $stmt->fetch(PDO::FETCH_ASSOC);
+		closeDBConnection($conn);
+		
+		return $row["version"] == DB_VERSION;
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		return false;
+	}
+}
+
+/**
 * close a database connection
 */ 
 function closeDBConnection($conn)
@@ -111,8 +134,7 @@ function getMediaSourcePath($mediaSourceID)
 		$stmt->execute();
 
 		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		closeDBConnection($conn);
-		
+		closeDBConnection($conn);	
 		return $row["path"];
 	}
 	catch (PDOException $e)
@@ -125,6 +147,7 @@ function getMediaSourcePath($mediaSourceID)
 * get an array of media sources
 */
 function getMediaSources(){
+	$conn = null;
 	try
 	{
 		$conn = getDBConnection();
@@ -146,6 +169,14 @@ function getMediaSources(){
 		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
 		return false;
 	}
+	closeDBConnection($conn);
+}
+
+/**
+* outputs a json encoded string representing a list of media sources
+*/
+function outputMediaSourcesList_JSON(){
+	restTools::sendResponse(json_encode(getMediaSources(),200));
 }
 
 /**
@@ -485,7 +516,6 @@ function saveStreamerSettings($settings_JSON)
 			updateStreamer($streamer, $conn);		
 		}
 		
-		appLog("commiting");
 		$conn->commit();
 	}
 	catch (PDOException $e)
@@ -668,7 +698,7 @@ function getUserObject($userid)
 */
 function updateUser($userid, $json_settings){
 
-	$userSettings = (array)json_decode($json_settings);
+	$userSettings = json_decode($json_settings,true);
 
 	$av = new ArgValidator("handleArgValidationError");
 	
@@ -728,7 +758,7 @@ function updateUser($userid, $json_settings){
 function addUser($json_settings)
 {
 
-	$userSettings = (array)json_decode($json_settings);
+	$userSettings = json_decode($json_settings,true);
 	
 	$av = new ArgValidator("handleArgValidationError");
 	
@@ -841,6 +871,88 @@ function changeUserPassword($userid, $password)
 	
 		$stmt->execute();
 		
+		$conn->commit();
+		
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+		if(isset($conn) && $conn && $conn->inTransaction())
+		{
+			$conn->rollBack();
+		}		
+		return false;
+	}
+	closeDBConnection($conn);
+}
+
+/**
+* outputs a JSON representation of the media source settings
+*/
+function outputMediaSourceSettings_JSON()
+{
+	restTools::sendResponse(json_encode(getMediaSourceSettings(),200));
+}
+
+/**
+* returns an object representing the media Source Settings
+*/
+function getMediaSourceSettings(){
+	$conn = null;
+	try
+	{
+		$conn = getDBConnection();		
+		$stmt = $conn->prepare("SELECT path, displayName FROM mediaSource");	
+		$stmt->execute();
+		
+		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		
+		return $results;
+		
+	}
+	catch (PDOException $e)
+	{
+		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);		
+		return false;
+	}
+	closeDBConnection($conn);
+}
+
+/**
+* takes a JSON encoded string representing an object representing new media source settings to replace the old ones. 
+*/
+function saveMediaSourceSettings($settings_JSON)
+{
+	$settings = json_decode($settings_JSON,true);
+	//validate them - may as well loop here and below - this doesn't get done much - it's not lile this file is MASSIVE
+	foreach($settings as $mediaSource)
+	{
+		//validate them
+		$av = new ArgValidator("handleArgValidationError");
+		$mediaSource = $av->validateArgs($mediaSource,array(
+			"path" 			=>	"string, notblank",
+			"displayName" 	=> "string, notblank",
+		),false);
+	}
+	
+	$conn = null;
+	try
+	{
+		$conn = getDBConnection();
+		$conn->beginTransaction();
+		
+		//remove old media source settings 
+		$stmt = $conn->prepare("DELETE FROM mediaSource");
+		$stmt->execute();
+		//insert new settings
+		foreach($settings as $mediaSource)
+		{			
+			var_dump_pre($mediaSource);
+			$stmt = $conn->prepare("INSERT INTO mediaSource(path, displayName) VALUES (:path, :dname)");		
+			$stmt->bindValue(":path", $mediaSource["path"], PDO::PARAM_STR); 
+			$stmt->bindValue(":dname", $mediaSource["displayName"], PDO::PARAM_STR); 
+			$stmt->execute();
+		}
 		$conn->commit();
 		
 	}
