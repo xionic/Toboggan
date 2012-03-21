@@ -259,6 +259,27 @@ changeUserPassword
 	args:
 		userid - (OPTIONAL) id of the user whose password should be changed. if omitted the current user's password will be changed
 		password - (POST) - base64 encoded sha256 of the password
-	
-
+		
+retrieveMediaSourceSettings
+	args: 
+		None
+	Returns a JSON object representing the media source settings in the following format:
+	[
+		{
+			"path":			"thePath",
+			"displayname: 	"theDisplayName,
+		}
+		...
+	]
+saveMediaSourceSettings
+	args:
+		mediaSourceSettings - a json object representing(see below) the new media source settings to completely replace the old ones
+	Saves new media source settings - this will overwrite current settings.
+	[
+		{
+			"path":			"thePath",
+			"displayname: 	"theDisplayName,
+		}
+		...
+	]
 		

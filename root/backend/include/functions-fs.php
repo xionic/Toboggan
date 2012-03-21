@@ -10,7 +10,14 @@ function outputDirContents_JSON($dir, $mediaSourceID){
 		restTools::sendResponse("Invalid or missing mediaSourceID", 404, "text/plain");
 	}
 
-	$mediaSourcePath = normalisePath(getMediaSourcePath($mediaSourceID))."/";
+	$mediaSourcePath = getMediaSourcePath($mediaSourceID);
+	if(!$mediaSourcePath)
+	{
+		reportError("No media sources defined");
+		die;
+	}
+		
+	$mediaSourcePath = normalisePath($mediaSourcePath)."/";
 	$dir = normalisePath($dir)."/";
 
 	$dh = opendir($mediaSourcePath.$dir) or die("opendir failed:".$mediaSourcePath.$dir);
@@ -82,11 +89,15 @@ function outputSearchResults_JSON($mediaSourceID, $dir, $query)
 	foreach($mediaSourceArr as $id)
 	{
 		$path = getMediaSourcePath($id);
+		if(!$path){
+			reportError("Invalid/Non-existant media source");
+			die;
+		}
 		$results[] = array(
 			"mediaSourceID" => $id,
 			"results" => getSearchResults($path,normalisePath($dir),$query, true),
 		);
-		//return json_encode(getSearchResults($path.normalisePath($dir),$query, true));
+		
 	}
 	//var_dump_pre($results);
 	restTools::sendResponse(json_encode($results), 200, "text/json");
@@ -98,7 +109,7 @@ function outputSearchResults_JSON($mediaSourceID, $dir, $query)
 function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 {
 	$path = normalisePath(normalisePath($mediaSourcePath)."/".normalisePath($relPath))."/";
-	//echo "path: $path <br>";
+
 	if(!is_dir($path))
 	{	
 		appLog("path is not a directory: ".$path, appLog_INFO);

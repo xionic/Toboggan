@@ -32,3 +32,4 @@ INSERT INTO APIKey(apikey, displayName) VALUES("{05C8236E-4CB2-11E1-9AD8-A28BA55
 INSERT INTO APIKey(apikey, displayName) VALUES("testkey1", "Testing apikey 1");
 INSERT INTO APIKey(apikey, displayName) VALUES("testkey2", "Testing apikey2");
 
+INSERT INTO schema_information(version) VALUES("100");

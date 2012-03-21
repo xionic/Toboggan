@@ -8,7 +8,11 @@ require_once("include/functions.php");
 require_once("classes/REST_Helpers.class.php");
 require_once("classes/userLogin.class.php");
 
-
+//check that the db schema version that the code uses is the same as the actual db
+if(!validateDBVersion())
+{
+	reportServerError("Server schema version mismatch. This is a server problem.");
+}
 
 //argument validator
 $av = new ArgValidator("handleArgValidationError");
@@ -36,7 +40,6 @@ session_start();
 //check user is auth'd
 if(isset($_GET["action"]) && $_GET["action"] != "login") // special case
 {
-	//echo "'".(userLogin::checkLoggedIn())."'\n";
 	if(userLogin::checkLoggedIn() === false)
 	{
 		reportError("Authentication failed", 401, "text/plain");
@@ -53,7 +56,7 @@ appLog("Received request for action ". $action, appLog_DEBUG);
 switch($action)
 {
 	case "listMediaSources":		
-		restTools::sendResponse(json_encode(getMediaSources(),200));
+		outputMediaSourcesList_JSON();
 		break;
 		
 	case "listDirContents":
@@ -81,6 +84,12 @@ switch($action)
 		), true);
 				
 		//get full path to file
+		$mediaSourcePath = getMediaSourcePath($args["mediaSourceID"]);
+		if(!$mediaSourcePath)
+		{
+			reportError("Invalid/Non-Existant media source");
+			die;
+		}
 		$fullfilepath = getMediaSourcePath($args["mediaSourceID"]).normalisePath($args["dir"].$args["filename"]);
 		
 		//output the media stream via a streamer
@@ -205,6 +214,16 @@ switch($action)
 		changeUserPassword($userid, $argsPOST["password"]);
 	break;
 	
+	case "retrieveMediaSourceSettings":		
+		outputMediaSourceSettings_JSON();
+		break;
+	
+	case "saveMediaSourceSettings":
+		$argsPOST = $av->validateArgs($_POST, array(			
+			"mediaSourceSettings"	=> "string, notblank",
+		),true);
+		saveMediaSourceSettings($argsPOST["mediaSourceSettings"]);
+		break;	
 	
 	case "":
 		restTools::sendResponse("No action specified", 400, "text/plain");
