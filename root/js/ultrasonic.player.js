@@ -225,7 +225,7 @@
 	{	
 		$("#playlistTracks").append(		
 			$("<li></li>").append(
-				$("<a href='javascript:;' class='removeFromPlaylist'>R</a>")
+				$("<a href='javascript:;' class='removeFromPlaylist'>-</a>")
 			).append(
 				$("<a href='javascript:;' class='playNow'></a>")
 					.text( trackObject.text )
@@ -248,6 +248,8 @@
 				$("<input type='checkbox' name='trackCheckbox'/>")
 			).append(
 				$("<a href='javascript:;' class='addToPlaylistButton'>+</a>")
+			).append(
+				$("<a href='javascript:;' class='playNowButton'>P</a>")
 			).append(
 				$("<a href='javascript:;' class='downloadButton'>D</a>")
 			).append(
@@ -370,6 +372,29 @@
 			addToNowPlaying(trackObject);
 			saveNowPlaying();
 			addNowPlayingClickHandlers();
+		});
+		
+		parentElement.children("a.playNowButton").click(function(){
+			var parentObj = $(this).parent(),
+				trackTagObject = parentObj.children("span.trackName");
+			
+			if(parentObj.hasClass("unplayable"))
+				return false;
+			
+			trackObject = {
+				'text': $(trackTagObject).text(),
+				'filename': $(trackTagObject).attr("data-filename"),
+				'dir': $(trackTagObject).attr("data-dir"),
+				'streamers': $(trackTagObject).attr("data-streamers"),
+				'media_source': $(trackTagObject).attr("data-media_source")
+			}
+			
+			addToNowPlaying(trackObject);
+			saveNowPlaying();
+			addNowPlayingClickHandlers();
+			
+			$("#playlistTracks li:last a.playNow").click();
+			
 		});
 		
 		$( "#tracklist li" ).draggable({

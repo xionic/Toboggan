@@ -358,7 +358,7 @@ img.loading
 /** 
 	mini-icons 
 **/
-.addToPlaylistButton, .downloadButton, .removeFromPlaylist
+.addToPlaylistButton, .downloadButton, .removeFromPlaylist, .playNowButton
 {
 	display:	inline-block;
 	width:		11px;
@@ -371,7 +371,7 @@ img.loading
 	vertical-align: middle;
 }
 
-.downloadButton 
+.downloadButton, .playNowButton
 {
 	margin-left: 0.3ex;
 }
