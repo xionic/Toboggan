@@ -59,7 +59,6 @@
 														'z-index': playerCSSProperties.zIndex
 													});
 				});
-				
 			},	//hack/workaround for the nightmarish streamed video layback stopping issue!
 			progress: function(event) {	
 				//if this is the first time the progress event has been handled				
@@ -69,10 +68,18 @@
  					initialProgressEvent=true;
  				}
 			},
+			volumechange: function(event) {
+				//save the volume and mute settings to HTML5 LocalStorage
+				localStorage.setItem("playbackVolume", event.jPlayer.options.volume);
+				localStorage.setItem("isMuted", event.jPlayer.options.muted);
+			},
 			swfPath: "./js/jQuery.jPlayer.2.1.0/",
 			supplied: "mp3,flv",
 			preload: "none",
-			wmode: "window"
+			wmode: "window",
+			volume: ( (localStorage.getItem("playbackVolume") !== null)?localStorage.getItem("playbackVolume"):0.8),
+			muted: localStorage.getItem("isMuted")=="true"?true:false			
+					
 		}).bind($.jPlayer.event.ended, function(event){
 
 		//get the currently played one
