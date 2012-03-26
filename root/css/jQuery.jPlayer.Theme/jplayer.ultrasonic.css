@@ -257,7 +257,7 @@ a.jp-volume-max:hover {
 div.jp-volume-bar {
 	overflow:hidden;
 	background: url("jplayer.ultrasonic.png") 0 -250px repeat-x;
-	width:46px;
+	width:50px;
 	height:5px;
 	cursor: pointer;
 	display: inline-block;

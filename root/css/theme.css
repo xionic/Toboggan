@@ -1,3 +1,11 @@
+/**
+
+$PanelColour1 = rgba(238,238,238,1);
+$PanelColour2 = rgba(250,250,250,1);
+$BasePanelColour = #fafafa;
+$ButtonColour1 = #f4f4f4;
+$ButtonColour2 = #ffffff;
+*/
 
 #centreContainer
 {
@@ -8,7 +16,7 @@
 #playerControlsContainer
 {
 //	border-top: 1px solid grey;
-	//font-size: larger;
+//	font-size: larger;
 	background: -o-linear-gradient(rgba(0,0,0,1),rgba(40,40,40,1));
 }
 
@@ -20,7 +28,7 @@ div.containerPadding
 html, #loginForm 
 {
 	font-family: "Trebuchet MS", "Liberation Sans", "Tahoma", Sans-Serif;
-	//font-size: x-small;
+//	font-size: x-small;
 	font-size: small;
 }
 
@@ -32,7 +40,7 @@ html, #loginForm
 
 #playlistContainer, #folderbrowserContainer, #centreContainer
 {
-	background-color: #fafafa;
+	background-color: $BasePanelColour;
 }
 
 #folderbrowserContainer, #playlistContainer 
@@ -42,19 +50,19 @@ html, #loginForm
 
 #playlistTracks, #folderbrowserContainer
 {
-	background: -o-linear-gradient(rgba(238,238,238,1),rgba(250,250,250,1));
+	background: -o-linear-gradient($PanelColour1,$PanelColour2);
 }
 
 #centreContainer 
 {
-	background: -o-linear-gradient(rgba(250,250,250,1),rgba(238,238,238,1));
+	background: -o-linear-gradient($PanelColour2,$PanelColour1);
 }
 
 #playlistTracks
 {
 	min-height: 2.2ex;
 	border: 0px solid grey;
-	//padding	: 1ex;
+//	padding	: 1ex;
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -65,7 +73,7 @@ html, #loginForm
 #topBarContainer, #trackListAddControls
 {
 	border-bottom: 1px solid grey;	
-	background: -o-linear-gradient(rgba(250,250,250,1),rgba(238,238,238,1));
+	background: -o-linear-gradient($PanelColour2,$PanelColour1);
 	color: grey;
 	font-size: x-small;
 }
@@ -134,7 +142,7 @@ html, #loginForm
 #tracklist li:nth-of-type(odd)
 {
 //	background: #fff;
-	background: -o-linear-gradient(#f4f4f4,#ffffff);
+	background: -o-linear-gradient($ButtonColour1,$ButtonColour2);
 }
 
 #folderlist, #playlistTracks
@@ -213,7 +221,6 @@ html, #loginForm
 	font: inherit;
 }
 
-//
 select#mediaSourceSelector
 {
 	display: block;
@@ -278,7 +285,7 @@ select#mediaSourceSelector
 #configDialog fieldset
 {
 	border: 1px solid grey;
-	background: -o-linear-gradient(rgba(250,250,250,1),rgba(238,238,238,1));
+	background: -o-linear-gradient($PanelColour2,$PanelColour1);
 	padding: 1ex 1ex;
 	margin: 0ex 0ex 1ex 0ex;
 }
@@ -295,7 +302,7 @@ select#mediaSourceSelector
 #searchContainer
 {
 	padding: 1ex;
-	background: -o-linear-gradient(rgba(250,250,250,1),rgba(238,238,238,1));
+	background: -o-linear-gradient($PanelColour2,$PanelColour1);
 	border-bottom: 1px solid grey;
 }
 
@@ -312,7 +319,7 @@ select#mediaSourceSelector
 {
 	border: 1px solid grey;
 	border-radius: 5px;
-	background: -o-linear-gradient(#f4f4f4,#ffffff);
+	background: -o-linear-gradient($ButtonColour1,$ButtonColour2);
 }
 
 #searchContainer input, #searchContainer button
