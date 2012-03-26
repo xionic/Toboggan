@@ -1,10 +1,20 @@
 /**
 
-$PanelColour1 = rgba(238,238,238,1);
-$PanelColour2 = rgba(250,250,250,1);
+$PanelColour1 = rgba(40,40,40,1);
+$PanelColour2 = rgba(17,17,17,1);
 $BasePanelColour = #fafafa;
 $ButtonColour1 = #f4f4f4;
 $ButtonColour2 = #ffffff;
+
+$liEvenColour1 = #d4d4d4;
+$liEvenColour2 = #ddd;
+$liOddColour1 = #f4f4f4;
+$liOddColour2 = #ffffff;
+
+$liSubSirEvenColour1 = rgba(255,255,255,0.1); 
+$liSubSirEvenColour2 = rgba(245,245,245,0.1);
+$liSubSirOddColour1 = rgba(10,10,10,0.1);
+$liSubSirOddColour2 = rgba(0,0,0,0.1);
 */
 
 #centreContainer
@@ -30,6 +40,7 @@ html, #loginForm
 	font-family: "Trebuchet MS", "Liberation Sans", "Tahoma", Sans-Serif;
 //	font-size: x-small;
 	font-size: small;
+	color: white;
 }
 
 #playerControlsContainer, #topBarContainer
@@ -133,16 +144,14 @@ html, #loginForm
 #playlistTracks li:nth-of-type(even),
 #tracklist li:nth-of-type(even)
 {
-//	background: #ddd;
-	background: -o-linear-gradient(#d4d4d4,#ddd);
+	background: -o-linear-gradient($liEvenColour1,$liEvenColou2);
 }
 
 #folderlist li:nth-of-type(odd),
 #playlistTracks li:nth-of-type(odd),
 #tracklist li:nth-of-type(odd)
 {
-//	background: #fff;
-	background: -o-linear-gradient($ButtonColour1,$ButtonColour2);
+	background: -o-linear-gradient($liOddColour1,$liOddColour2);
 }
 
 #folderlist, #playlistTracks
@@ -156,14 +165,15 @@ html, #loginForm
 	margin-top: 0.5ex;
 	margin-bottom: -0.5ex;
 }
-#folderlist ul.subdir li:nth-of-type(odd)
-{
-	background: -o-linear-gradient(rgba(10,10,10,0.1),rgba(0,0,0,0.1));
-}
 
 #folderlist ul.subdir li:nth-of-type(even)
 {
-	background: -o-linear-gradient(rgba(255,255,255,0.1),rgba(245,245,245,0.1));
+	background: -o-linear-gradient($liSubSirEvenColour1,$liSubSirEvenColour2);
+}
+
+#folderlist ul.subdir li:nth-of-type(odd)
+{
+	background: -o-linear-gradient($liSubSirOddColour1,$liSubSirOddColour2);
 }
 
 //Currently selected folder
