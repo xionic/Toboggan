@@ -15,6 +15,11 @@ $liSubSirEvenColour1 = rgba(255,255,255,0.1);
 $liSubSirEvenColour2 = rgba(245,245,245,0.1);
 $liSubSirOddColour1 = rgba(10,10,10,0.1);
 $liSubSirOddColour2 = rgba(0,0,0,0.1);
+
+$topBarColour1 = rgba(40,40,40,1);
+$topBarColour2 = rgba(30,30,30,1);
+$playerControlsColour1 = rgba(0,0,0,1);
+$playerControlsColour2 = rgba(40,40,40,1);
 */
 
 #centreContainer
@@ -27,7 +32,7 @@ $liSubSirOddColour2 = rgba(0,0,0,0.1);
 {
 //	border-top: 1px solid grey;
 //	font-size: larger;
-	background: -o-linear-gradient(rgba(0,0,0,1),rgba(40,40,40,1));
+	background: -o-linear-gradient($playerControlsColour1,$playerControlsColour2);
 }
 
 div.containerPadding 
@@ -94,7 +99,7 @@ html, #loginForm
 	border-bottom: 0px;
 	padding: 0ex 1ex;
 	text-align: right;
-	background: -o-linear-gradient(rgba(40,40,40,1), rgba(30,30,30,1));
+	background: -o-linear-gradient($topBarColour1,$topBarColour2);
 	color: white;
 }
 
@@ -144,7 +149,7 @@ html, #loginForm
 #playlistTracks li:nth-of-type(even),
 #tracklist li:nth-of-type(even)
 {
-	background: -o-linear-gradient($liEvenColour1,$liEvenColou2);
+	background: -o-linear-gradient($liEvenColour1,$liEvenColour2);
 }
 
 #folderlist li:nth-of-type(odd),
