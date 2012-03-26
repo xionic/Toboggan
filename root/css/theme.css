@@ -1,25 +1,29 @@
 /**
 
-$PanelColour1 = rgba(40,40,40,1);
+$PanelColour1 = rgba(17,17,17,1);
 $PanelColour2 = rgba(17,17,17,1);
 $BasePanelColour = #fafafa;
 $ButtonColour1 = #f4f4f4;
 $ButtonColour2 = #ffffff;
 
-$liEvenColour1 = #d4d4d4;
-$liEvenColour2 = #ddd;
-$liOddColour1 = #f4f4f4;
-$liOddColour2 = #ffffff;
+$FieldsetColour1 = #f4f4f4;
+$FieldsetColour2 = #ffffff;
 
-$liSubSirEvenColour1 = rgba(255,255,255,0.1); 
-$liSubSirEvenColour2 = rgba(245,245,245,0.1);
-$liSubSirOddColour1 = rgba(10,10,10,0.1);
-$liSubSirOddColour2 = rgba(0,0,0,0.1);
+$liEvenColour1 	= #111111;
+$liEvenColour2 	= #222222;
+$liOddColour1 	= #333333;
+$liOddColour2 	= #222222;
+
+$liSubSirEvenColour1 = rgba(255,255,255,0.2); 
+$liSubSirEvenColour2 = rgba(245,245,245,0.2);
+$liSubSirOddColour1 = rgba(15,15,15,0.2);
+$liSubSirOddColour2 = rgba(0,0,0,0.2);
 
 $topBarColour1 = rgba(40,40,40,1);
 $topBarColour2 = rgba(30,30,30,1);
 $playerControlsColour1 = rgba(0,0,0,1);
 $playerControlsColour2 = rgba(40,40,40,1);
+
 */
 
 #centreContainer
@@ -90,7 +94,7 @@ html, #loginForm
 {
 	border-bottom: 1px solid grey;	
 	background: -o-linear-gradient($PanelColour2,$PanelColour1);
-	color: grey;
+	color: inherit;
 	font-size: x-small;
 }
 
@@ -117,7 +121,6 @@ html, #loginForm
 #trackListAddControls a
 {
 	font-weight: bold;
-	color: black;
 }
 
 #playlistTracks li 
@@ -241,9 +244,16 @@ select#mediaSourceSelector
 	display: block;
 	width: 100%;
 	border: 0px;
-	background: none;
+	background: rgba(0,0,0,0);
+	color: inherit;
 	padding: 0ex 1ex;
 	font-weight: bold;
+}
+
+select#mediaSourceSelector option 
+{
+	background: black;
+	color: inherit;
 }
 
 #folderlist>li
@@ -300,7 +310,7 @@ select#mediaSourceSelector
 #configDialog fieldset
 {
 	border: 1px solid grey;
-	background: -o-linear-gradient($PanelColour2,$PanelColour1);
+	background: -o-linear-gradient($FieldsetColour1,$FieldsetColour2);
 	padding: 1ex 1ex;
 	margin: 0ex 0ex 1ex 0ex;
 }
