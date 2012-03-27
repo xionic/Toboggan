@@ -77,6 +77,7 @@
 			supplied: "mp3,flv",
 			preload: "none",
 			wmode: "window",
+			verticalVolume: false,
 			volume: ( (localStorage.getItem("playbackVolume") !== null)?localStorage.getItem("playbackVolume"):0.8),
 			muted: localStorage.getItem("isMuted")=="true"?true:false			
 					
