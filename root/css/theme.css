@@ -10,8 +10,8 @@ $ButtonColour2 = rgba(17,17,17,1);
 $ButtonFontColour = white;
 
 $FontColour = #eee;
-$PlayingTrackColour = #009bea;
-$CurrentlySelectedColour = #009bea;
+$PlayingTrackColour = #d00004;
+$CurrentlySelectedColour = #d00004;
 
 $FieldsetColour1 = #f4f4f4;
 $FieldsetColour2 = #ffffff;
@@ -196,6 +196,7 @@ html, #loginForm
 {
 	font-weight: bold;
 	color: $CurrentlySelectedColour;
+	text-shadow: #111 1px -1px 1px;
 }
 #folderlist .currentlySelected ul
 {
@@ -214,6 +215,7 @@ html, #loginForm
 a.jPlaying {
 	font-weight: bold;
 	color: $PlayingTrackColour !important;
+	text-shadow: #111 1px -1px 1px;
 }
 
 #jquery_jplayer_1, #centerPlayerContainer {
