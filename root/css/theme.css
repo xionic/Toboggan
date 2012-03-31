@@ -402,6 +402,13 @@ img.loading
 	font-weight: bold;
 }
 
+/**
+	Login dialog tweaks
+*/
+.ui-dialog *
+{
+	color: black;
+}
 /** 
 	mini-icons 
 **/
