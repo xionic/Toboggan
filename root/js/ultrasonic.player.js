@@ -114,6 +114,9 @@
 		$("#searchForm").submit(function(event){
 			event.preventDefault();
 			event.stopPropagation();
+
+			//un-highlight the selected folder			
+			$("#folderlist .currentlySelected").removeClass("currentlySelected");
 			
 			searchForMedia(	
 				$("#search_mediaSourceSelector").val(), 
