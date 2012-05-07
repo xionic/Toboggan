@@ -777,21 +777,19 @@ function saveMediaSourceSettings($settings_JSON)
 		}
 		
 	}
-	var_dump_pre(implode($mediaSourceIDsToKeep,","));
+	
 	//now remove the ones that weren't in the passed back list
 	//build a query with the correct number of placeholders	
 	$tempArr = array_fill(0, count($mediaSourceIDsToKeep), "?")	;
 	$query = "DELETE FROM mediaSource WHERE idmediaSource NOT IN (" . implode($tempArr,","). ");";
-	var_dump_pre($query);
+
 	
 	$stmt = $conn->prepare($query);		
 	for($n=0; $n < count($mediaSourceIDsToKeep); $n++)
 	{
 		$stmt->bindValue($n+1, $mediaSourceIDsToKeep[$n], PDO::PARAM_INT);
-		var_dump_pre($mediaSourceIDsToKeep[$n]);
 	}
 	$stmt->execute();
-	var_dump_pre($mediaSourceIDsToKeep);
 	
 	$conn->commit();
 		
