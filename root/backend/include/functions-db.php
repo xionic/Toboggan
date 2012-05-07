@@ -8,28 +8,20 @@ require_once("classes/userLogin.class.php");
 function getAvailableStreamers($file){
 	//get file extension
 	$pathinfo = pathinfo($file);
-	$extension = strtolower($pathinfo["extension"]);
+	$extension = strtolower($pathinfo["extension"]);	
 	
-	try
-	{
-		$conn = getDBConnection();
-		
-		$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
-					INNER JOIN fromExt USING (idfromExt)
-					INNER JOIN toExt USING(idtoExt)
-					INNER JOIN transcode_cmd USING(idtranscode_cmd)
-					WHERE `fromExt`.Extension = :fromExt");
-		$stmt->bindValue(":fromExt",$extension, PDO::PARAM_STR);
-		$stmt->execute();
-		
-		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		closeDBConnection($conn);
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+	$conn = getDBConnection();
+	
+	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
+				INNER JOIN fromExt USING (idfromExt)
+				INNER JOIN toExt USING(idtoExt)
+				INNER JOIN transcode_cmd USING(idtranscode_cmd)
+				WHERE `fromExt`.Extension = :fromExt");
+	$stmt->bindValue(":fromExt",$extension, PDO::PARAM_STR);
+	$stmt->execute();
+	
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);	
 	
 	$suitableStreamers = array();
 	foreach($results as $row){
@@ -43,28 +35,21 @@ function getAvailableStreamers($file){
 * get a streamer profile from its id
 */
 function getStreamerById($id){
-	try
-	{
-		$conn = getDBConnection();
-		
-		$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
-					INNER JOIN fromExt USING (idfromExt)
-					INNER JOIN toExt USING(idtoExt)
-					INNER JOIN transcode_cmd USING(idtranscode_cmd)
-					WHERE idextensionMap = :idextensionMap");
-		$stmt->bindValue(":idextensionMap",$id, PDO::PARAM_INT);
-		$stmt->execute();
-
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		$stmt->closeCursor();
-		closeDBConnection($conn);
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}	
 	
+	$conn = getDBConnection();
+	
+	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
+				INNER JOIN fromExt USING (idfromExt)
+				INNER JOIN toExt USING(idtoExt)
+				INNER JOIN transcode_cmd USING(idtranscode_cmd)
+				WHERE idextensionMap = :idextensionMap");
+	$stmt->bindValue(":idextensionMap",$id, PDO::PARAM_INT);
+	$stmt->execute();
+
+	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	$stmt->closeCursor();
+	closeDBConnection($conn);
+		
 	if($row)
 		return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
 	else
@@ -77,40 +62,24 @@ function getStreamerById($id){
 */
 function getDBConnection()
 {
-	try
-	{
-		$db = new PDO(PDO_DSN);
-		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		return $db;
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+	
+	$db = new PDO(PDO_DSN);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	return $db;	
 }
-
 /**
 * checks that the code and the DB are using the same DB schema version - returns boolean
 */
 function validateDBVersion()
 {
-	try
-	{
-		$conn = getDBConnection();
-		$stmt = $conn->prepare("SELECT version FROM schema_information");
-		$stmt->execute();
+	$conn = getDBConnection();
+	$stmt = $conn->prepare("SELECT version FROM schema_information");
+	$stmt->execute();
 
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		closeDBConnection($conn);
-		
-		return $row["version"] == DB_VERSION;
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);
+	
+	return $row["version"] == DB_VERSION;
 }
 
 /**
@@ -125,51 +94,36 @@ function closeDBConnection($conn)
 * get mediaSource path from it's ID
 */
 function getMediaSourcePath($mediaSourceID)
-{
-	try
-	{
-		$conn = getDBConnection();
-		$stmt = $conn->prepare("SELECT path FROM mediaSource WHERE idmediaSource = :idmediaSource");
-		$stmt->bindValue(":idmediaSource",$mediaSourceID, PDO::PARAM_INT);
-		$stmt->execute();
+{	
+	$conn = getDBConnection();
+	$stmt = $conn->prepare("SELECT path FROM mediaSource WHERE idmediaSource = :idmediaSource");
+	$stmt->bindValue(":idmediaSource",$mediaSourceID, PDO::PARAM_INT);
+	$stmt->execute();
 
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		closeDBConnection($conn);	
-		return $row["path"];
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);	
+	return $row["path"];	
 }
 /**
 * get an array of media sources
 */
 function getMediaSources(){
 	$conn = null;
-	try
-	{
-		$conn = getDBConnection();
-		$stmt = $conn->prepare("SELECT idmediaSource, displayName FROM mediaSource");
-		$stmt->execute();
+	
+	$conn = getDBConnection();
+	$stmt = $conn->prepare("SELECT idmediaSource, displayName FROM mediaSource");
+	$stmt->execute();
 
-		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		closeDBConnection($conn);
-		
-		$mediaSources = array();
-		foreach($results as $row)
-		{
-			$mediaSources[]  =  array("mediaSourceID" => $row["idmediaSource"], "displayName" => $row["displayName"]);
-		}
-		return $mediaSources;
-	}
-	catch (PDOException $e)
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);
+	
+	$mediaSources = array();
+	foreach($results as $row)
 	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
+		$mediaSources[]  =  array("mediaSourceID" => $row["idmediaSource"], "displayName" => $row["displayName"]);
 	}
 	closeDBConnection($conn);
+	return $mediaSources;
 }
 
 /**
@@ -184,23 +138,16 @@ function outputMediaSourcesList_JSON(){
 */
 function getCurrentMaxBandwidth(){
 	$userid = userLogin::getCurrentUserID();
-	try
-	{
-		$conn = getDBConnection();
-		$stmt = $conn->prepare("SELECT maxBandwidth FROM User WHERE idUser = :idUser");
-		$stmt->bindValue(":idUser",$userid, PDO::PARAM_INT);
-		$stmt->execute();
+	
+	$conn = getDBConnection();
+	$stmt = $conn->prepare("SELECT maxBandwidth FROM User WHERE idUser = :idUser");
+	$stmt->bindValue(":idUser",$userid, PDO::PARAM_INT);
+	$stmt->execute();
 
-		$result = $stmt->fetch(PDO::FETCH_ASSOC);
-		closeDBConnection($conn);
-		
-		return $result["maxBandwidth"];
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+	$result = $stmt->fetch(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);
+	
+	return $result["maxBandwidth"];	
 }
 
 /**
@@ -219,67 +166,44 @@ function getCurrentMaxBitrate($type){
 	}
 	//get the current user id
 	$userid = userLogin::getCurrentUserID();
-	try
-	{
-		$conn = getDBConnection();
-		$stmt = $conn->prepare("SELECT $mediaColumn FROM User WHERE idUser = :idUser ");
-		$stmt->bindValue(":idUser",$userid, PDO::PARAM_INT);
-		$stmt->execute();
+	
+	$conn = getDBConnection();
+	$stmt = $conn->prepare("SELECT $mediaColumn FROM User WHERE idUser = :idUser ");
+	$stmt->bindValue(":idUser",$userid, PDO::PARAM_INT);
+	$stmt->execute();
 
-		$result = $stmt->fetch(PDO::FETCH_ASSOC);
-		closeDBConnection($conn);
-		
-		return $result[$mediaColumn]."k"; // whack a k on the end for kilobytes
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+	$result = $stmt->fetch(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);
+	
+	return $result[$mediaColumn]."k"; // whack a k on the end for kilobytes	
 }
 /**
 * check an api key is valid
 */
 function checkAPIKey($apikey)
 {
-	try
-	{
-		$conn = getDBConnection();
-		$stmt = $conn->prepare("SELECT 1 FROM APIKey WHERE apikey = :apikey ");
-		$stmt->bindValue("apikey",$apikey, PDO::PARAM_STR);
-		$stmt->execute();
+	$conn = getDBConnection();
+	$stmt = $conn->prepare("SELECT 1 FROM APIKey WHERE apikey = :apikey ");
+	$stmt->bindValue("apikey",$apikey, PDO::PARAM_STR);
+	$stmt->execute();
 
-		$result = $stmt->fetch(PDO::FETCH_ASSOC);
-		closeDBConnection($conn);
-		return $result ? true:false;
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+	$result = $stmt->fetch(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);
+	return $result ? true:false;	
 }
 /**
 * get a user's info
 */
 function getUserInfo($username)
 {
-	try
-	{
-		$conn = getDBConnection();
+	$conn = getDBConnection();
 
-		$stmt = $conn->prepare("SELECT * FROM User WHERE username=:username;");
-		$stmt->bindValue(":username",$username,PDO::PARAM_STR);
-		$stmt->execute();
+	$stmt = $conn->prepare("SELECT * FROM User WHERE username=:username;");
+	$stmt->bindValue(":username",$username,PDO::PARAM_STR);
+	$stmt->execute();
 
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		closeDBConnection($conn);
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);
 	
 	return(isset($rows[0])?$rows[0]:null);
 }
@@ -288,22 +212,15 @@ function getUserInfo($username)
 */
 function getUserInfoFromID($userid)
 {	
-	try
-	{
-		$conn = getDBConnection();
+	$conn = getDBConnection();
 
-		$stmt = $conn->prepare("SELECT * FROM User WHERE idUser=:idUser;");
-		$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
-		$stmt->execute();
+	$stmt = $conn->prepare("SELECT * FROM User WHERE idUser=:idUser;");
+	$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
+	$stmt->execute();
 
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		closeDBConnection($conn);
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);
+	
 	return(isset($rows[0])?$rows[0]:null);
 }
 
@@ -312,68 +229,53 @@ function getUserInfoFromID($userid)
 */
 function saveClientSettings($settings, $apikey, $userid)
 {
-	try
-	{
-		$conn = getDBConnection();
+	$conn = getDBConnection();
 
-		//check this client and user already have settings saved
-		$stmt = $conn->prepare("SELECT idClientSettings FROM ClientSettings INNER JOIN User USING (idUser) INNER JOIN APIKey USING(idAPIKey) WHERE idUser = :idUser AND apikey = :apikey");
+	//check this client and user already have settings saved
+	$stmt = $conn->prepare("SELECT idClientSettings FROM ClientSettings INNER JOIN User USING (idUser) INNER JOIN APIKey USING(idAPIKey) WHERE idUser = :idUser AND apikey = :apikey");
+	$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
+	$stmt->bindValue(":apikey",$apikey,PDO::PARAM_STR);
+	$stmt->execute();
+
+	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	if(!$row)
+	{
+		$stmt = $conn->prepare("INSERT INTO ClientSettings(idAPIKey, settings, idUser) SELECT idAPIKey, :settings, :idUser FROM APIKey WHERE apikey = :apikey");
 		$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
+		$stmt->bindValue(":settings",$settings,PDO::PARAM_STR);
 		$stmt->bindValue(":apikey",$apikey,PDO::PARAM_STR);
 		$stmt->execute();
-
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		if(!$row)
-		{
-			$stmt = $conn->prepare("INSERT INTO ClientSettings(idAPIKey, settings, idUser) SELECT idAPIKey, :settings, :idUser FROM APIKey WHERE apikey = :apikey");
-			$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
-			$stmt->bindValue(":settings",$settings,PDO::PARAM_STR);
-			$stmt->bindValue(":apikey",$apikey,PDO::PARAM_STR);
-			$stmt->execute();
-		}
-		else
-		{
-			$stmt = $conn->prepare("UPDATE ClientSettings SET settings = :settings WHERE idClientSettings = :idClientSettings");
-			$stmt->bindValue(":idClientSettings",$row["idClientSettings"],PDO::PARAM_INT);
-			$stmt->bindValue(":settings",$settings,PDO::PARAM_STR);
-			$stmt->execute();
-		}
-
-		closeDBConnection($conn);
 	}
-	catch (PDOException $e)
+	else
 	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
+		$stmt = $conn->prepare("UPDATE ClientSettings SET settings = :settings WHERE idClientSettings = :idClientSettings");
+		$stmt->bindValue(":idClientSettings",$row["idClientSettings"],PDO::PARAM_INT);
+		$stmt->bindValue(":settings",$settings,PDO::PARAM_STR);
+		$stmt->execute();
 	}
+
+	closeDBConnection($conn);
 }
 
 function getClientSettings($apikey, $userid){
-	try
-	{
-		$conn = getDBConnection();
+	$conn = getDBConnection();
 		
-		//check this client and user already have settings saved
-		$stmt = $conn->prepare("SELECT settings FROM ClientSettings INNER JOIN User USING (idUser) INNER JOIN APIKey USING(idAPIKey) WHERE idUser = :idUser AND apikey = :apikey");
-		$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
-		$stmt->bindValue(":apikey",$apikey,PDO::PARAM_STR);
-		$stmt->execute();	 
-		
-		$row = $stmt->fetch(PDO::FETCH_ASSOC);
-		
-		closeDBConnection($conn);
-		
-		if($row)
-			return $row["settings"];
-		else 
-			return false; // no settings
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+	//check this client and user already have settings saved
+	$stmt = $conn->prepare("SELECT settings FROM ClientSettings INNER JOIN User USING (idUser) INNER JOIN APIKey USING(idAPIKey) WHERE idUser = :idUser AND apikey = :apikey");
+	$stmt->bindValue(":idUser",$userid,PDO::PARAM_INT);
+	$stmt->bindValue(":apikey",$apikey,PDO::PARAM_STR);
+	$stmt->execute();	 
+	
+	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	
+	closeDBConnection($conn);
+	
+	if($row)
+		return $row["settings"];
+	else 
+		return false; // no settings
 }
+
 /**
 * output a JSON object representing all changable server settings
 */
@@ -389,52 +291,45 @@ function getStreamerSettings()
 {
 	//results structure
 	$results = array();
-
-	try
+	
+	//db connection
+	$conn = getDBConnection();
+		
+	//get streamer settings
+	$stmt = $conn->prepare("SELECT DISTINCT fromExt.bitrateCmd,
+		toExt.Extension AS toExtension, toExt.MimeType, toExt.MediaType, transcode_cmd.command
+		FROM fromExt
+		INNER JOIN extensionMap USING(idfromExt)
+		INNER JOIN toExt USING(idtoExt)
+		INNER JOIN transcode_cmd USING(idtranscode_cmd);
+	");
+	$stmt->execute();
+	
+	//get streamer results and for each toext query which from ext go to it to aggregate
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	foreach($rows as &$streamer)
 	{
-		//db connection
-		$conn = getDBConnection();
-			
-		//get streamer settings
-		$stmt = $conn->prepare("SELECT DISTINCT fromExt.bitrateCmd,
-			toExt.Extension AS toExtension, toExt.MimeType, toExt.MediaType, transcode_cmd.command
-			FROM fromExt
-			INNER JOIN extensionMap USING(idfromExt)
+		$stmt = $conn->prepare("SELECT fromExt.Extension as fromExtension
+			FROM fromExt 
+			INNER JOIN ExtensionMap USING(idfromExt)
 			INNER JOIN toExt USING(idtoExt)
-			INNER JOIN transcode_cmd USING(idtranscode_cmd);
+			WHERE toExt.Extension = :toExt
 		");
+		$stmt->bindValue(":toExt", $streamer["toExtension"]);
 		$stmt->execute();
 		
-		//get streamer results and for each toext query which from ext go to it to aggregate
-		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		foreach($rows as &$streamer)
-		{
-			$stmt = $conn->prepare("SELECT fromExt.Extension as fromExtension
-				FROM fromExt 
-				INNER JOIN ExtensionMap USING(idfromExt)
-				INNER JOIN toExt USING(idtoExt)
-				WHERE toExt.Extension = :toExt
-			");
-			$stmt->bindValue(":toExt", $streamer["toExtension"]);
-			$stmt->execute();
-			
-			$fromExtStr = "";
-			while(($fromExt = $stmt->fetch(PDO::FETCH_ASSOC)) !== false){
-				$fromExtStr .= $fromExt["fromExtension"] . ",";
-			}
-			$fromExtStr = substr($fromExtStr, 0, -1); 
-			
-			//update main resuklt set
-			$streamer["fromExtensions"] = $fromExtStr;
-			
-		}		
-		closeDBConnection($conn);
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		return false;
-	}
+		$fromExtStr = "";
+		while(($fromExt = $stmt->fetch(PDO::FETCH_ASSOC)) !== false){
+			$fromExtStr .= $fromExt["fromExtension"] . ",";
+		}
+		$fromExtStr = substr($fromExtStr, 0, -1); 
+		
+		//update main resuklt set
+		$streamer["fromExtensions"] = $fromExtStr;
+		
+	}		
+	closeDBConnection($conn);
+	
 	return $rows;
 }
 
@@ -473,12 +368,12 @@ function saveStreamerSettings($settings_JSON)
 		foreach($fromExtArr as $fromExt)
 		{
 			$expandedStreamers[] = array(
-			"fromExtension"		=>		$fromExt,
-			"bitrateCmd"		=>		$streamer["bitrateCmd"],
-			"toExtension"		=>		$streamer["toExtension"],
-			"MimeType"			=>		$streamer["MimeType"],
-			"MediaType"			=>		$streamer["MediaType"],
-			"command"			=>		$streamer["command"],
+				"fromExtension"		=>		$fromExt,
+				"bitrateCmd"		=>		$streamer["bitrateCmd"],
+				"toExtension"		=>		$streamer["toExtension"],
+				"MimeType"			=>		$streamer["MimeType"],
+				"MediaType"			=>		$streamer["MediaType"],
+				"command"			=>		$streamer["command"],
 			);
 		}		
 	}
@@ -486,47 +381,36 @@ function saveStreamerSettings($settings_JSON)
 	$settings = $expandedStreamers;
 	
 	$conn = null;
-	try
+
+	appLog("Clearing old settings from the db", appLog_DEBUG);
+	//clear out the db in preparation for the new settings
+	$conn = getDBConnection();
+	$conn->beginTransaction();
+	
+	$stmt = $conn->prepare("DELETE FROM extensionMap");
+	$stmt->execute();
+	
+	$stmt = $conn->prepare("DELETE FROM fromExt");
+	$stmt->execute();
+	
+	$stmt = $conn->prepare("DELETE FROM toExt");
+	$stmt->execute();
+	
+	$stmt = $conn->prepare("DELETE FROM transcode_cmd");
+	$stmt->execute();
+	
+	//prepare the data to be inserted
+	
+	
+	appLog("Inserting new settings into the db", appLog_DEBUG);	
+	
+	//insert the new streamers
+	foreach($settings as $streamer)
 	{
-		appLog("Clearing old settings from the db", appLog_DEBUG);
-		//clear out the db in preparation for the new settings
-		$conn = getDBConnection();
-		$conn->beginTransaction();
-		
-		$stmt = $conn->prepare("DELETE FROM extensionMap");
-		$stmt->execute();
-		
-		$stmt = $conn->prepare("DELETE FROM fromExt");
-		$stmt->execute();
-		
-		$stmt = $conn->prepare("DELETE FROM toExt");
-		$stmt->execute();
-		
-		$stmt = $conn->prepare("DELETE FROM transcode_cmd");
-		$stmt->execute();
-		
-		//prepare the data to be inserted
-		
-		
-		appLog("Inserting new settings into the db", appLog_DEBUG);	
-		
-		//insert the new streamers
-		foreach($settings as $streamer)
-		{
-			updateStreamer($streamer, $conn);		
-		}
-		
-		$conn->commit();
+		updateStreamer($streamer, $conn);		
 	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		if(isset($conn) && $conn && $conn->inTransaction())
-		{
-			$conn->rollBack();
-		}		
-		return false;
-	}
+	
+	$conn->commit();
 	
 	closeDBConnection($conn);
 }
@@ -611,8 +495,7 @@ function updateStreamer($streamer, $conn)
 		//nothing to update
 	}
 	
-	//extensionMap
-	
+	//extensionMap	
 	$stmt = $conn->prepare("INSERT INTO extensionMap(idfromExt, idtoExt, idtranscode_cmd) VALUES(:idfrom, :idto, :idtrans)");
 	$stmt->bindValue(":idfrom", $fromExtID);
 	$stmt->bindValue(":idto", $toExtID);
@@ -634,27 +517,12 @@ function outputUserList_JSON()
 * returns an array of users with userid and username
 */
 function getUsers()
-{
-	try
-	{
-		$conn = getDBConnection();
-		
-		$stmt = $conn->prepare("SELECT idUser, username FROM User");
-		$stmt->execute();
-		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		
-		closeDBConnection($conn);
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		if(isset($conn) && $conn && $conn->inTransaction())
-		{
-			$conn->rollBack();
-		}		
-		return false;
-	}
+{	
+	$conn = getDBConnection();
 	
+	$stmt = $conn->prepare("SELECT idUser, username FROM User");
+	$stmt->execute();
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	
 	return $results;
 }
@@ -671,26 +539,14 @@ function outputUserSettings_JSON($userid)
 */
 function getUserObject($userid)
 {
-	try
-	{
-		$conn = getDBConnection();
-		
-		$stmt = $conn->prepare("SELECT idUser, username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth
-		FROM User WHERE idUser = :userid");
-		$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
-		$stmt->execute();
-		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		return $results[0];
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		if(isset($conn) && $conn && $conn->inTransaction())
-		{
-			$conn->rollBack();
-		}		
-		return false;
-	}
+	$conn = getDBConnection();
+	
+	$stmt = $conn->prepare("SELECT idUser, username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth
+	FROM User WHERE idUser = :userid");
+	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
+	$stmt->execute();
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	return $results[0];
 }
 
 /**
@@ -712,43 +568,32 @@ function updateUser($userid, $json_settings){
 	), true);
 	
 	$conn = null;
-	try
-	{
-		$conn = getDBConnection();
-		$conn->beginTransaction();
+	
+	$conn = getDBConnection();
+	$conn->beginTransaction();
+	
+	$stmt = $conn->prepare("UPDATE User SET 
+		username = :username,
+		email = :email,
+		enabled = :enabled,
+		maxAudioBitrate = :maxAudioBitrate,
+		maxVideoBitrate = :maxVideoBitrate,
+		maxBandwidth = :maxBandwidth
+		WHERE idUser = :idUser
 		
-		$stmt = $conn->prepare("UPDATE User SET 
-			username = :username,
-			email = :email,
-			enabled = :enabled,
-			maxAudioBitrate = :maxAudioBitrate,
-			maxVideoBitrate = :maxVideoBitrate,
-			maxBandwidth = :maxBandwidth
-			WHERE idUser = :idUser
-			
-		");
-		
-		$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT);
-		$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
-		$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
-		$stmt->bindValue(":enabled", $userSettings["enabled"], PDO::PARAM_INT);
-		$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
-		$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
-		$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
-		$stmt->execute();
-		
-		$conn->commit();
-		
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		if(isset($conn) && $conn && $conn->inTransaction())
-		{
-			$conn->rollBack();
-		}		
-		return false;
-	}
+	");
+	
+	$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT);
+	$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
+	$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
+	$stmt->bindValue(":enabled", $userSettings["enabled"], PDO::PARAM_INT);
+	$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
+	$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
+	$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
+	$stmt->execute();
+	
+	$conn->commit();		
+	
 	closeDBConnection($conn);
 }
 
@@ -773,46 +618,35 @@ function addUser($json_settings)
 	), true);
 	
 	$conn = null;
-	try
-	{
-		$conn = getDBConnection();
-		$conn->beginTransaction();
-		
-		$stmt = $conn->prepare("INSERT INTO User(idRole,username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth) VALUES
-			(
-				:idRole,
-				:username,
-				:password,
-				:email,
-				:enabled,
-				:maxAudioBitrate,
-				:maxVideoBitrate,
-				:maxBandwidth
-			)
-		");
-		
-		$stmt->bindValue(":idRole", 0, PDO::PARAM_INT); // hack in later
-		$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
-		$stmt->bindValue(":password", userLogin::hashPassword($userSettings["password"]), PDO::PARAM_STR);
-		$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
-		$stmt->bindValue(":enabled", $userSettings["enabled"], PDO::PARAM_INT);
-		$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
-		$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
-		$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
-		$stmt->execute();
-		
-		$conn->commit();
-		
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		if(isset($conn) && $conn && $conn->inTransaction())
-		{
-			$conn->rollBack();
-		}		
-		return false;
-	}
+	
+	$conn = getDBConnection();
+	$conn->beginTransaction();
+	
+	$stmt = $conn->prepare("INSERT INTO User(idRole,username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth) VALUES
+		(
+			:idRole,
+			:username,
+			:password,
+			:email,
+			:enabled,
+			:maxAudioBitrate,
+			:maxVideoBitrate,
+			:maxBandwidth
+		)
+	");
+	
+	$stmt->bindValue(":idRole", 0, PDO::PARAM_INT); // hack in later
+	$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
+	$stmt->bindValue(":password", userLogin::hashPassword($userSettings["password"]), PDO::PARAM_STR);
+	$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
+	$stmt->bindValue(":enabled", $userSettings["enabled"], PDO::PARAM_INT);
+	$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
+	$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
+	$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
+	$stmt->execute();
+	
+	$conn->commit();
+	
 	closeDBConnection($conn);
 	
 }
@@ -823,33 +657,22 @@ function addUser($json_settings)
 function deleteUser($userid)
 {
 	$conn = null;
-	try
-	{
-		$conn = getDBConnection();
-		$conn->beginTransaction();
+	
+	$conn = getDBConnection();
+	$conn->beginTransaction();
+	
+	//remove client settings for the user 
+	$stmt = $conn->prepare("DELETE FROM ClientSettings WHERE idUser = :idUser");		
+	$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT); 
+	$stmt->execute();
+	
+	//remove the user
+	$stmt = $conn->prepare("DELETE FROM User WHERE idUser = :idUser");		
+	$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT); 
+	$stmt->execute();
+	
+	$conn->commit();
 		
-		//remove client settings for the user 
-		$stmt = $conn->prepare("DELETE FROM ClientSettings WHERE idUser = :idUser");		
-		$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT); 
-		$stmt->execute();
-		
-		//remove the user
-		$stmt = $conn->prepare("DELETE FROM User WHERE idUser = :idUser");		
-		$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT); 
-		$stmt->execute();
-		
-		$conn->commit();
-		
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		if(isset($conn) && $conn && $conn->inTransaction())
-		{
-			$conn->rollBack();
-		}		
-		return false;
-	}
 	closeDBConnection($conn);
 }
 
@@ -859,30 +682,18 @@ function deleteUser($userid)
 function changeUserPassword($userid, $password)
 {
 	$conn = null;
-	try
-	{
-		$conn = getDBConnection();
-		$conn->beginTransaction();
-		
-		$stmt = $conn->prepare("UPDATE User SET Password = :password WHERE idUser = :idUser");
-		
-		$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT);
-		$stmt->bindValue(":password", userLogin::hashPassword($password), PDO::PARAM_STR);
+	$conn = getDBConnection();
+	$conn->beginTransaction();
 	
-		$stmt->execute();
+	$stmt = $conn->prepare("UPDATE User SET Password = :password WHERE idUser = :idUser");
+	
+	$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT);
+	$stmt->bindValue(":password", userLogin::hashPassword($password), PDO::PARAM_STR);
+
+	$stmt->execute();
+	
+	$conn->commit();
 		
-		$conn->commit();
-		
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		if(isset($conn) && $conn && $conn->inTransaction())
-		{
-			$conn->rollBack();
-		}		
-		return false;
-	}
 	closeDBConnection($conn);
 }
 
@@ -899,23 +710,15 @@ function outputMediaSourceSettings_JSON()
 */
 function getMediaSourceSettings(){
 	$conn = null;
-	try
-	{
-		$conn = getDBConnection();		
-		$stmt = $conn->prepare("SELECT path, displayName FROM mediaSource");	
-		$stmt->execute();
-		
-		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-		
-		return $results;
-		
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);		
-		return false;
-	}
+	$conn = getDBConnection();		
+	$stmt = $conn->prepare("SELECT path, displayName FROM mediaSource");	
+	$stmt->execute();
+	
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	
 	closeDBConnection($conn);
+	
+	return $results;
 }
 
 /**
@@ -936,41 +739,26 @@ function saveMediaSourceSettings($settings_JSON)
 	}
 	
 	$conn = null;
-	try
-	{
-		$conn = getDBConnection();
-		$conn->beginTransaction();
-		
-		//remove old media source settings 
-		$stmt = $conn->prepare("DELETE FROM mediaSource");
+	
+	$conn = getDBConnection();
+	$conn->beginTransaction();
+	
+	//remove old media source settings 
+	$stmt = $conn->prepare("DELETE FROM mediaSource");
+	$stmt->execute();
+	//insert new settings
+	foreach($settings as $mediaSource)
+	{			
+		var_dump_pre($mediaSource);
+		$stmt = $conn->prepare("INSERT INTO mediaSource(path, displayName) VALUES (:path, :dname)");		
+		$stmt->bindValue(":path", $mediaSource["path"], PDO::PARAM_STR); 
+		$stmt->bindValue(":dname", $mediaSource["displayName"], PDO::PARAM_STR); 
 		$stmt->execute();
-		//insert new settings
-		foreach($settings as $mediaSource)
-		{			
-			var_dump_pre($mediaSource);
-			$stmt = $conn->prepare("INSERT INTO mediaSource(path, displayName) VALUES (:path, :dname)");		
-			$stmt->bindValue(":path", $mediaSource["path"], PDO::PARAM_STR); 
-			$stmt->bindValue(":dname", $mediaSource["displayName"], PDO::PARAM_STR); 
-			$stmt->execute();
-		}
-		$conn->commit();
+	}
+	$conn->commit();
 		
-	}
-	catch (PDOException $e)
-	{
-		appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
-		if(isset($conn) && $conn && $conn->inTransaction())
-		{
-			$conn->rollBack();
-		}		
-		return false;
-	}
 	closeDBConnection($conn);
 }
-
-
-
-
 
 
 ?>

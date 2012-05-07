@@ -130,12 +130,16 @@ function handleArgValidationError($msg, $argName="", $argValue="")
 	exit;
 }
 
+/**
+* Report that the server has had an error and inform the user to check the error log on the server. 
+*/
 function reportServerError($errMsg, $httpcode = 500, $mime = 'text/plain')
 {
 	appLog("Server Error: '".$errMsg."'", appLog_INFO);
 	if($mime != "text/json") // injection protection
 		$errMsg = htmlentities($errMsg);
 	restTools::sendResponse	("There was an error in the". APPNAME ." server application. Please check the server log.",$httpcode, $mime);
+	exit;
 }
 
 
