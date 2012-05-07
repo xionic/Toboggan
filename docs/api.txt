@@ -268,7 +268,7 @@ retrieveMediaSourceSettings
 		{
 			"mediaSourceID":	"theMediaSourceID",
 			"path":				"thePath",
-			"displayname: 		"theDisplayName,
+			"displayName: 		"theDisplayName,
 		}
 		...
 	]
@@ -280,7 +280,7 @@ saveMediaSourceSettings
 		{
 			"mediaSourceID":	"theMediaSourceID",
 			"path":				"thePath",
-			"displayname: 		"theDisplayName,
+			"displayName: 		"theDisplayName,
 		}
 		...
 	]
