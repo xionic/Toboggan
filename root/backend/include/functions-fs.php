@@ -9,18 +9,24 @@ function outputDirContents_JSON($dir, $mediaSourceID){
 	{
 		restTools::sendResponse("Invalid or missing mediaSourceID", 404, "text/plain");
 	}
+	
 
 	$mediaSourcePath = getMediaSourcePath($mediaSourceID);
 	if(!$mediaSourcePath)
 	{
 		reportError("No media sources defined");
-		die;
 	}
 		
 	$mediaSourcePath = normalisePath($mediaSourcePath)."/";
 	$dir = normalisePath($dir)."/";
+	
+	//check that the path is a dir
+	if(!is_dir($mediaSourcePath.$dir))
+	{
+		reportError("Directory does not exist");
+	}
 
-	$dh = opendir($mediaSourcePath.$dir) or die("opendir failed:".$mediaSourcePath.$dir);
+	$dh = opendir($mediaSourcePath.$dir) or reportServerError("opendir failed:".$mediaSourcePath.$dir);
 
 	$files	= array();
 	$dirs	= array();

@@ -216,11 +216,11 @@ try
 			changeUserPassword($userid, $argsPOST["password"]);
 		break;
 		
-		case "retrieveMediaSourceSettings":		
+		case "retrieveMediaSourceSettings":
 			outputMediaSourceSettings_JSON();
 			break;
 		
-		case "saveMediaSourceSettings":
+		case "saveMediaSourceSettings":		
 			$argsPOST = $av->validateArgs($_POST, array(			
 				"mediaSourceSettings"	=> "string, notblank",
 			),true);
