@@ -73,6 +73,16 @@
 				localStorage.setItem("playbackVolume", event.jPlayer.options.volume);
 				localStorage.setItem("isMuted", event.jPlayer.options.muted);
 			},
+			error: function(event){
+				console.error(event);
+				if(event.jPlayer.error.type == $.jPlayer.error.URL)
+				{
+					alert("there was an error with the media url!");
+				}
+			},
+			warning: function(event){
+				console.warn(event);
+			},
 			swfPath: "./js/jQuery.jPlayer.2.1.0/",
 			supplied: "mp3,flv",
 			preload: "none",
@@ -1134,7 +1144,36 @@
 						});
 					break;
 					case 'tab_server_mediaSources':
-					
+						$(ui.panel).empty();
+						//list mediaSources
+						$.ajax({
+							cache: false,
+							url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=retrieveMediaSourceSettings&apikey="+apikey+"&apiver="+apiversion,
+							type: "GET",
+							complete: function(jqxhr,status) {},
+							error: function(jqxhr, status, errorThrown) {
+						
+								//if not logged in, display the login form
+								if(jqxhr.status==401)
+									doLogin();
+							},
+							success: function(data, status, jqxhr) {		
+								//display mediaSources
+								//permit update to mediaSources
+								var output= $("<ul/>");
+								console.log(data);
+								for (var x=0; x<data.length; ++x)
+								{
+									//	data[x].mediaSourceID+" "+data[x].path+" "+data[x].displayName
+									$(output).append($("<li/>").append(
+										$("<input name='id' type='hidden'/>").val(data[x].mediaSourceID),
+										$("<input name='path'/>").val(data[x].path),
+										$("<input name='displayName'/>").val(data[x].displayName)
+									));
+								}
+								$(ui.panel).append(output);
+							},
+						});	
 					break;
 					case 'tab_client':
 					
