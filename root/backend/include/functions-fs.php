@@ -55,9 +55,9 @@ function outputDirContents_JSON($dir, $mediaSourceID){
 	closedir($dh);
 
 	//TODO:: these should be made to be case insensitive really
-	sort($dirs);		
-	sort($files);
-	sort($links);
+	usort($dirs, strcasecmp);		
+	usort($files, strcasecmp);
+	usort($links, strcasecmp);
 		
 	//var_dump($dirs);	
 		
