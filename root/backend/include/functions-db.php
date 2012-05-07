@@ -711,28 +711,28 @@ function outputMediaSourceSettings_JSON()
 function getMediaSourceSettings(){
 	$conn = null;
 	$conn = getDBConnection();		
-	$stmt = $conn->prepare("SELECT path, displayName FROM mediaSource");	
+	$stmt = $conn->prepare("SELECT idmediaSource as mediaSourceID, path, displayName FROM mediaSource");	
 	$stmt->execute();
 	
 	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	
-	closeDBConnection($conn);
-	
+	closeDBConnection($conn);	
 	return $results;
 }
 
 /**
-* takes a JSON encoded string representing an object representing new media source settings to replace the old ones. 
+* takes a JSON encoded string representing an object representing new media source settings to update the old ones.
 */
 function saveMediaSourceSettings($settings_JSON)
 {
 	$settings = json_decode($settings_JSON,true);
-	//validate them - may as well loop here and below - this doesn't get done much - it's not lile this file is MASSIVE
+	//validate them - may as well loop here and below - this doesn't get done much - and it's not lile this file is MASSIVE already
 	foreach($settings as $mediaSource)
 	{
 		//validate them
 		$av = new ArgValidator("handleArgValidationError");
 		$mediaSource = $av->validateArgs($mediaSource,array(
+			"mediaSourceID"	=>	"int, notblank, optional",
 			"path" 			=>	"string, notblank",
 			"displayName" 	=> "string, notblank",
 		),false);
@@ -741,20 +741,58 @@ function saveMediaSourceSettings($settings_JSON)
 	$conn = null;
 	
 	$conn = getDBConnection();
-	$conn->beginTransaction();
+	$conn->beginTransaction();	
 	
-	//remove old media source settings 
-	$stmt = $conn->prepare("DELETE FROM mediaSource");
-	$stmt->execute();
+	
+	
 	//insert new settings
+	//list of mediaSourceIDs that should be in the DB - all others will be removed at the end
+	$mediaSourceIDsToKeep = array();
 	foreach($settings as $mediaSource)
 	{			
-		var_dump_pre($mediaSource);
-		$stmt = $conn->prepare("INSERT INTO mediaSource(path, displayName) VALUES (:path, :dname)");		
-		$stmt->bindValue(":path", $mediaSource["path"], PDO::PARAM_STR); 
-		$stmt->bindValue(":dname", $mediaSource["displayName"], PDO::PARAM_STR); 
-		$stmt->execute();
+		//var_dump_pre(getMediaSourcePath($mediaSource["mediaSourceID"]));
+		//see if the mediaSourceID is already in the db
+		if(!getMediaSourcePath($mediaSource["mediaSourceID"]))
+		{
+			//insert a new mediaSource
+			appLog("Inserting new Media Source with path " . $mediaSource["path"], appLog_DEBUG);
+			
+			$stmt = $conn->prepare("INSERT INTO mediaSource(path, displayName) VALUES (:path, :dname)");		
+			$stmt->bindValue(":path", $mediaSource["path"], PDO::PARAM_STR); 
+			$stmt->bindValue(":dname", $mediaSource["displayName"], PDO::PARAM_STR); 
+			$stmt->execute();
+			$mediaSourceIDsToKeep[] = $conn->lastInsertId();
+		}
+		else
+		{
+			//update a current mediaSource
+			appLog("Updating Media Source with id " . $mediaSource["mediaSourceID"], appLog_DEBUG);
+			
+			$stmt = $conn->prepare("UPDATE mediaSource SET path = :path, displayName = :dname WHERE idmediaSource = :mediaSourceID");		
+			$stmt->bindValue(":path", $mediaSource["path"], PDO::PARAM_STR);
+			$stmt->bindValue(":dname", $mediaSource["displayName"], PDO::PARAM_STR); 
+			$stmt->bindValue(":mediaSourceID", $mediaSource["mediaSourceID"], PDO::PARAM_STR); 
+			$stmt->execute();
+			$mediaSourceIDsToKeep[] = $mediaSource["mediaSourceID"];
+		}
+		
 	}
+	var_dump_pre(implode($mediaSourceIDsToKeep,","));
+	//now remove the ones that weren't in the passed back list
+	//build a query with the correct number of placeholders	
+	$tempArr = array_fill(0, count($mediaSourceIDsToKeep), "?")	;
+	$query = "DELETE FROM mediaSource WHERE idmediaSource NOT IN (" . implode($tempArr,","). ");";
+	var_dump_pre($query);
+	
+	$stmt = $conn->prepare($query);		
+	for($n=0; $n < count($mediaSourceIDsToKeep); $n++)
+	{
+		$stmt->bindValue($n+1, $mediaSourceIDsToKeep[$n], PDO::PARAM_INT);
+		var_dump_pre($mediaSourceIDsToKeep[$n]);
+	}
+	$stmt->execute();
+	var_dump_pre($mediaSourceIDsToKeep);
+	
 	$conn->commit();
 		
 	closeDBConnection($conn);

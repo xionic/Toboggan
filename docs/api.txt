@@ -266,19 +266,21 @@ retrieveMediaSourceSettings
 	Returns a JSON object representing the media source settings in the following format:
 	[
 		{
-			"path":			"thePath",
-			"displayname: 	"theDisplayName,
+			"mediaSourceID":	"theMediaSourceID",
+			"path":				"thePath",
+			"displayname: 		"theDisplayName,
 		}
 		...
 	]
 saveMediaSourceSettings
 	args:
 		mediaSourceSettings - a json object representing(see below) the new media source settings to completely replace the old ones
-	Saves new media source settings - this will overwrite current settings.
+	Saves new media source settings. Entries with a null mediaSourceID are treated as new mediaSources. To remove a media source, omit it from the list. 
 	[
 		{
-			"path":			"thePath",
-			"displayname: 	"theDisplayName,
+			"mediaSourceID":	"theMediaSourceID",
+			"path":				"thePath",
+			"displayname: 		"theDisplayName,
 		}
 		...
 	]
