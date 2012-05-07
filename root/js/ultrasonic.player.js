@@ -1168,10 +1168,27 @@
 									$(output).append($("<li/>").append(
 										$("<input name='id' type='hidden'/>").val(data[x].mediaSourceID),
 										$("<input name='path'/>").val(data[x].path),
-										$("<input name='displayName'/>").val(data[x].displayName)
+										$("<input name='displayName'/>").val(data[x].displayName),
+										$("<a href='#'>Del</a>").click(function(){
+												$(this).parent().remove();
+												return false;
+											})
 									));
 								}
-								$(ui.panel).append(output);
+								$(ui.panel).append(output)
+										.append($("<a href='#' class='add'>Add</a>").click(function(){
+											$("#tab_server_mediaSources ul").append(
+												$("<li/>").append(
+													$("<input name='path' />"),
+													$("<input name='displayName' />"),
+													$("<a href='#'>Del</a>").click(function(){
+                                            			$(this).parent().remove();
+                                               			return false;
+                                            		})
+												)
+											);
+										})
+								);
 							},
 						});	
 					break;
