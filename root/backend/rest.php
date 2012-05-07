@@ -237,11 +237,11 @@ try
 	}
 catch(PDOException $pdoe)
 {
-	appLog('Connection Failed: '.$e->getMessage(), appLog_INFO);
+	reportServerError('Connection Failed: '.$pdoe->getMessage(),500);
 	if(isset($conn) && $conn && $conn->inTransaction())
 	{
 		$conn->rollBack();
-	}		
+	}
 	return false;
 }
 

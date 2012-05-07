@@ -138,7 +138,7 @@ function reportServerError($errMsg, $httpcode = 500, $mime = 'text/plain')
 	appLog("Server Error: '".$errMsg."'", appLog_INFO);
 	if($mime != "text/json") // injection protection
 		$errMsg = htmlentities($errMsg);
-	restTools::sendResponse	("There was an error in the". APPNAME ." server application. Please check the server log.",$httpcode, $mime);
+	restTools::sendResponse	("There was an error in the ". APPNAME ." server application. Please check the server log.",$httpcode, $mime);
 	exit;
 }
 
