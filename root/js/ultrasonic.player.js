@@ -783,7 +783,34 @@
 					
 						break;
 						case 'tab_server_mediaSources':
-						
+							var mediaSourceArray = [];
+							//build an array of mediaSources
+							$("#tab_server_mediaSources ul li").each(function(){
+								var newObj = {
+									'path':			$(this).children('input[name=path]').val(),
+									'displayname':	$(this).children('input[name=displayName]').val()
+								};
+								if($(this).children('input[name=id]').count()>0)
+								{
+									//include the id
+									newObj['mediaSourceID'] = $(this).children('input[name=id]').val();
+								}
+								mediaSourceArray.push(newObj);
+							});
+
+							$.ajax({
+								url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=saveMediaSourceSettings&apikey="+apikey+"&apiver="+apiversion,
+								type:'POST',
+								data: {settings: JSON.stringify(mediaSourceArray)},
+								success: function(data, textStatus, jqXHR){
+									$( "#configDialog" ).dialog( "close" );
+								},
+								error: function(jqHXR, textStatus, errorThrown){
+									alert("A mild saving catastrophe has occurred, please check the error log");
+									console.error(jqHXR, textStatus, errorThrown);
+								}	
+							});							
+
 						break;
 						case 'tab_client':
 						
