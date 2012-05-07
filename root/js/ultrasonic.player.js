@@ -779,29 +779,31 @@
 								}
 							})
 						break;
-						case 'tab_server_users':
+						case '#tab_server_users':
 					
 						break;
-						case 'tab_server_mediaSources':
+						case '#tab_server_mediaSources':
 							var mediaSourceArray = [];
 							//build an array of mediaSources
 							$("#tab_server_mediaSources ul li").each(function(){
 								var newObj = {
 									'path':			$(this).children('input[name=path]').val(),
-									'displayname':	$(this).children('input[name=displayName]').val()
+									'displayName':	$(this).children('input[name=displayName]').val()
 								};
-								if($(this).children('input[name=id]').count()>0)
+								if($(this).children('input[name=id]').length>0)
 								{
 									//include the id
 									newObj['mediaSourceID'] = $(this).children('input[name=id]').val();
 								}
 								mediaSourceArray.push(newObj);
 							});
-
+							
+							//console.debug(mediaSourceArray);
+							
 							$.ajax({
 								url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=saveMediaSourceSettings&apikey="+apikey+"&apiver="+apiversion,
 								type:'POST',
-								data: {settings: JSON.stringify(mediaSourceArray)},
+								data: {mediaSourceSettings: JSON.stringify(mediaSourceArray)},
 								success: function(data, textStatus, jqXHR){
 									$( "#configDialog" ).dialog( "close" );
 								},
@@ -812,7 +814,7 @@
 							});							
 
 						break;
-						case 'tab_client':
+						case '#tab_client':
 						
 						break;
 						default:
