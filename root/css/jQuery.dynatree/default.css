@@ -71,7 +71,7 @@ span.dynatree-drag-helper-img,
 	vertical-align: top;
 	background-repeat: no-repeat;
 	background-position: left;
-	background-image: url("../../img/icons.gif");
+	background-image: url("../../img/dynatree-icons.png");
 	background-position: 0 0;
 }
 
@@ -228,6 +228,16 @@ span.dynatree-icon /* Default icon */
 .dynatree-ico-ef span.dynatree-icon  /* Expanded Folder */
 {
 	background-position: -64px -16px;
+}
+
+.dynatree-active.dynatree-ico-cf span.dynatree-icon  /* Collapsed Folder */
+{
+	background-position: -16px -16px;
+}
+
+.dynatree-active.dynatree-ico-ef span.dynatree-icon  /* Expanded Folder */
+{
+	background-position: -80px -16px;
 }
 
 /* Status node icons */
