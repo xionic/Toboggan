@@ -35,14 +35,11 @@ $playerControlsColour2 = rgba(40,40,40,1);
 
 #centreContainer
 {
-//	border-right: 1px solid grey;
-//	border-left: 1px solid grey;
+
 }
 
 #playerControlsContainer
 {
-//	border-top: 1px solid grey;
-//	font-size: larger;
 	background: -o-linear-gradient($playerControlsColour1,$playerControlsColour2);
 }
 
@@ -54,7 +51,6 @@ div.containerPadding
 html, #loginForm 
 {
 	font-family: "Trebuchet MS", "Liberation Sans", "Tahoma", Sans-Serif;
-//	font-size: x-small;
 	font-size: small;
 	color: $FontColour;
 }
@@ -153,6 +149,23 @@ html, #loginForm
 {
 	padding-top: 0.125ex;
 	padding-bottom: 0.125ex;
+}
+
+#playlistTracks li:nth-of-type(even),
+#tracklist li:nth-of-type(even)
+{
+	background: -o-linear-gradient($liEvenColour1,$liEvenColour2);
+}
+
+#playlistTracks li:nth-of-type(odd),
+#tracklist li:nth-of-type(odd)
+{
+	background: -o-linear-gradient($liOddColour1,$liOddColour2);
+}
+
+#playlistTracks
+{
+	font-size: smaller;
 }
 
 //Currently selected folder
@@ -410,4 +423,19 @@ img.loading
 {
 	width: 6em;
 	font-family: "consolas", monospace;
+}
+
+
+/**
+	Trick for "zebra"ing the tables
+**/
+.dynatree-container {
+	background-image: url("../img/tree-zebra.png");
+	background-repeat: repeat;
+}
+.dynatree-title {	//shift the text down a smidge
+	padding-top: 3px;
+	font-size: smaller;
+	cursor: pointer;
+	padding-left: 2px;
 }

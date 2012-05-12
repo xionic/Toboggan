@@ -194,10 +194,15 @@
 			Configure Dynatree
 		*/
 		$("#folderlist").dynatree({
-			title: "folderlist!",
+			title: "folderlist",
 			keyboard: false,
 			autoCollapse: false,
-			generateIds: true,
+			generateIds: false,
+			noLink: true,
+			fx: { 
+				height: "toggle", 
+				duration: 200 
+			},
 			onActivate: function(node){
 				updateFolderBrowser($("#mediaSourceSelector").val(), node);
 			},
@@ -554,9 +559,10 @@
 				for (var x=0; x<data.Directories.length; ++x)
 				{
 					res.push({
-						title:data.Directories[x],
-						icon:false,
-						isLazy: true
+						title:	data.Directories[x],
+						isFolder: true,
+					//	icon:	true,
+						isLazy:	true
 					});
 				}
 				if(clearAllNodes)

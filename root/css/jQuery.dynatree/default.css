@@ -3,13 +3,9 @@
  */
 ul.dynatree-container
 {
-	font-family: tahoma, arial, helvetica;
-	font-size: 10pt; /* font size should not be too big */
 	white-space: nowrap;
-	padding: 3px;
+	padding: 0px 3px;
 	margin: 0; /* issue 201 */
-	background-color: white;
-	border: 1px dotted gray;
 	overflow: auto;
 	height: 100%; /* issue 263 */
 }
@@ -31,14 +27,11 @@ ul.dynatree-container li
 	background-attachment: scroll;
 	background-color: transparent;
 	background-repeat: repeat-y;
-	background-image: url("vline.gif");
+	background-image: url("../../img/vline.gif");
 	background-position: 0 0;
-	/*
-	background-image: url("icons_96x256.gif");
-	background-position: -80px -64px;
-	*/
+
 	margin: 0;
-	padding: 1px 0 0 0;
+	padding: 0px 0 0 0;
 }
 /* Suppress lines for last child node */
 ul.dynatree-container li.dynatree-lastsib
@@ -74,13 +67,11 @@ span.dynatree-drag-helper-img,
 {
 	width: 16px;
 	height: 16px;
-/*	display: -moz-inline-box; /* @ FF 1+2 removed for issue 221 */
-/*	-moz-box-align: start; /* issue 221 */
 	display: inline-block; /* Required to make a span sizeable */
 	vertical-align: top;
 	background-repeat: no-repeat;
 	background-position: left;
-	background-image: url("icons.gif");
+	background-image: url("../../img/icons.gif");
 	background-position: 0 0;
 }
 
@@ -145,7 +136,7 @@ span.dynatree-expander
 .dynatree-loading span.dynatree-expander  /* 'Loading' status overrides all others */
 {
 	background-position: 0 0;
-	background-image: url("loading.gif");
+	background-image: url("../../img/ajax.gif");
 }
 
 
@@ -154,7 +145,7 @@ span.dynatree-expander
  */
 span.dynatree-checkbox
 {
-	margin-left: 3px;
+	margin-left: 1px;
 	background-position: 0px -32px;
 }
 span.dynatree-checkbox:hover
@@ -187,7 +178,7 @@ span.dynatree-checkbox:hover
  */
 span.dynatree-radio
 {
-	margin-left: 3px;
+	margin-left: 1px;
 	background-position: 0px -48px;
 }
 span.dynatree-radio:hover
@@ -225,7 +216,7 @@ span.dynatree-radio:hover
 
 span.dynatree-icon /* Default icon */
 {
-	margin-left: 3px;
+	margin-left: 1px;
 	background-position: 0px 0px;
 }
 
@@ -243,7 +234,7 @@ span.dynatree-icon /* Default icon */
 
 .dynatree-statusnode-wait span.dynatree-icon
 {
-	background-image: url("loading.gif");
+	background-image: url("../../img/loading.gif");
 }
 
 .dynatree-statusnode-error span.dynatree-icon
@@ -281,28 +272,23 @@ ul.dynatree-container a
 ul.dynatree-container a:hover
 {
 /*	text-decoration: underline; */
-	background-color: #F2F7FD; /* light blue */
-	border-color: #B8D6FB; /* darker light blue */
 }
 
 span.dynatree-node a
 {
-	font-size: 10pt; /* required for IE, quirks mode */
+
 	display: inline-block; /* Better alignment, when title contains <br> */
-/*	vertical-align: top;*/
-	padding-left: 3px;
 	padding-right: 3px; /* Otherwise italic font will be outside bounds */
 	/*	line-height: 16px; /* should be the same as img height, in case 16 px */
 }
 span.dynatree-folder a
 {
-	font-weight: bold;
 }
 
 ul.dynatree-container a:focus,
 span.dynatree-focused a:link  /* @IE */
 {
-	background-color: #EFEBDE; /* gray */
+	
 }
 
 span.dynatree-has-children a
@@ -321,8 +307,7 @@ span.dynatree-selected a
 
 span.dynatree-active a
 {
-	background-color: #3169C6 !important;
-	color: white !important; /* @ IE6 */
+
 }
 
 /*******************************************************************************
