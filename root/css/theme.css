@@ -145,8 +145,8 @@ html, #loginForm
 
 #folderlist li
 {
-	padding-top: 0.5ex;
-	padding-bottom: 0.5ex;
+//	padding-top: 0.5ex;
+//	padding-bottom: 0.5ex;
 }
 
 #tracklist li 
@@ -155,44 +155,8 @@ html, #loginForm
 	padding-bottom: 0.125ex;
 }
 
-#folderlist li:nth-of-type(even),
-#playlistTracks li:nth-of-type(even),
-#tracklist li:nth-of-type(even)
-{
-	background: -o-linear-gradient($liEvenColour1,$liEvenColour2);
-}
-
-#folderlist li:nth-of-type(odd),
-#playlistTracks li:nth-of-type(odd),
-#tracklist li:nth-of-type(odd)
-{
-	background: -o-linear-gradient($liOddColour1,$liOddColour2);
-}
-
-#folderlist, #playlistTracks
-{
-	font-size: smaller;
-}
-
-//For Subdirectories:
-#folderlist ul.subdir
-{
-	margin-top: 0.5ex;
-	margin-bottom: -0.5ex;
-}
-
-#folderlist ul.subdir li:nth-of-type(even)
-{
-	background: -o-linear-gradient($liSubSirEvenColour1,$liSubSirEvenColour2);
-}
-
-#folderlist ul.subdir li:nth-of-type(odd)
-{
-	background: -o-linear-gradient($liSubSirOddColour1,$liSubSirOddColour2);
-}
-
 //Currently selected folder
-#folderlist .currentlySelected
+#folderlist .currentlySelected, .dynatree-active
 {
 	font-weight: bold;
 	color: $CurrentlySelectedColour;

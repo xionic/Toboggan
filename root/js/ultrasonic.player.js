@@ -189,7 +189,28 @@
 			});
 			return false;
 		});		
-		
+	
+		/**
+			Configure Dynatree
+		*/
+		$("#folderlist").dynatree({
+			title: "folderlist!",
+			keyboard: false,
+			autoCollapse: false,
+			generateIds: true,
+			onActivate: function(node){
+				updateFolderBrowser($("#mediaSourceSelector").val(), node);
+			},
+			onExpand: function(node){
+				// triggered on shrinking as well as expanding
+				if(node && node.activate)
+					node.activate();
+			},
+			onLazyRead: function(node){
+				node.activate();
+			}
+		});
+	
 		getMediaSources();
 		//load the nowPlaying from localStorage
 		loadNowPlaying();
@@ -466,23 +487,7 @@
 		addNowPlayingClickHandlers();
 		
 	}
-	
-	/**
-		Click Handler for folders in the folder browser
-	*/
-	function addFolderClickHandlers()
-	{
-		//updated to include sub-directory browsing, now slower than before as it
-		// is forced to recurse through subdirectories etc, 
-		// unbind is now required as the tree structure is now no longer entirely 
-		// replaced with the new one
-		$("#folderlist li a").unbind('click').click(function(){	
-			$("#folderlist .currentlySelected").removeClass("currentlySelected");
-			$(this).parent().addClass("currentlySelected");
-			updateFolderBrowser($(this).attr("data-media_source"),this);
-		});
-	}
-	
+		
 	/**
 		Click Handler for tracks in the playlist
 	*/
@@ -502,30 +507,27 @@
 	/**
 		Actually updates the folder browser with content
 	*/
-	function updateFolderBrowser(mediaSourceID, clickedObj)
+	function updateFolderBrowser(mediaSourceID, node)
 	{
-		var folderName = "", appendTarget;
+		var clearAllNodes=false;
+		var folderName="/";
 		
-		if(clickedObj)	// if it's a subfolder, else it's the root
+		if(typeof node === "undefined")
 		{
-			folderName = $(clickedObj).attr("data-parent")+""+$(clickedObj).text();
-			
-			appendTarget = $(clickedObj).siblings("ul.subdir");
-			if(appendTarget.length==0)
-			{
-				appendTarget = $("<ul class='subdir'></ul>");
-				$(clickedObj).parent().append(appendTarget);
-			}
+			node = $("#folderlist").dynatree("getRoot");
+			clearAllNodes=true;
 		}
 		else
 		{
-			appendTarget = $("#folderlist");
-		}		
-		
-		//display loading placeholder
-		displayLoading();
-		
-		//retrieve a list of new folders
+			//build tree to the node
+			//getKeyPath ?
+			node.visitParents(function(p_node){
+				if(p_node.data.title)
+					folderName = "/"+ p_node.data.title + folderName;
+			},true);
+			clearAllNodes = true;
+		}
+			
 		$.ajax({
 			cache: false,
 			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listDirContents&apikey="+apikey+"&apiver="+apiversion,
@@ -538,38 +540,39 @@
 			error: function(jqxhr, status, errorThrown) {
 				alert("AJAX ERROR - check the console!");
 				console.error(jqxhr, status, errorThrown);
+				node.setLazyNodeStatus(DTNodeStatus_Error, {
+					tooltip: data.faultDetails,
+					info: data.faultString
+				});
 			},
+			
 			success: function(data, status, jqxhr) {
-				
-				//remove loading placeholder
-				$("#tracklist").empty();
-				$(appendTarget).empty();
-				
-				//reset the checkbox in the file header
-				$("#selectAll_inputs").attr("checked", false);
-				
 				$("#tracklistHeader").text($("#mediaSourceSelector option:selected").text()+""+(folderName==""?"/":folderName));
 				
-				for (dir in data.Directories)
+				//directory handling
+				var res = []
+				for (var x=0; x<data.Directories.length; ++x)
 				{
-					$("<li></li>").append(
-						$("<a href='javascript:;'></a>")
-							.text(data.Directories[dir])
-							.attr("data-parent", data.CurrentPath)
-							.attr("data-media_source", mediaSourceID)
-					)
-					.appendTo(appendTarget);
+					res.push({
+						title:data.Directories[x],
+						icon:false,
+						isLazy: true
+					});
 				}
-				addFolderClickHandlers();
-
-				//data.Files
+				if(clearAllNodes)
+					node.removeChildren();
+				
+				node.setLazyNodeStatus(DTNodeStatus_Ok);
+				node.addChild(res);
+				
+				$("#tracklist").empty();
+				//add files
 				for (file in data.Files)
 				{	
 					addTrackToFileList(data.Files[file], folderName, mediaSourceID);
 				}
 				addTrackClickHandlers();
-				
-			},
+			}
 		});
 	}
 		

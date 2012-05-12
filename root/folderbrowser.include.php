@@ -1,5 +1,2 @@
-<div class=''>
-	<ul id='folderlist'>
-		
-	</ul>
+<div class='' id='folderlist'>
 </div>
