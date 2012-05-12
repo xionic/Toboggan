@@ -199,10 +199,6 @@
 			autoCollapse: false,
 			generateIds: false,
 			noLink: true,
-			fx: { 
-				height: "toggle", 
-				duration: 200 
-			},
 			onActivate: function(node){
 				updateFolderBrowser($("#mediaSourceSelector").val(), node);
 			},
