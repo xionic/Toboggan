@@ -89,8 +89,13 @@
 			wmode: "window",
 			verticalVolume: false,
 			volume: ( (localStorage.getItem("playbackVolume") !== null)?localStorage.getItem("playbackVolume"):0.8),
-			muted: localStorage.getItem("isMuted")=="true"?true:false			
-					
+			muted: localStorage.getItem("isMuted")=="true"?true:false,		
+			cssSelector: {
+				videoPlay: "",
+				volumeMax: "",
+				repeat: "",
+				repeatOff: ""
+			}
 		}).bind($.jPlayer.event.ended, function(event){
 
 		//get the currently played one
@@ -200,6 +205,7 @@
 			autoCollapse: false,
 			generateIds: false,
 			noLink: true,
+			debugLevel: 0,
 			onActivate: function(node){
 				updateFolderBrowser($("#mediaSourceSelector").val(), node);
 			},
