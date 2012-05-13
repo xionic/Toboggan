@@ -459,3 +459,8 @@ img.loading
 {
 	color: $CurrentFolderTitleColour;
 }
+
+.trackName
+{
+	cursor: move;
+}
