@@ -12,6 +12,13 @@ $ButtonFontColour = white;
 $FontColour = #eee;
 $PlayingTrackColour = #d00004;
 $CurrentlySelectedColour = #d00004;
+$CurrentFolderTitleColour = #d00004;
+
+$InlineButtonColour = #d00004 !important;
+$InlineButtonBGColour = #eee;
+$InlineButtonOperaBGColour = -o-linear-gradient(#efefef, #9f9f9f);
+$InlineButtonBorderColour = #606060;
+$InlineButtonTextShadowHighlight = #666 1px -1px 1px;
 
 $FieldsetColour1 = #f4f4f4;
 $FieldsetColour2 = #ffffff;
@@ -30,6 +37,8 @@ $topBarColour1 = rgba(40,40,40,1);
 $topBarColour2 = rgba(30,30,30,1);
 $playerControlsColour1 = rgba(0,0,0,1);
 $playerControlsColour2 = rgba(40,40,40,1);
+
+$textShadowHighlight = #111 1px -1px 1px;
 
 */
 
@@ -173,7 +182,7 @@ html, #loginForm
 {
 	font-weight: bold;
 	color: $CurrentlySelectedColour;
-	text-shadow: #111 1px -1px 1px;
+	text-shadow: $textShadowHighlight;
 }
 #folderlist .currentlySelected ul
 {
@@ -192,7 +201,7 @@ html, #loginForm
 a.jPlaying {
 	font-weight: bold;
 	color: $PlayingTrackColour !important;
-	text-shadow: #111 1px -1px 1px;
+	text-shadow: $textShadowHighlight;
 }
 
 #jquery_jplayer_1, #centerPlayerContainer {
@@ -234,7 +243,7 @@ select#mediaSourceSelector
 	border: 0px;
 	background: rgba(0,0,0,0);
 	color: inherit;
-	padding: 0ex 1ex;
+	padding: 0ex 0ex 0ex 0ex;
 	font-weight: bold;
 }
 
@@ -395,8 +404,14 @@ img.loading
 	width:		11px;
 	height:	11px;
 	line-height: 13px;
-	border:	1px solid grey;
-	color:		grey !important;
+	
+	border:	1px solid $InlineButtonBorderColour;
+	color: 	$InlineButtonColour;
+	background-color: $InlineButtonBGColour;
+	background: $InlineButtonOperaBGColour;
+	
+	text-shadow: $InlineButtonTextShadowHighlight;
+	
 	font-size: smaller;
 	text-align: center;
 	vertical-align: middle;
@@ -438,4 +453,9 @@ img.loading
 	font-size: smaller;
 	cursor: pointer;
 	padding-left: 2px;
+}
+
+#tracklistHeader
+{
+	color: $CurrentFolderTitleColour;
 }

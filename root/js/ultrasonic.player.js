@@ -275,7 +275,7 @@
 	{	
 		$("#playlistTracks").append(		
 			$("<li></li>").append(
-				$("<a href='javascript:;' class='removeFromPlaylist'>-</a>")
+				$("<a href='javascript:;' class='removeFromPlaylist'>&minus;</a>")
 			).append(
 				$("<a href='javascript:;' class='playNow'></a>")
 					.text( trackObject.text )
@@ -401,7 +401,7 @@
 		    		"&apikey="+apikey+
 					"&apiver="+apiversion;
 		    		
-			window.open(url);	//open in new window
+			window.location = url;
 		});
 		
 		parentElement.children("a.addToPlaylistButton").click(function(){
