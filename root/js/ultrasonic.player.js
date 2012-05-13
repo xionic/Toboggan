@@ -126,7 +126,8 @@
 			event.stopPropagation();
 
 			//un-highlight the selected folder			
-			$("#folderlist .currentlySelected").removeClass("currentlySelected");
+			if(activeNode = $("#folderlist").dynatree("getTree").getActiveNode())
+				activeNode.deactivate();
 			
 			searchForMedia(	
 				$("#search_mediaSourceSelector").val(), 
