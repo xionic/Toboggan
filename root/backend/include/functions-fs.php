@@ -54,13 +54,12 @@ function outputDirContents_JSON($dir, $mediaSourceID){
 	}
 	closedir($dh);
 
-	//TODO:: these should be made to be case insensitive really
-	usort($dirs, strcasecmp);		
-	usort($files, strcasecmp);
-	usort($links, strcasecmp);
-		
-	//var_dump($dirs);	
-		
+	usort($dirs, 'strcasecmp');
+
+	usort($files, function($a,$b) {
+		return strcasecmp($a['displayName'], $b['displayName']);
+	});
+
 	restTools::sendResponse(
 		json_encode(
 			array("CurrentPath" => $dir, "Directories" => $dirs, "Files" => $files)
