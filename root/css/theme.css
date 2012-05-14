@@ -12,6 +12,13 @@ $ButtonFontColour = white;
 $FontColour = #eee;
 $PlayingTrackColour = #d00004;
 $CurrentlySelectedColour = #d00004;
+$CurrentFolderTitleColour = #d00004;
+
+$InlineButtonColour = #d00004 !important;
+$InlineButtonBGColour = #eee;
+$InlineButtonOperaBGColour = -o-linear-gradient(#efefef, #9f9f9f);
+$InlineButtonBorderColour = #606060;
+$InlineButtonTextShadowHighlight = #666 1px -1px 1px;
 
 $FieldsetColour1 = #f4f4f4;
 $FieldsetColour2 = #ffffff;
@@ -31,18 +38,17 @@ $topBarColour2 = rgba(30,30,30,1);
 $playerControlsColour1 = rgba(0,0,0,1);
 $playerControlsColour2 = rgba(40,40,40,1);
 
+$textShadowHighlight = #111 1px -1px 1px;
+
 */
 
 #centreContainer
 {
-//	border-right: 1px solid grey;
-//	border-left: 1px solid grey;
+
 }
 
 #playerControlsContainer
 {
-//	border-top: 1px solid grey;
-//	font-size: larger;
 	background: -o-linear-gradient($playerControlsColour1,$playerControlsColour2);
 }
 
@@ -54,7 +60,6 @@ div.containerPadding
 html, #loginForm 
 {
 	font-family: "Trebuchet MS", "Liberation Sans", "Tahoma", Sans-Serif;
-//	font-size: x-small;
 	font-size: small;
 	color: $FontColour;
 }
@@ -145,8 +150,8 @@ html, #loginForm
 
 #folderlist li
 {
-	padding-top: 0.5ex;
-	padding-bottom: 0.5ex;
+//	padding-top: 0.5ex;
+//	padding-bottom: 0.5ex;
 }
 
 #tracklist li 
@@ -155,48 +160,29 @@ html, #loginForm
 	padding-bottom: 0.125ex;
 }
 
-#folderlist li:nth-of-type(even),
 #playlistTracks li:nth-of-type(even),
 #tracklist li:nth-of-type(even)
 {
 	background: -o-linear-gradient($liEvenColour1,$liEvenColour2);
 }
 
-#folderlist li:nth-of-type(odd),
 #playlistTracks li:nth-of-type(odd),
 #tracklist li:nth-of-type(odd)
 {
 	background: -o-linear-gradient($liOddColour1,$liOddColour2);
 }
 
-#folderlist, #playlistTracks
+#playlistTracks
 {
 	font-size: smaller;
 }
 
-//For Subdirectories:
-#folderlist ul.subdir
-{
-	margin-top: 0.5ex;
-	margin-bottom: -0.5ex;
-}
-
-#folderlist ul.subdir li:nth-of-type(even)
-{
-	background: -o-linear-gradient($liSubSirEvenColour1,$liSubSirEvenColour2);
-}
-
-#folderlist ul.subdir li:nth-of-type(odd)
-{
-	background: -o-linear-gradient($liSubSirOddColour1,$liSubSirOddColour2);
-}
-
 //Currently selected folder
-#folderlist .currentlySelected
+#folderlist .currentlySelected, .dynatree-active
 {
 	font-weight: bold;
 	color: $CurrentlySelectedColour;
-	text-shadow: #111 1px -1px 1px;
+	text-shadow: $textShadowHighlight;
 }
 #folderlist .currentlySelected ul
 {
@@ -215,7 +201,7 @@ html, #loginForm
 a.jPlaying {
 	font-weight: bold;
 	color: $PlayingTrackColour !important;
-	text-shadow: #111 1px -1px 1px;
+	text-shadow: $textShadowHighlight;
 }
 
 #jquery_jplayer_1, #centerPlayerContainer {
@@ -257,7 +243,7 @@ select#mediaSourceSelector
 	border: 0px;
 	background: rgba(0,0,0,0);
 	color: inherit;
-	padding: 0ex 1ex;
+	padding: 0ex 0ex 0ex 0ex;
 	font-weight: bold;
 }
 
@@ -418,8 +404,14 @@ img.loading
 	width:		11px;
 	height:	11px;
 	line-height: 13px;
-	border:	1px solid grey;
-	color:		grey !important;
+	
+	border:	1px solid $InlineButtonBorderColour;
+	color: 	$InlineButtonColour;
+	background-color: $InlineButtonBGColour;
+	background: $InlineButtonOperaBGColour;
+	
+	text-shadow: $InlineButtonTextShadowHighlight;
+	
 	font-size: smaller;
 	text-align: center;
 	vertical-align: middle;
@@ -446,4 +438,24 @@ img.loading
 {
 	width: 6em;
 	font-family: "consolas", monospace;
+}
+
+
+/**
+	Trick for "zebra"ing the tables
+**/
+.dynatree-container {
+	background-image: url("../img/tree-zebra.png");
+	background-repeat: repeat;
+}
+.dynatree-title {	//shift the text down a smidge
+	padding-top: 3px;
+	font-size: smaller;
+	cursor: pointer;
+	padding-left: 2px;
+}
+
+#tracklistHeader
+{
+	color: $CurrentFolderTitleColour;
 }
