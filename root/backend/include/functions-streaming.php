@@ -79,7 +79,9 @@ function outputStream($streamerID, $file){
 				$bitrateOutput = exec($bitrateCommand);
 				appLog("Output from bitrate command: ". $bitrateOutput, appLog_DEBUG);
 				$bitrate = (int) $bitrateOutput;
-				appLog("Parsed bitrate number read from bitrate command output: " . $bitrate . "kb/s", appLog_DEBUG);		
+				appLog("Parsed bitrate number read from bitrate command output is " . ($bitrate==0? "invalid - no bitrate limit will be applied":$bitrate."kb/s"), appLog_DEBUG);
+				if($bitrate == 0)
+					appLog("Parsed bitrate number was 0 - no bitrate limit will be applied", appLog_DEBUG);				
 			
 				//check if max bitrate is over 
 				if($bitrate > $maxBitrate)
@@ -156,7 +158,7 @@ function passthroughStream($file){
 	header("Content-Length: " . $fileSize);
 
 	$maxBandwidth = getCurrentMaxBandwidth();
-	if($maxBandwidth === false || $maxBandwidth === 0)
+	if(!(is_numeric($maxBandwidth) && $maxBandwidth >= 0))
 	{
 		reportError("Could not get maxBandwidth or it is 0");
 		exit();
