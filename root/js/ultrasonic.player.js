@@ -574,7 +574,8 @@
 				node.setLazyNodeStatus(DTNodeStatus_Ok);
 				node.addChild(res);
 				
-				$("#tracklist").empty();
+				refreshFileListState();
+
 				//add files
 				for (file in data.Files)
 				{	
@@ -617,9 +618,15 @@
 	
 	function displayLoading()
 	{
-		$("#tracklist").empty().append();
+		refreshFileListState();
 		$("#tracklistHeader").html("Loading..."+"<img src='img/ajax.gif' alt='loading' class='loading' />");
 	}	
+	
+	function refreshFileListState()
+	{
+		$("#selectAll_inputs").attr("checked",false);
+		$("#tracklist").empty();
+	}
 	
 	/**
 		Search the backend for media
@@ -638,7 +645,7 @@
 			},
 			success: function(data, status, jqxhr) {	
 			
-				$("#tracklist").empty();
+				refreshFileListState();
 				
 				$("#tracklistHeader").text("Search Results Within "+$("#search_mediaSourceSelector option:selected").text()+" For: "+query);
 				
