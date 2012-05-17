@@ -158,6 +158,7 @@ try
 			break;
 			
 		case "saveStreamerSettings":
+		
 			$args = $av->validateArgs($_POST, array(			
 				"settings"		=> "string, notblank",
 			),true);
@@ -237,12 +238,13 @@ try
 	}
 catch(PDOException $pdoe)
 {
-	reportServerError('Connection Failed: '.$pdoe->getMessage(),500);
+	/*var_dump_pre($pdoe);
 	if(isset($conn) && $conn && $conn->inTransaction())
 	{
+		appLog("Rolling back DB transaction", appLog_ERROR);
 		$conn->rollBack();
-	}
-	return false;
+	}*/
+	reportServerError('PDOException: '.$pdoe->getMessage(),500);
 }
 
 

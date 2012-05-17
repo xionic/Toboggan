@@ -8,6 +8,7 @@ define("appLog_DEBUG2", 6); // includes error stream from streamer processes
 define("appLog_DEBUG", 5);
 define("appLog_VERBOSE", 4);
 define("appLog_INFO",3);
+define("appLog_ERROR", 2);
 
 
 ?>

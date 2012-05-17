@@ -54,6 +54,7 @@ function outputDirContents_JSON($dir, $mediaSourceID){
 	}
 	closedir($dh);
 
+	//sort the bitches
 	usort($dirs, 'strcasecmp');
 
 	usort($files, function($a,$b) {
