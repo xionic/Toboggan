@@ -1116,6 +1116,9 @@
 														case "enabled":
 															newinputType = "checkbox";													
 														break;
+														case "password":
+															newinputType = "password";
+														break;
 														default:
 															newinputType = "text";
 													}
