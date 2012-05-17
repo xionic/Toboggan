@@ -232,7 +232,8 @@
 	*/
 	function loadNowPlaying()
 	{
-		var nowPlaying = localStorage.getItem("nowPlaying");
+		var nowPlayingKey = "nowPlaying-" + window.location.host + window.location.pathname,
+			nowPlaying = localStorage.getItem(nowPlayingKey);
 		
 		if(typeof nowPlaying === "undefined" || !nowPlaying)
 			return;
@@ -252,7 +253,8 @@
 	function saveNowPlaying()
 	{
 		var trackList = $("#playlistTracks li a.playNow"),
-			nowPlaying = [];
+			nowPlaying = [],
+			nowPlayingKey = nowPlayingKey = "nowPlaying-" + window.location.host + window.location.pathname;
 		
 		for(var x=0; x<trackList.length; ++x)
 		{
@@ -265,7 +267,7 @@
 			});
 		}
 		
-		localStorage.setItem("nowPlaying", JSON.stringify(nowPlaying));
+		localStorage.setItem(nowPlayingKey, JSON.stringify(nowPlaying));
 	}
 	
 	/**
