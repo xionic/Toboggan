@@ -6,7 +6,8 @@
 		apiversion='0.58',
 		initialProgressEvent=false,	//used to ensure that the initial progress event is the only one handled
 		playerCSSProperties = {},
-		isFullscreen = {};
+		isFullscreen = {},
+		currentUserName = "";
 	/**
 		jQuery Entry Point
 	*/
@@ -703,6 +704,7 @@
 				'password': hash
 			},
 			success: function(){
+				currentUserName = $("#username").val();
 				$("#loginFormContainer").dialog("close");
 				getMediaSources();
 			},
@@ -1083,7 +1085,6 @@
 							).append(	//add the delete button
 								$("<button id='opt_usr_input_deleteBtn'>Delete User</button>").click(function(e){
 									e.preventDefault();
-									
 									if( confirm("Delete this user?") )
 									{
 										var btnObj = $(this);
@@ -1108,6 +1109,7 @@
 										});
 									}
 								})
+								.attr("disabled", !(currentUserName=="" || currentUserName !== $("#opt_user_select option:selected").text()) )
 							)
 							.append(	//add the fields to change the password
 								$("<div id='opt_usr_input_changePasswd_container' />")
