@@ -158,6 +158,9 @@ html, #loginForm
 {
 	padding-top: 0.125ex;
 	padding-bottom: 0.125ex;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow-x: hidden;
 }
 
 #playlistTracks li:nth-of-type(even),
