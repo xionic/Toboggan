@@ -99,9 +99,16 @@ function outputSearchResults_JSON($mediaSourceID, $dir, $query)
 			reportError("Invalid/Non-existant media source");
 			die;
 		}
+				
+		$resultSet = getSearchResults($path,normalisePath($dir),$query, true);
+		
+		usort($resultSet['files'], function($a,$b){
+			return strcasecmp($a['path'], $b['path'])!==0?strcasecmp($a['path'], $b['path']):strcasecmp($a['fileObject']['displayName'], $b['fileObject']['displayName']);
+		});
+		
 		$results[] = array(
 			"mediaSourceID" => $id,
-			"results" => getSearchResults($path,normalisePath($dir),$query, true),
+			"results" => $resultSet,
 		);
 		
 	}
@@ -159,7 +166,7 @@ function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 			}
 		}
 	}
-	
+
 	closedir($dirHandle);
 	return array("dirs" => $dirResults, "files" => $fileResults);
 }
