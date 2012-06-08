@@ -414,7 +414,7 @@ function saveStreamerSettings($settings_JSON)
 			"MimeType"			=>		"string, notblank",
 			"MediaType"			=>		"string, notblank",
 			"command"			=>		"string, notblank",
-		),false);
+		));
 	}
 	//TODO - add more validation - deduplication etc
 	
@@ -771,7 +771,7 @@ function updateUser($userid, $json_settings){
 		"maxAudioBitrate"		=> "int",
 		"maxVideoBitrate"		=> "int",
 		"maxBandwidth"			=> "int",
-	), true);
+	));
 	
 	$conn = null;
 	
@@ -821,7 +821,7 @@ function addUser($json_settings)
 		"maxAudioBitrate"		=> "int",
 		"maxVideoBitrate"		=> "int",
 		"maxBandwidth"			=> "int",
-	), true);
+	));
 	
 	$conn = null;
 	
@@ -941,7 +941,7 @@ function saveMediaSourceSettings($settings_JSON)
 			"mediaSourceID"	=>	"int, notblank, optional",
 			"path" 			=>	"string, notblank",
 			"displayName" 	=> "string, notblank",
-		),false);
+		));
 	}
 	
 	$conn = null;

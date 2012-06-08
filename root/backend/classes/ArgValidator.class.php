@@ -23,7 +23,7 @@ class ArgValidator{
 	* string		-	must be string
 	* array			- 	must be array
 	*/
-	public function validateArgs($argArray, $argDesc, $urldecode = false)
+	public function validateArgs($argArray, $argDesc)
 	{
 		$this->argArray = $argArray;
 		$this->argDesc = $argDesc;
@@ -105,10 +105,8 @@ class ArgValidator{
 					
 				}
 			}
-			if($urldecode)
-				$retArr[$arg] = urldecode($curValue);
-			else
-				$retArr[$arg] = $curValue;
+			
+			$retArr[$arg] = $curValue;
 		}
 		return $retArr;
 	}	

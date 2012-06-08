@@ -24,7 +24,7 @@ try
 	$apiargs = $av->validateArgs($_GET, array(
 		"apikey" => "string, notblank",
 		"apiver" => "numeric",
-	), true);
+	));
 	//api version
 	if($apiargs["apiver"] != APIVERSION)
 	{//unsupported api version
@@ -66,7 +66,7 @@ try
 			$args = $av->validateArgs($_GET, array(
 				"dir" => "string",
 				"mediaSourceID"	=>	"int, notzero",
-			), true);
+			));
 			
 				
 			outputDirContents_JSON($args["dir"], $args["mediaSourceID"]);
@@ -83,7 +83,7 @@ try
 				"mediaSourceID"		=> "int, notzero",
 				"filename"			=> "string, notblank",
 				"streamerID" 		=> "int"
-			), true);
+			));
 					
 			//get full path to file
 			$mediaSourcePath = getMediaSourcePath($args["mediaSourceID"]);
@@ -119,7 +119,7 @@ try
 			$args = $av->validateArgs($_GET, array(
 				"settingsBlob" => "string",
 				"apikey"		=> "string, notblank"
-			),true);
+			));
 			//save the settings
 			saveClientSettings($args["settingsBlob"], $args["apikey"], userLogin::getCurrentUserID());
 			
@@ -128,7 +128,7 @@ try
 		case "retrieveClientSettings":
 			$args = $av->validateArgs($_GET, array(
 				"apikey"		=> "string, notblank"
-			),true);
+			));
 
 			$clientSettings = getClientSettings($args["apikey"], userLogin::getCurrentUserID());
 			if(!$clientSettings) // no settings to retrieve
@@ -148,7 +148,7 @@ try
 				"mediaSourceID"		=> "string, notblank", //string to allow for 'all'
 				"dir"				=> "string",
 				"query"				=> "string, notblank",
-			),true);
+			));
 			
 			outputSearchResults_JSON($args["mediaSourceID"], $args["dir"], $args["query"]);
 			break;
@@ -161,7 +161,7 @@ try
 		
 			$args = $av->validateArgs($_POST, array(			
 				"settings"		=> "string, notblank",
-			),true);
+			));
 			
 			saveStreamerSettings($args["settings"]);
 			break;
@@ -173,17 +173,17 @@ try
 		case "retrieveUserSettings":
 			$args = $av->validateArgs($_GET, array(			
 				"userid"	=> "int, notblank",
-			),true);
+			));
 			outputUserSettings_JSON($args["userid"]);
 		break;
 		
 		case "updateUserSettings":
 			$argsPOST = $av->validateArgs($_POST, array(			
 				"settings"	=> "string, notblank",
-			),true);
+			));
 			$argsGET = $av->validateArgs($_GET, array(			
 				"userid"	=> "int, notblank",
-			),true);
+			));
 			
 			updateUser($argsGET["userid"], $argsPOST["settings"]);
 		break;
@@ -191,24 +191,24 @@ try
 		case "addUser":
 			$args = $av->validateArgs($_POST, array(			
 				"settings"	=> "string, notblank",
-			),true);
+			));
 			addUser($args["settings"]);
 		break;
 		
 		case "deleteUser";
 			$args = $av->validateArgs($_GET, array(			
 				"userid"	=> "int, notblank",
-			),true);
+			));
 			deleteUser($args["userid"]);
 		break;
 		
 		case "changeUserPassword":
 			$argsGET = $av->validateArgs($_GET, array(
 				"userid"	=> "int, notblank, optional",
-			),true);
+			));
 			$argsPOST = $av->validateArgs($_POST, array(			
 				"password"	=> "string, notblank",
-			),true);
+			));
 			
 			if(!isset($argsGET["userid"])) // it's optional - if not set use current userid
 				$userid = userLogin::getCurrentUserID();
@@ -224,7 +224,7 @@ try
 		case "saveMediaSourceSettings":		
 			$argsPOST = $av->validateArgs($_POST, array(			
 				"mediaSourceSettings"	=> "string, notblank",
-			),true);
+			));
 			saveMediaSourceSettings($argsPOST["mediaSourceSettings"]);
 			break;	
 		
