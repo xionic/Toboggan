@@ -96,7 +96,8 @@
 				volumeMax: "",
 				repeat: "",
 				repeatOff: ""
-			}
+			},
+			backgroundColor: "#000000"
 		}).bind($.jPlayer.event.ended, function(event){
 
 		//get the currently played one
@@ -147,14 +148,6 @@
 		**/
 		//initialise the click handler for config
 		$("#configButton_txt").click(displayConfig);
-		
-		//init for search functionality
-		$("#searchButton_txt").click(function(){
-			$("#searchContainer").slideDown("fast",function(){
-				$("#search_query").focus();
-			});
-			return false;
-		});
 
 		//Add handling for "select all" box
 		$("#selectAll_inputs").click(function(){
@@ -664,7 +657,6 @@
 				addTrackClickHandlers();
 				
 				//reset the search bar
-				$("#searchContainer").slideUp();
 				$("#search_mediaSourceSelector option[value='all']").attr("selected","selected");
 				$("#search_query").val("");
 			},

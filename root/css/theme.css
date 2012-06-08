@@ -326,9 +326,7 @@ select#mediaSourceSelector option
 */
 #searchContainer
 {
-	padding: 1ex;
-	background: -o-linear-gradient($PanelColour2,$PanelColour1);
-	border-bottom: 1px solid grey;
+	
 }
 
 #search_query
@@ -359,7 +357,7 @@ select#mediaSourceSelector option
 span.selectWrapper
 {
 	padding: 4px;
-	padding-top: 4px;
+	padding-top: 7px;
 }
 
 #searchContainer span.selectWrapper select

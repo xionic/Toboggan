@@ -4,7 +4,8 @@ $Directory_columnWidth = 200px;
 $playerHeight = 53px;
 $Playlist_columnWidth = 250px;
 $playWindowHeight = 270px;
-$topbarHeight = 18px;
+$topbarHeight = 38px;
+$searchBox_left_position = 205px;
 */
 
 /* Reset CSS */
@@ -81,7 +82,7 @@ a, a:link, a:visited
 #folderbrowserContainer
 {
 	position: fixed;
-	top: $topbarHeight;
+	top: 0px;
 	left: 0px;
 	bottom: $playerHeight;
 	width: $Directory_columnWidth;
@@ -134,7 +135,7 @@ a, a:link, a:visited
 {
 	top: 0px;
 	right: 0px;
-	left: 0px;
+	left: $Directory_columnWidth;
 
 	height: $topbarHeight;
 	line-height: $topbarHeight;
@@ -216,5 +217,7 @@ p label
 
 #searchContainer
 {
-	display: none;
+	display: block;
+	float: left;
+	margin-top: 2px;
 }
