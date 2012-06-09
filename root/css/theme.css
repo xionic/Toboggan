@@ -49,6 +49,7 @@ $textShadowHighlight = #111 1px -1px 1px;
 
 #playerControlsContainer
 {
+	background: $playerControlsColour1;
 	background: -o-linear-gradient($playerControlsColour1,$playerControlsColour2);
 }
 
@@ -82,11 +83,13 @@ html, #loginForm
 
 #playlistTracks, #folderbrowserContainer
 {
+	background: $PanelColour1;
 	background: -o-linear-gradient($PanelColour1 0%, $PanelColour1 90%,$PanelColour2 100%);
 }
 
 #centreContainer 
 {
+	background: $PanelColour2;
 	background: -o-linear-gradient($PanelColour2 0%, $PanelColour1 20%);
 }
 
@@ -105,6 +108,7 @@ html, #loginForm
 #topBarContainer, #trackListAddControls
 {
 	border-bottom: 1px solid grey;	
+	background: $PanelColour2;
 	background: -o-linear-gradient($PanelColour2,$PanelColour1);
 	color: inherit;
 	font-size: x-small;
@@ -115,6 +119,7 @@ html, #loginForm
 	border-bottom: 0px;
 	padding: 0ex 1ex;
 	text-align: right;
+	background: $topBarColour1;
 	background: -o-linear-gradient($topBarColour1,$topBarColour2);
 	color: white;
 }
@@ -166,12 +171,14 @@ html, #loginForm
 #playlistTracks li:nth-of-type(even),
 #tracklist li:nth-of-type(even)
 {
+	background: $liEvenColour1;
 	background: -o-linear-gradient($liEvenColour1,$liEvenColour2);
 }
 
 #playlistTracks li:nth-of-type(odd),
 #tracklist li:nth-of-type(odd)
 {
+	background: $liOddColour1;
 	background: -o-linear-gradient($liOddColour1,$liOddColour2);
 }
 
@@ -203,6 +210,7 @@ html, #loginForm
 
 #trackListHeaderContainer 
 {
+	background: $PanelColour2;
 	background: -o-linear-gradient($PanelColour2,$PanelColour1);
 }
 
@@ -316,6 +324,7 @@ select#mediaSourceSelector option
 #configDialog fieldset
 {
 	border: 1px solid grey;
+	background: $FieldsetColour1;
 	background: -o-linear-gradient($FieldsetColour1,$FieldsetColour2);
 	padding: 1ex 1ex;
 	margin: 0ex 0ex 1ex 0ex;
@@ -344,6 +353,7 @@ select#mediaSourceSelector option
 {
 	border: 1px solid grey;
 	border-radius: 5px;
+	background: $ButtonColour1;
 	background: -o-linear-gradient($ButtonColour1,$ButtonColour2);
 	color: $ButtonFontColour;
 }

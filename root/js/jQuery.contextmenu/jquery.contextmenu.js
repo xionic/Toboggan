@@ -134,7 +134,8 @@
                             }
                         }			
                         $('li', $menu).each(function() { 
-                            $(this).click(function() {
+                            $(this).click(function(event) {
+								event.preventDefault();
                                 if (!$(this).hasClass(classes.disabled)) {
                                     options.onSelect.call(this, {
                                         id : $(this).attr('id'),
