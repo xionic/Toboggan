@@ -41,8 +41,15 @@ INSERT INTO Action(idAction, actionName, displayName) VALUES(4, "accessMediaSour
 INSERT INTO Action(idAction, actionName, displayName) VALUES(5, "accessStreamer", "Access a streamer");
 
 INSERT INTO UserPermission(idUser, idAction) VALUES(1,1);
+INSERT INTO UserPermission(idUser, idAction) VALUES(1,2);
 INSERT INTO UserPermission(idUser, idAction) VALUES(1,3);
-INSERT INTO UserPermission(idUser, idAction) VALUES(2,3);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,4,1);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,4,2);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,5,1);
-INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,5,3);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,5,2);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,5,3);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,5,4);
+
+INSERT INTO UserPermission(idUser, idAction) VALUES(2,1);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,5,1);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,4,1);
