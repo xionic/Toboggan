@@ -113,7 +113,7 @@ CREATE TABLE `schema_information` (
 
 
 CREATE TABLE `Action` (
-	`idAction` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`idAction` INTEGER PRIMARY KEY,
 	`actionName` VARCHAR(45) NOT NULL ,
 	`displayName` VARCHAR(45) NOT NULL,
 	CONSTRAINT `actionName`
