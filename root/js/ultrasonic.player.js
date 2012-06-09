@@ -290,6 +290,16 @@
 	{
 		var className = (file.streamers.length == 0)?"unplayable":"playable";
 		
+		var subMenu = [];
+		for ( x in file.streamers)
+		{
+			subMenu.push({
+				'id' :  'trackMenu_downcode_'+file.streamers[x].streamerID,
+				'action' : 'trackMenu_downcode_'+file.streamers[x].streamerID,
+				'text' : file.streamers[x].extension
+			});
+		}
+		
 		$("<li></li>").append(
 				$("<input type='checkbox' name='trackCheckbox'/>")
 			).append(
@@ -309,8 +319,28 @@
 			)
 			.addClass(className)
 			.contextMenu({
-				menu: 'trackMenu',
-				onSelect: function(e,a) {
+//				menu: 'trackMenu',
+				menu: [{ 'id':		'trackMenu_add', 
+						  'action':	'trackMenu_add', 
+						  'text':	'Add To Playlist', 
+						},
+						{ 'id':		'trackMenu_play', 
+						  'action':	'trackMenu_play', 
+						  'text':	'Play Now', 
+						},
+						{ 'id':		'trackMenu_down', 
+						  'action':	'trackMenu_down', 
+						  'text':	'Download Now', 
+						},
+						{
+							'id':	'trackMenu_downcode',
+							'action': 'trackMenu_downcode',
+							'text' : 'Downcode as ...',
+							'children' : subMenu
+						}
+						],
+				onSelect: function(e) {
+					console.log(this);
 					switch(e.action)
 					{
 						case "trackMenu_add":
@@ -323,9 +353,24 @@
 							$(e.menuContext).find("a.downloadButton").click();
 						break;
 						default:
+							var matches = e.action.match(/trackMenu_downcode_([0-9])+/);
+							var trackObject = $(e.menuContext).find("span.trackName");
+							
+							var		remote_filename = $(trackObject).attr("data-filename"),
+									remote_directory = $(trackObject).attr("data-dir"),
+									remote_mediaSource = $(trackObject).attr("data-media_source");
+							
+							var url = g_ultrasonic_basePath+"/backend/rest.php"+"?action=getStream"+
+														"&filename="+encodeURIComponent(remote_filename)+
+														"&dir="+encodeURIComponent(remote_directory)+
+														"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
+														"&streamerID="+matches[1]+
+														"&apikey="+apikey+
+														"&apiver="+apiversion;
+							window.location = url;
 						break;
 					}
-				}
+				},
 			})
 			.appendTo($("#tracklist"));
 	}

@@ -68,15 +68,11 @@
 		<li id='trackMenu_add' unselectable='on' ><a href='#trackMenu_add' unselectable='on'>Add to Playlist</a></li>
 		<li id='trackMenu_play' class='separator' unselectable='on'><a href='#trackMenu_play' unselectable='on'>Play Now</a></li>
 		<li id='trackMenu_down' class='separator' unselectable='on'><a href='#trackMenu_down' unselectable='on'>Download</a></li>
-<!--
-		<li id='ctxt_downloadAs'>Download As...
-			<ul id='ctxt_downloadAsUl'>
-				<li>hello</li>
-				<li>hello2</li>
-				<li>hello3</li>
+		<li id='trackMenu_downcode'>
+			<a href='#trackMenu_downcodeAsUl'>Download Transcoded To...</a>
+			<ul id='trackMenu_downcodeAsUl'>
 			</ul>
 		</li>
--->
 	</ul>
 </div>
 </body>

@@ -139,7 +139,8 @@
                                     options.onSelect.call(this, {
                                         id : $(this).attr('id'),
                                         action : $('a:first', this).attr('href').substr(1),
-										menuContext: $this
+										menuContext: $this,
+										contextMenu: $menu
                                     });
                                 }
                             });
@@ -150,11 +151,17 @@
                             $('li', $menu).unbind('click');
                             methods.hide.call();
                         });		
-                        options.onShow.call(this);
+                        options.onShow.call(this,{
+							menuContext: $this,
+							contextMenu: $menu
+						});
                         return false;
                     });
                 }		
-                options.onLoad.call(this);
+                options.onLoad.call(this,{
+					menuContext: $this,
+					contextMenu: $menu
+				});
             });
         },
         refresh : function(options) {	
