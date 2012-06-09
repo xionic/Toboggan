@@ -1027,7 +1027,7 @@
 								//display mediaSources
 								//permit update to mediaSources
 								var output= $("<ul/>");
-								console.log(data);
+								
 								for (var x=0; x<data.length; ++x)
 								{
 									//	data[x].mediaSourceID+" "+data[x].path+" "+data[x].displayName
@@ -1112,6 +1112,32 @@
 									break;
 									case "enabled":
 										newinputType = "checkbox";													
+									break;
+									case "permissions":
+										
+										$("#permissionsTarget").remove();
+										$("#opt_usr_rightFrameTarget").append(
+											$("<fieldset id='permissionsTarget' ><legend>Permissions</legend></fieldset>")
+										);
+										
+										for (permissionCategory in data[lbl])
+										{
+											var categoryContainer = $("<fieldset/>");
+											categoryContainer.append($("<legend/>").text(permissionCategory));
+											
+											for( permIndex in data[lbl][permissionCategory] )
+											{
+												$(categoryContainer).append(
+													$("<p>")
+														.append($("<label />").text(data[lbl][permissionCategory][permIndex]["displayName"]))
+														.append($("<input type='checkbox' />").attr('checked',data[lbl][permissionCategory][permIndex]["granted"]==="Y"))
+														.append($("<input type='hidden' />").attr(data[lbl][permissionCategory][permIndex]["id"]))
+												);
+											}
+											categoryContainer.appendTo("#permissionsTarget");
+										}
+										
+										continue;
 									break;
 									default:
 										newinputType = "text";
