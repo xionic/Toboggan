@@ -308,6 +308,25 @@
 					.attr("data-media_source", mediaSourceID)
 			)
 			.addClass(className)
+			.contextMenu({
+				menu: 'trackMenu',
+				onSelect: function(e,a) {
+					switch(e.action)
+					{
+						case "trackMenu_add":
+							$(e.menuContext).find("a.addToPlaylistButton").click();
+						break;
+						case "trackMenu_play":
+							$(e.menuContext).find("a.playNowButton").click();
+						break;
+						case "trackMenu_down":
+							$(e.menuContext).find("a.downloadButton").click();
+						break;
+						default:
+						break;
+					}
+				}
+			})
 			.appendTo($("#tracklist"));
 	}
 	
