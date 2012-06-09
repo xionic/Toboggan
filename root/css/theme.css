@@ -479,3 +479,16 @@ img.loading
 }
 
 /** Context Menu Stuff*/
+.vmenu{border:1px solid #aaa;position:absolute;	display:none;font-size:0.75em;}
+.vmenu .first_li span{width:100px;display:block;padding:5px 10px;cursor:pointer}
+.vmenu .inner_li{display:none;margin-left:120px;position:absolute;border:1px solid #aaa; border-left:1px solid #ccc;margin-top:-28px;}
+.vmenu .sep_li{border-top: 1px ridge #aaa;margin:5px 0}
+.vmenu .fill_title{font-size:11px;font-weight:bold;/height:15px;/overflow:hidden;word-wrap:break-word;}
+
+.vmenu, .vmenu .inner_li {
+	background: black;
+}
+
+.vmenu .first_li:hover, .vmenu .inner_li span:hover {
+	background: #333;
+}

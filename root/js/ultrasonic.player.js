@@ -7,6 +7,7 @@
 		initialProgressEvent=false,	//used to ensure that the initial progress event is the only one handled
 		playerCSSProperties = {},
 		isFullscreen = {},
+		rightClickedObject = {},
 		currentUserName = "";
 	/**
 		jQuery Entry Point
@@ -217,6 +218,8 @@
 		//load the nowPlaying from localStorage
 		loadNowPlaying();
 		
+		configureContextMenuCallbacks();
+		
 		//load jPlayer Inspector
 	//	$("#jPlayerInspector").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
 	});
@@ -284,22 +287,79 @@
 	}
 	
 	/**
+		Adds static callbacks on for the context menu
+	*/
+	function configureContextMenuCallbacks()
+	{
+		$('#trackMenu .first_li, #trackMenu .inner_li span').live('click',function(e) {
+			e.preventDefault();
+			e.stopPropagation();
+			
+			console.log(this);
+			console.log(rightClickedObject);
+
+			if($(this).hasClass("add_to_playlist"))
+			{
+				$(rightClickedObject).find("a.addToPlaylistButton").click();
+			}
+			if($(this).hasClass("play_now"))
+			{
+				$(rightClickedObject).find("a.playNowButton").click();
+			}
+			if($(this).hasClass("download"))
+			{
+				$(rightClickedObject).find("a.downloadButton").click();
+			}
+			
+			if($(this).hasClass("downcode_streamer"))
+			{
+				var trackObject = $(rightClickedObject).find("span.trackName");
+				var		remote_filename = $(trackObject).attr("data-filename"),
+						remote_directory = $(trackObject).attr("data-dir"),
+						remote_mediaSource = $(trackObject).attr("data-media_source");
+				
+				var url = g_ultrasonic_basePath+"/backend/rest.php"+"?action=getStream"+
+											"&filename="+encodeURIComponent(remote_filename)+
+											"&dir="+encodeURIComponent(remote_directory)+
+											"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
+											"&streamerID="+$(this).attr("data-streamerid")+
+											"&apikey="+apikey+
+											"&apiver="+apiversion;
+				window.location = url;
+			}
+			
+		});
+	
+		$('#trackMenu .first_li').live('click',function() {
+			if( $(this).children().size() == 1 ) {
+				$('#trackMenu').hide();
+				$('.overlay').hide();
+			}
+		});
+
+		$('#trackMenu .inner_li span').live('click',function() {
+				$('#trackMenu').hide();
+				$('.overlay').hide();
+		});
+
+
+		$(".first_li , .sec_li, .inner_li span").hover(function () {
+			if ( $(this).children().size() >0 )
+					$(this).find('.inner_li').show();	
+					$(this).css({cursor : 'default'});
+		}, 
+		function () {
+			$(this).find('.inner_li').hide();
+		});
+	}
+	
+	/**
 		Add a track to the list of playable files (centre container)
 	*/
 	function addTrackToFileList(file, folderName, mediaSourceID)
 	{
 		var className = (file.streamers.length == 0)?"unplayable":"playable";
-		
-		var subMenu = [];
-		for ( x in file.streamers)
-		{
-			subMenu.push({
-				'id' :  'trackMenu_downcode_'+file.streamers[x].streamerID,
-				'action' : 'trackMenu_downcode_'+file.streamers[x].streamerID,
-				'text' : file.streamers[x].extension
-			});
-		}
-		
+				
 		$("<li></li>").append(
 				$("<input type='checkbox' name='trackCheckbox'/>")
 			).append(
@@ -318,59 +378,31 @@
 					.attr("data-media_source", mediaSourceID)
 			)
 			.addClass(className)
-			.contextMenu({
-//				menu: 'trackMenu',
-				menu: [{ 'id':		'trackMenu_add', 
-						  'action':	'trackMenu_add', 
-						  'text':	'Add To Playlist', 
-						},
-						{ 'id':		'trackMenu_play', 
-						  'action':	'trackMenu_play', 
-						  'text':	'Play Now', 
-						},
-						{ 'id':		'trackMenu_down', 
-						  'action':	'trackMenu_down', 
-						  'text':	'Download Now', 
-						},
-						{
-							'id':	'trackMenu_downcode',
-							'action': 'trackMenu_downcode',
-							'text' : 'Downcode as ...',
-							'children' : subMenu
-						}
-						],
-				onSelect: function(e) {
-					console.log(this);
-					switch(e.action)
-					{
-						case "trackMenu_add":
-							$(e.menuContext).find("a.addToPlaylistButton").click();
-						break;
-						case "trackMenu_play":
-							$(e.menuContext).find("a.playNowButton").click();
-						break;
-						case "trackMenu_down":
-							$(e.menuContext).find("a.downloadButton").click();
-						break;
-						default:
-							var matches = e.action.match(/trackMenu_downcode_([0-9])+/);
-							var trackObject = $(e.menuContext).find("span.trackName");
-							
-							var		remote_filename = $(trackObject).attr("data-filename"),
-									remote_directory = $(trackObject).attr("data-dir"),
-									remote_mediaSource = $(trackObject).attr("data-media_source");
-							
-							var url = g_ultrasonic_basePath+"/backend/rest.php"+"?action=getStream"+
-														"&filename="+encodeURIComponent(remote_filename)+
-														"&dir="+encodeURIComponent(remote_directory)+
-														"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
-														"&streamerID="+matches[1]+
-														"&apikey="+apikey+
-														"&apiver="+apiversion;
-							window.location = url;
-						break;
-					}
-				},
+			.bind('contextmenu', function(e){
+				var $cmenu = $("#trackMenu");
+				rightClickedObject = this;
+				//dynamically update submenu
+				$("#trackMenu_downcodestreamers").empty();
+				for ( x in file.streamers)
+				{
+					$("#trackMenu_downcodestreamers").append(
+						$("<span/>")
+							.addClass("downcode_streamer")
+							.text(file.streamers[x].extension)
+							.attr("data-streamerID",file.streamers[x].streamerID)
+					);
+				}
+				
+				$('<div class="overlay"></div>').css({left : '0px', top : '0px',position: 'absolute', width:'100%', height: '100%', zIndex: '1000' })
+					.click(function() {
+						$(this).remove();
+						$cmenu.hide();
+					}).bind('contextmenu' , function(){return false;})
+					.appendTo(document.body);
+				
+				$("#trackMenu").css({ left: e.pageX, top: e.pageY, zIndex: '1001' }).show();
+
+				return false;
 			})
 			.appendTo($("#tracklist"));
 	}
