@@ -622,6 +622,7 @@
 	{
 		$("#selectAll_inputs").attr("checked",false);
 		$("#tracklist").empty();
+		$("#centerTrackContainer").scrollTop(0);
 	}
 	
 	/**

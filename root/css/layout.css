@@ -4,7 +4,7 @@ $Directory_columnWidth = 200px;
 $playerHeight = 53px;
 $Playlist_columnWidth = 250px;
 $playWindowHeight = 270px;
-$topbarHeight = 38px;
+$topbarHeight = 20px;
 $searchBox_left_position = 205px;
 */
 
@@ -69,7 +69,7 @@ a, a:link, a:visited
 #playlistContainer 
 {
 	position: fixed;
-	top: $topbarHeight;
+	top: 0px;
 	bottom: $playerHeight;
 	right: 0px;
 
@@ -94,7 +94,7 @@ a, a:link, a:visited
 #centreContainer
 {
 	position: fixed;
-	top: $topbarHeight;
+	top: 0px;
 	bottom: $playerHeight;
 	right: $Playlist_columnWidth;
 	left: $Directory_columnWidth;
@@ -114,12 +114,13 @@ a, a:link, a:visited
 
 #centerTrackContainer
 {
-	overflow-y: scroll;
+	overflow-y: auto;
 	position: absolute;
-	top: 0px;
+	top: 82px;
 	left: 0px;
-	right: 0px;
+	right: 5px;
 	bottom: $playWindowHeight;
+	padding-top: 0px;
 }
 
 #centerPlayerContainer
@@ -133,9 +134,9 @@ a, a:link, a:visited
 
 #topBarContainer
 {
-	top: 0px;
+	
+	bottom: 0px;
 	right: 0px;
-	left: $Directory_columnWidth;
 
 	height: $topbarHeight;
 	line-height: $topbarHeight;
@@ -218,6 +219,17 @@ p label
 #searchContainer
 {
 	display: block;
-	float: left;
-	margin-top: 2px;
+	margin-top: 5px;
+	margin-left: 5px;
+}
+
+#trackListHeaderContainer 
+{
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 5px;
+	
+	padding: 0px;
+	padding-top: 0px;
 }
