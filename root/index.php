@@ -6,7 +6,6 @@
 	<link href='./css/jQuery.jPlayer.Theme/jplayer.ultrasonic.css' rel='stylesheet' type='text/css' />
 	<link href='./css/jQuery-ui/smoothness/jquery-ui-1.8.17.custom.css' rel='stylesheet' type='text/css' />
 	<link href='./css/jQuery.dynatree/default.css' rel='stylesheet' type='text/css' />
-	<link href='./css/jQuery.contextmenu/jquery.contextmenu.css' rel='stylesheet' type='text/css' />
 
 	<!-- internal stylesheets -->
 	<link href='./css/?layout.css' rel='stylesheet' type='text/css' />
@@ -16,8 +15,6 @@
 	<script type="text/javascript" src="./js/jQuery-ui.1.8.17/jquery-ui-1.8.17.custom.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery.jPlayer.2.1.0/jquery.jplayer.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery.dynatree/jquery.dynatree.min.js"></script>
-	<script type="text/javascript" src="./js/jQuery.contextmenu/jquery.contextmenu.js"></script>
-	<script type="text/javascript" src="./js/jQuery.contextmenu/jquery.hoverintent.js"></script>
 
 	<script type="text/javascript" src="./js/jQuery.jPlayer.2.1.0/add-on/jquery.jplayer.inspector.js"></script>
 	<script type="text/javascript">

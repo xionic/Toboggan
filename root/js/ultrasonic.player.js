@@ -638,8 +638,8 @@
 				alert("AJAX ERROR - check the console!");
 				console.error(jqxhr, status, errorThrown);
 				node.setLazyNodeStatus(DTNodeStatus_Error, {
-					tooltip: data.faultDetails,
-					info: data.faultString
+					tooltip: status,
+					info: status
 				});
 			},
 			
