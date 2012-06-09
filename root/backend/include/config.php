@@ -6,7 +6,7 @@ $config = array();
 //db 
 define("DBPATH", "db/nick-dev.db");
 define("PDO_DSN", "sqlite:".DBPATH);
-define("DB_VERSION", 100); // indicates what version of the db the code uses - to be matched against the one in the db
+define("DB_VERSION", 101); // indicates what version of the db the code uses - to be matched against the one in the db
 
 //api version
 define("APIVERSION","0.58");

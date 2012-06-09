@@ -1,3 +1,5 @@
+INSERT INTO schema_information(version) VALUES("101");
+
 INSERT INTO fromExt(Extension, bitrateCmd) VALUES("mp3", "/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'");
 INSERT INTO toExt(Extension, MimeType, MediaType) VALUES("mp3", "audio/mp3", "a");
 INSERT INTO transcode_cmd(command) VALUES("ffmpeg -i %path -ab %bitrate -v 0 -f mp3 -");
@@ -32,4 +34,15 @@ INSERT INTO APIKey(apikey, displayName) VALUES("{05C8236E-4CB2-11E1-9AD8-A28BA55
 INSERT INTO APIKey(apikey, displayName) VALUES("testkey1", "Testing apikey 1");
 INSERT INTO APIKey(apikey, displayName) VALUES("testkey2", "Testing apikey2");
 
-INSERT INTO schema_information(version) VALUES("100");
+INSERT INTO Action(actionName, displayName) VALUES("streamFile", "Stream files");
+INSERT INTO Action(actionName, displayName) VALUES("downloadFile", "Download files");
+INSERT INTO Action(actionName, displayName) VALUES("administrator", "Is Administrator");
+INSERT INTO Action(actionName, displayName) VALUES("accessMediaSource", "Access a media source");
+INSERT INTO Action(actionName, displayName) VALUES("accessStreamer", "Access a streamer");
+
+INSERT INTO UserPermission(idUser, idAction) VALUES(1,1);
+INSERT INTO UserPermission(idUser, idAction) VALUES(1,3);
+INSERT INTO UserPermission(idUser, idAction) VALUES(2,3);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,4,1);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,5,1);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,5,3);

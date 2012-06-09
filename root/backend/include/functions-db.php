@@ -25,8 +25,12 @@ function getAvailableStreamers($file){
 	
 	$suitableStreamers = array();
 	foreach($results as $row){
-		$suitableStreamers[] = new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
+		//check that the user has permission
+		if(checkUserPermission("accessStreamer", $row["idextensionMap"]))
+			$suitableStreamers[] = new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
 	}	
+	
+		
 	
 	return $suitableStreamers;
 }
@@ -51,7 +55,8 @@ function getStreamerById($id){
 	$stmt->closeCursor();
 	closeDBConnection($conn);
 		
-	if($row)
+		
+	if($row && checkUserPermission("accessStreamer", $row["idextensionMap"])) //check user has permission to use the streamer too
 		return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
 	else
 		return false;
@@ -80,7 +85,8 @@ function getAllStreamers()
 		$streamers = array();
 		foreach($rows as $row)
 		{
-			$streamers[] =  new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
+			if(checkUserPermission("accessStreamer",$row["idextensionMap"]))//check user has permission to access the streamer
+				$streamers[] =  new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
 		}
 		return $streamers;
 	}
@@ -111,7 +117,7 @@ function getStreamerByExtensions($fromExt, $toExt)
 	$stmt->closeCursor();
 	closeDBConnection($conn);
 	
-	if($row)
+	if($row &&checkUserPermission("accessStreamer",$row["idextensionMap"]))//check user has permission to access the streamer)
 		return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
 	else
 		return false;
@@ -155,6 +161,9 @@ function closeDBConnection($conn)
 */
 function getMediaSourcePath($mediaSourceID)
 {	
+	//check user is allowed to access this media Source
+	checkActionAllowed("accessMediaSource",$mediaSourceID);
+	
 	$conn = getDBConnection();
 	$stmt = $conn->prepare("SELECT path FROM mediaSource WHERE idmediaSource = :idmediaSource");
 	$stmt->bindValue(":idmediaSource",$mediaSourceID, PDO::PARAM_INT);
@@ -183,7 +192,17 @@ function getMediaSources(){
 		$mediaSources[]  =  array("mediaSourceID" => $row["idmediaSource"], "displayName" => $row["displayName"]);
 	}
 	closeDBConnection($conn);
-	return $mediaSources;
+	
+	//check user has permission for each mediaSource
+	$returnMediaSources = array();
+	foreach($mediaSources as $mediaSource)
+	{
+		if(checkUserPermission("accessMediaSource", $mediaSource["mediaSourceID"]))
+		{
+			$returnMediaSources[] = $mediaSource;
+		}
+	}
+	return $returnMediaSources;
 }
 
 /**
@@ -746,13 +765,77 @@ function outputUserSettings_JSON($userid)
 function getUserObject($userid)
 {
 	$conn = getDBConnection();
+	$conn->beginTransaction();
 	
+	//assemble user info
 	$stmt = $conn->prepare("SELECT idUser, username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth
 	FROM User WHERE idUser = :userid");
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->execute();
 	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	return $results[0];
+	$userObj = $results[0];
+	
+	//assemble user permissions info
+	//get  permissions for "normal" action - ie those with not targetObjectID
+	$stmt = $conn->prepare("
+		SELECT idAction, displayName as actionDisplayName, CASE WHEN idUserPermission IS NOT NULL THEN 'Y' ELSE 'N' END as granted 
+		FROM Action 
+		LEFT JOIN UserPermission USING(idAction)
+		WHERE (idUser = :userid OR idUser IS NULL)
+		AND targetObjectID IS NULL
+		;
+	");
+	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
+	$stmt->execute();
+	$userStandardPerms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$userObj["permissions"]["general"] = $userStandardPerms;
+	
+	//get  permissions for accessMediaSource action - special case for accessing certain mediaSources
+	$stmt = $conn->prepare("
+		SELECT mediaSource.idmediaSource as mediaSourceId, mediaSource.displayName as mediaSourceDisplayName, 
+		CASE WHEN PermissionAction.idAction IS NOT NULL THEN 'Y' ELSE 'N' END as granted
+			FROM mediaSource 
+				CROSS JOIN User 
+				LEFT JOIN (
+					SELECT * FROM UserPermission 
+							INNER JOIN Action USING(idAction) 
+						WHERE Action.actionName='accessMediaSource') AS PermissionAction 
+				ON (PermissionAction.targetObjectID = mediaSource.idmediaSource 
+					AND PermissionAction.idUser=User.idUser) 
+			WHERE User.idUser= :userid;
+		
+	");
+	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
+	$stmt->execute();
+	$userMediaSourcePerms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$userObj["permissions"]["mediaSources"] = $userMediaSourcePerms;
+	
+	//get  permissions for accessStreamer action - special case for accessing certain streamers
+	$stmt = $conn->prepare("
+		SELECT idextensionMap as streamerID, fromExt.Extension as fromExt, toExt.Extension as toExt, 
+		CASE WHEN PermissionAction.idAction IS NOT NULL THEN 'Y' ELSE 'N' END as granted
+			FROM extensionMap
+				INNER JOIN fromExt USING(idfromExt)
+				INNER JOIN toExt USING(idtoExt)
+				CROSS JOIN User 
+				LEFT JOIN (
+					SELECT * FROM UserPermission 
+							INNER JOIN Action USING(idAction) 
+						WHERE Action.actionName='accessStreamer') AS PermissionAction 
+				ON (PermissionAction.targetObjectID = extensionMap.idextensionMap 
+					AND PermissionAction.idUser=User.idUser) 
+			WHERE User.idUser= :userid;
+		
+	");
+	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
+	$stmt->execute();
+	$userStreamerPerms = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	$userObj["permissions"]["streamers"] = $userStreamerPerms;
+	
+	$conn->commit();	
+	closeDBConnection($conn);
+
+	return $userObj;
 }
 
 /**
@@ -828,9 +911,8 @@ function addUser($json_settings)
 	$conn = getDBConnection();
 	$conn->beginTransaction();
 	
-	$stmt = $conn->prepare("INSERT INTO User(idRole,username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth) VALUES
+	$stmt = $conn->prepare("INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth) VALUES
 		(
-			:idRole,
 			:username,
 			:password,
 			:email,
@@ -841,7 +923,6 @@ function addUser($json_settings)
 		)
 	");
 	
-	$stmt->bindValue(":idRole", 0, PDO::PARAM_INT); // hack in later
 	$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
 	$stmt->bindValue(":password", userLogin::hashPassword($userSettings["password"]), PDO::PARAM_STR);
 	$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
@@ -915,7 +996,6 @@ function outputMediaSourceSettings_JSON()
 * returns an object representing the media Source Settings
 */
 function getMediaSourceSettings(){
-	$conn = null;
 	$conn = getDBConnection();		
 	$stmt = $conn->prepare("SELECT idmediaSource as mediaSourceID, path, displayName FROM mediaSource");	
 	$stmt->execute();
@@ -1000,6 +1080,45 @@ function saveMediaSourceSettings($settings_JSON)
 	$conn->commit();
 		
 	closeDBConnection($conn);
+}
+/**
+* checks whether the currently auth'd user has permission to perform the action given by actionName
+*/
+function checkUserPermission($actionName, $targetObjectID = false)
+{
+	appLog(
+		"Checking userid '" . userLogin::getCurrentUserID() . "' has permission for action '" . 
+		$actionName . "' with targetObjectID '" . $targetObjectID . "'", appLog_DEBUG
+	);
+	$userID = userLogin::getCurrentUserID();
+	$sql = "SELECT 1 
+			FROM UserPermission 
+			INNER JOIN Action USING(idAction)
+			INNER JOIN User USING(idUser)
+			WHERE 
+				`User`.idUser = :idUser
+			AND
+				actionName = :actionName
+			";
+	if($targetObjectID !== false)
+		$sql .= "AND targetObjectID = :targetObjectID";
+
+	$conn = getDBConnection();	
+	$conn->beginTransaction();
+	$stmt = $conn->prepare($sql);	
+	
+	$stmt->bindValue("idUser", $userID, PDO::PARAM_INT);
+	$stmt->bindValue("actionName", $actionName, PDO::PARAM_STR);
+	if($targetObjectID !== false)
+		$stmt->bindValue("targetObjectID", $targetObjectID);
+		
+	$stmt->execute();
+	
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+	$conn->commit();
+	closeDBConnection($conn);	
+	return (count($results)==0?false:true);
 }
 
 

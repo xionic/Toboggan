@@ -12,6 +12,11 @@ function appLog($message, $level = -1){
 	else
 		$callingfn = "[origin unknown]";
 	$file = fopen($config["logFile"], "a");
+	
+	//expand arrays
+	if(is_array($message))
+		$message = var_export($message,true);
+	
 	fwrite($file, date("Y/m/d H:i:s") . ": ". $level. ": " . $callingfn . "\t: " . $message."\n");
 	fclose($file);
 }

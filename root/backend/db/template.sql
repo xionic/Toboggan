@@ -112,3 +112,36 @@ CREATE TABLE `schema_information` (
 
 
 
+CREATE TABLE `Action` (
+	`idAction` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`actionName` VARCHAR(45) NOT NULL ,
+	`displayName` VARCHAR(45) NOT NULL,
+	CONSTRAINT `actionName`
+		UNIQUE (`actionName`)
+		ON CONFLICT ROLLBACK
+);
+
+
+
+
+
+CREATE TABLE `UserPermission` (
+	`idUserPermission` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`idUser` INTEGER NOT NULL ,
+	`idAction` INTEGER NOT NULL ,
+	`targetObjectID` INTEGER NULL , --the target of the permission, for instance a mediaSourceID. Context based on the action - use determined by code
+	CONSTRAINT `userid`
+		FOREIGN KEY (`idUser` )
+		REFERENCES `User` (`idUser` )
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION,
+	CONSTRAINT `actionid`
+		FOREIGN KEY (`idAction` )
+		REFERENCES `Action` (`idAction` )
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+);
+
+
+
+

@@ -73,10 +73,11 @@ try
 			break;
 			
 		case "downloadFile": //download a file unmodified
+			checkActionAllowed("downloadFile");	
 			$_GET["streamerID"] = 0; //hack through the switch and allow to follow through the getStream handler
 			
 		case "getStream": // INPUT VALIDITY CHECKING SHOULD BE BETTER HERE
-			
+			checkActionAllowed("streamFile");	
 			//validate arguments
 			$args = $av->validateArgs($_GET, array(
 				"dir" 				=> "string",
@@ -154,11 +155,12 @@ try
 			break;
 			
 		case "retrieveStreamerSettings":
+			checkActionAllowed("administrator");
 			outputStreamerSettings_JSON();
 			break;
 			
 		case "saveStreamerSettings":
-		
+			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_POST, array(			
 				"settings"		=> "string, notblank",
 			));
@@ -167,10 +169,12 @@ try
 			break;
 			
 		case "listUsers":
+			checkActionAllowed("administrator");
 			outputUserList_JSON();
 			break;
 			
 		case "retrieveUserSettings":
+			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_GET, array(			
 				"userid"	=> "int, notblank",
 			));
@@ -178,6 +182,7 @@ try
 		break;
 		
 		case "updateUserSettings":
+			checkActionAllowed("administrator");
 			$argsPOST = $av->validateArgs($_POST, array(			
 				"settings"	=> "string, notblank",
 			));
@@ -189,6 +194,7 @@ try
 		break;
 		
 		case "addUser":
+			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_POST, array(			
 				"settings"	=> "string, notblank",
 			));
@@ -196,6 +202,7 @@ try
 		break;
 		
 		case "deleteUser";
+			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_GET, array(			
 				"userid"	=> "int, notblank",
 			));
@@ -203,6 +210,7 @@ try
 		break;
 		
 		case "changeUserPassword":
+			checkActionAllowed("administrator");
 			$argsGET = $av->validateArgs($_GET, array(
 				"userid"	=> "int, notblank, optional",
 			));
@@ -218,10 +226,12 @@ try
 		break;
 		
 		case "retrieveMediaSourceSettings":
+			checkActionAllowed("administrator");
 			outputMediaSourceSettings_JSON();
 			break;
 		
-		case "saveMediaSourceSettings":		
+		case "saveMediaSourceSettings":
+			checkActionAllowed("administrator");
 			$argsPOST = $av->validateArgs($_POST, array(			
 				"mediaSourceSettings"	=> "string, notblank",
 			));
