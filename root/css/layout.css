@@ -233,3 +233,8 @@ p label
 	padding: 0px;
 	padding-top: 0px;
 }
+
+.dynatree-container li 
+{
+overflow-y: hidden;
+}
