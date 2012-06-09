@@ -778,7 +778,7 @@ function getUserObject($userid)
 	//assemble user permissions info
 	//get  permissions for "normal" action - ie those with not targetObjectID
 	$stmt = $conn->prepare("
-		SELECT idAction, displayName as actionDisplayName, CASE WHEN idUserPermission IS NOT NULL THEN 'Y' ELSE 'N' END as granted 
+		SELECT idAction as id, displayName as displayName, CASE WHEN idUserPermission IS NOT NULL THEN 'Y' ELSE 'N' END as granted 
 		FROM Action 
 		LEFT JOIN UserPermission USING(idAction)
 		WHERE (idUser = :userid OR idUser IS NULL)
@@ -788,11 +788,11 @@ function getUserObject($userid)
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->execute();
 	$userStandardPerms = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$userObj["permissions"]["general"] = $userStandardPerms;
+	$userObj["permissions"]["actions"] = $userStandardPerms;
 	
 	//get  permissions for accessMediaSource action - special case for accessing certain mediaSources
 	$stmt = $conn->prepare("
-		SELECT mediaSource.idmediaSource as mediaSourceId, mediaSource.displayName as mediaSourceDisplayName, 
+		SELECT mediaSource.idmediaSource as id, mediaSource.displayName as displayName, 
 		CASE WHEN PermissionAction.idAction IS NOT NULL THEN 'Y' ELSE 'N' END as granted
 			FROM mediaSource 
 				CROSS JOIN User 
@@ -812,7 +812,7 @@ function getUserObject($userid)
 	
 	//get  permissions for accessStreamer action - special case for accessing certain streamers
 	$stmt = $conn->prepare("
-		SELECT idextensionMap as streamerID, fromExt.Extension as fromExt, toExt.Extension as toExt, 
+		SELECT idextensionMap as id, (fromExt.Extension || ' -> '  || toExt.Extension) as displayName, 
 		CASE WHEN PermissionAction.idAction IS NOT NULL THEN 'Y' ELSE 'N' END as granted
 			FROM extensionMap
 				INNER JOIN fromExt USING(idfromExt)
