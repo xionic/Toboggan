@@ -295,9 +295,6 @@
 			e.preventDefault();
 			e.stopPropagation();
 			
-			console.log(this);
-			console.log(rightClickedObject);
-
 			if($(this).hasClass("add_to_playlist"))
 			{
 				$(rightClickedObject).find("a.addToPlaylistButton").click();
