@@ -854,13 +854,41 @@ function updateUser($userid, $json_settings){
 		"maxAudioBitrate"		=> "int",
 		"maxVideoBitrate"		=> "int",
 		"maxBandwidth"			=> "int",
+		"permissions"			=> "array",
 	));
+	$av->validateArgs($userSettings["permissions"], array(
+		"general"				=> "array",
+		"mediaSources"			=> "array",
+		"streamers"				=> "array",
+	));
+	foreach($userSettings["permissions"]["general"] as $perm)
+	{
+		$av->validateArgs($perm, array(
+			"idAction"				=> "int",
+			"granted"				=> "string, notblank",
+		));
+	}
+	foreach($userSettings["permissions"]["mediaSources"] as $perm)
+	{
+		$av->validateArgs($perm, array(
+			"mediaSourceId"				=> "int",
+			"granted"				=> "string, notblank",
+		));
+	}
+	foreach($userSettings["permissions"]["streamers"] as $perm)
+	{
+		$av->validateArgs($perm, array(
+			"streamerID"				=> "int",
+			"granted"				=> "string, notblank",
+		));
+	}
 	
 	$conn = null;
 	
 	$conn = getDBConnection();
 	$conn->beginTransaction();
 	
+	//update user settings
 	$stmt = $conn->prepare("UPDATE User SET 
 		username = :username,
 		email = :email,
@@ -881,9 +909,61 @@ function updateUser($userid, $json_settings){
 	$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
 	$stmt->execute();
 	
+	//update user permissions	
+	//build a normalised permissions structure to match the db structure (i.e. merge in the special cases [mediaSources and streamers])
+	$newUserPermissions = array();
+	//general permissions
+	foreach($userSettings["permissions"]["general"] as $perm)
+	{
+		if($perm["granted"] == 'Y')
+			$newUserPermissions[] = array("userid" => userLogin::getCurrentUserID(), "actionid" => $perm["idAction"]);
+	}
+	
+	//mediaSource permissions
+	foreach($userSettings["permissions"]["mediaSources"] as $perm)
+	{
+		if($perm["granted"] == 'Y')
+			$newUserPermissions[] = array("userid" => userLogin::getCurrentUserID(), "actionid" => PERMISSION_ACCESSMEDIASOURCE, "targetObjectID" => $perm["mediaSourceId"]);
+	}
+	
+	//streamer permissions
+	foreach($userSettings["permissions"]["streamers"] as $perm)
+	{
+		if($perm["granted"] == 'Y')
+			$newUserPermissions[] = array("actionid" => PERMISSION_ACCESSSTREAMER,  "targetObjectID" => $perm["streamerID"]);
+	}
+
+	//remove existing permission for the user
+	$stmt = $conn->prepare("DELETE FROM UserPermission WHERE idUser = :userid");
+	$stmt->bindValue(":userid", userLogin::getCurrentUserID(), PDO::PARAM_INT);
+	$stmt->execute();
+	
+	//insert new permissions
+	foreach($newUserPermissions as $perm)
+	{
+		$stmt = $conn->prepare(
+			"INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(:userid, :actionid, "
+				. (isset($perm["targetObjectID"])?":targetObjectID":"NULL") 
+			.")"
+		);
+		
+		$stmt->bindValue(":userid", userLogin::getCurrentUserID(), PDO::PARAM_INT);
+		$stmt->bindValue(":actionid", $perm["actionid"], PDO::PARAM_INT);
+		if(isset($perm["targetObjectID"]))
+			$stmt->bindValue(":targetObjectID", $perm["targetObjectID"], PDO::PARAM_INT);
+		$stmt->execute();
+	}
+	
 	$conn->commit();		
 	
 	closeDBConnection($conn);
+}
+/**
+* either updates an existing permission or inserts 
+*/
+function insertOrUpdatePermission()
+{
+
 }
 
 /**

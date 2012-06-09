@@ -214,37 +214,37 @@ retrieveUserSettings
 			"maxVideoBitrate": 	"themaxVideoBitrate (kbps)",
 			"maxBandwidth": 	"themaxBandwidth (kbps)",
 			"permissions":
-				{
-					"general":
-						[
-							{
-								"idAction":		"actionid",
-								"actionDisplayName":	"displayable name of the permitable action",
-								"granted":		"Y|N",
-							}
-							...
-						],
-					"mediaSources":
-						[
-							{
-								"mediaSourceId":			"mediaSourceID",
-								"mediaSourceDisplayName":	"displayable name of media source",
-								"granted":		"Y|N",
-							}
-							...
-						],
-					"streamers":
-						[
-							{
-								"streamerID":			"streamerID",
-								"fromExt":	"fromExtension of the streamer",
-								"toExt":	"toExtension of the streamer",
-								"granted":		"Y|N",
-							}
-							...
-						]
-					
-				}
+			{
+				"general":
+					[
+						{
+							"idAction":		"actionid",
+							"actionDisplayName":	"displayable name of the permitable action",
+							"granted":		"Y|N",
+						}
+						...
+					],
+				"mediaSources":
+					[
+						{
+							"mediaSourceId":			"mediaSourceID",
+							"mediaSourceDisplayName":	"displayable name of media source",
+							"granted":		"Y|N",
+						}
+						...
+					],
+				"streamers":
+					[
+						{
+							"streamerID":			"streamerID",
+							"fromExt":	"fromExtension of the streamer",
+							"toExt":	"toExtension of the streamer",
+							"granted":		"Y|N",
+						}
+						...
+					]
+				
+			}
 		}
 		...
 	]
@@ -260,6 +260,34 @@ updateUserSettings
 					"maxAudioBitrate":	"themaxAudioBitrate (kbps)",
 					"maxVideoBitrate":	"themaxVideoBitrate (kbps)",
 					"maxBandwidth":		"themaxBandwidth (kbps)",
+					"permissions":
+					{
+						"general":
+							[
+								{
+									"idAction":		"actionid",
+									"granted":		"Y|N",
+								}
+								...
+							],
+						"mediaSources":
+							[
+								{
+									"mediaSourceId":			"mediaSourceID",
+									"granted":		"Y|N",
+								}
+								...
+							],
+						"streamers":
+							[
+								{
+									"streamerID":			"streamerID",
+									"granted":		"Y|N",
+								}
+								...
+							]
+						
+					}
 				}
 				...
 			]

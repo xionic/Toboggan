@@ -185,7 +185,7 @@ try
 			checkActionAllowed("administrator");
 			$argsPOST = $av->validateArgs($_POST, array(			
 				"settings"	=> "string, notblank",
-			));
+			)); 
 			$argsGET = $av->validateArgs($_GET, array(			
 				"userid"	=> "int, notblank",
 			));
@@ -254,6 +254,7 @@ catch(PDOException $pdoe)
 		appLog("Rolling back DB transaction", appLog_ERROR);
 		$conn->rollBack();
 	}*/
+	appLog(var_export($pdoe,true), appLog_DEBUG2);
 	reportServerError('PDOException: '.$pdoe->getMessage(),500);
 }
 

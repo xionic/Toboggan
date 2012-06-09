@@ -34,11 +34,11 @@ INSERT INTO APIKey(apikey, displayName) VALUES("{05C8236E-4CB2-11E1-9AD8-A28BA55
 INSERT INTO APIKey(apikey, displayName) VALUES("testkey1", "Testing apikey 1");
 INSERT INTO APIKey(apikey, displayName) VALUES("testkey2", "Testing apikey2");
 
-INSERT INTO Action(actionName, displayName) VALUES("streamFile", "Stream files");
-INSERT INTO Action(actionName, displayName) VALUES("downloadFile", "Download files");
-INSERT INTO Action(actionName, displayName) VALUES("administrator", "Is Administrator");
-INSERT INTO Action(actionName, displayName) VALUES("accessMediaSource", "Access a media source");
-INSERT INTO Action(actionName, displayName) VALUES("accessStreamer", "Access a streamer");
+INSERT INTO Action(idAction, actionName, displayName) VALUES(1, "streamFile", "Stream files");
+INSERT INTO Action(idAction, actionName, displayName) VALUES(2, "downloadFile", "Download files");
+INSERT INTO Action(idAction, actionName, displayName) VALUES(3, "administrator", "Is Administrator");
+INSERT INTO Action(idAction, actionName, displayName) VALUES(4, "accessMediaSource", "Access a media source");
+INSERT INTO Action(idAction, actionName, displayName) VALUES(5, "accessStreamer", "Access a streamer");
 
 INSERT INTO UserPermission(idUser, idAction) VALUES(1,1);
 INSERT INTO UserPermission(idUser, idAction) VALUES(1,3);
