@@ -857,28 +857,28 @@ function updateUser($userid, $json_settings){
 		"permissions"			=> "array",
 	));
 	$av->validateArgs($userSettings["permissions"], array(
-		"general"				=> "array",
+		"actions"				=> "array",
 		"mediaSources"			=> "array",
 		"streamers"				=> "array",
 	));
-	foreach($userSettings["permissions"]["general"] as $perm)
+	foreach($userSettings["permissions"]["actions"] as $perm)
 	{
 		$av->validateArgs($perm, array(
-			"idAction"				=> "int",
+			"id"				=> "int",
 			"granted"				=> "string, notblank",
 		));
 	}
 	foreach($userSettings["permissions"]["mediaSources"] as $perm)
 	{
 		$av->validateArgs($perm, array(
-			"mediaSourceId"				=> "int",
+			"id"				=> "int",
 			"granted"				=> "string, notblank",
 		));
 	}
 	foreach($userSettings["permissions"]["streamers"] as $perm)
 	{
 		$av->validateArgs($perm, array(
-			"streamerID"				=> "int",
+			"id"				=> "int",
 			"granted"				=> "string, notblank",
 		));
 	}
@@ -912,25 +912,25 @@ function updateUser($userid, $json_settings){
 	//update user permissions	
 	//build a normalised permissions structure to match the db structure (i.e. merge in the special cases [mediaSources and streamers])
 	$newUserPermissions = array();
-	//general permissions
-	foreach($userSettings["permissions"]["general"] as $perm)
+	//action permissions
+	foreach($userSettings["permissions"]["actions"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
-			$newUserPermissions[] = array("userid" => userLogin::getCurrentUserID(), "actionid" => $perm["idAction"]);
+			$newUserPermissions[] = array("userid" => userLogin::getCurrentUserID(), "actionid" => $perm["id"]);
 	}
 	
 	//mediaSource permissions
 	foreach($userSettings["permissions"]["mediaSources"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
-			$newUserPermissions[] = array("userid" => userLogin::getCurrentUserID(), "actionid" => PERMISSION_ACCESSMEDIASOURCE, "targetObjectID" => $perm["mediaSourceId"]);
+			$newUserPermissions[] = array("userid" => userLogin::getCurrentUserID(), "actionid" => PERMISSION_ACCESSMEDIASOURCE, "targetObjectID" => $perm["id"]);
 	}
 	
 	//streamer permissions
 	foreach($userSettings["permissions"]["streamers"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
-			$newUserPermissions[] = array("actionid" => PERMISSION_ACCESSSTREAMER,  "targetObjectID" => $perm["streamerID"]);
+			$newUserPermissions[] = array("actionid" => PERMISSION_ACCESSSTREAMER,  "targetObjectID" => $perm["id"]);
 	}
 
 	//remove existing permission for the user

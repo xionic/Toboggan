@@ -183,6 +183,9 @@ try
 		
 		case "updateUserSettings":
 			checkActionAllowed("administrator");
+			$uo = getUserObject($_GET["userid"]);
+			$uo["permissions"]["actions"][1]["granted"] = "N";
+			$_POST["settings"] = json_encode($uo);
 			$argsPOST = $av->validateArgs($_POST, array(			
 				"settings"	=> "string, notblank",
 			)); 
