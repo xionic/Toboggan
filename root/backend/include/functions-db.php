@@ -778,13 +778,19 @@ function getUserObject($userid)
 	//assemble user permissions info
 	//get  permissions for "normal" action - ie those with not targetObjectID
 	$stmt = $conn->prepare("
-		SELECT idAction as id, displayName as displayName, CASE WHEN idUserPermission IS NOT NULL THEN 'Y' ELSE 'N' END as granted 
-		FROM Action 
-		LEFT JOIN UserPermission USING(idAction)
-		WHERE (idUser = :userid OR idUser IS NULL)
-		AND targetObjectID IS NULL
+		SELECT Action.idAction as id, displayName as displayName, CASE WHEN idUserPermission IS NOT NULL THEN 'Y' ELSE 'N' END as granted 
+			FROM Action CROSS JOIN User 
+				LEFT JOIN (
+					SELECT * 
+						FROM UserPermission 
+						WHERE idUser = :userid
+				) as UP 
+				USING (idAction) 
+			WHERE User.idUser = :userid 
+				AND targetObjectID IS NULL;
 		;
 	");
+	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->execute();
 	$userStandardPerms = $stmt->fetchAll(PDO::FETCH_ASSOC);

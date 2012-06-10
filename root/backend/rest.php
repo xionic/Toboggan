@@ -49,12 +49,13 @@ try
 			exit();
 		}
 	}
-
-	$action = @$_GET["action"];
+	if(isset($_GET) && isset($_GET["action"]))
+		$action = $_GET["action"];
+	else
+		$action = "";
 	appLog("Received request for action ". $action, appLog_DEBUG);
 
-
-
+	//main selector between actions
 	switch($action)
 	{
 		case "listMediaSources":		
