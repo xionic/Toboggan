@@ -157,6 +157,7 @@ function passthroughStream($file){
 	$fileSize = filesize($file);
 	header("Content-Length: " . $fileSize);
 
+	//limit bandwidth
 	$maxBandwidth = getCurrentMaxBandwidth();
 	if(!(is_numeric($maxBandwidth) && $maxBandwidth >= 0))
 	{
@@ -164,10 +165,33 @@ function passthroughStream($file){
 		exit();
 	}
 	appLog("Limiting bandwidth to ". $maxBandwidth . "KB/s", appLog_DEBUG);
-
+	
+	//calc bytes to read each second
+	$bytesToRead = $maxBandwidth*1024;
+	
 	while(!feof($fh))
 	{
-		print(fread($fh, $maxBandwidth*1024));
+		$remainingTraffic = getRemainingUserTrafficLimit(userLogin::getCurrentUserID());
+		if($remainingTraffic !== false && $remainingTraffic <= 0)
+		{
+			appLog("Traffic limit exceeded for user with id: " . userLogin::getCurrentUserID(), appLog_INFO);
+			exit();
+		}
+		elseif($remainingTraffic < $bytesToRead/1024)
+		{
+			appLog("Setting \$bytesToRead to $bytesToRead", appLog_DEBUG);
+			$bytesToRead = $remainingTraffic*1024;
+		}
+		//get start position of file pointer
+		$pointerStart = ftell($fh);
+		
+		//read the file and output the data
+		print(fread($fh, $bytesToRead));
+		
+		$bytesRead = ftell($fh) - $pointerStart;
+		
+		//update traffic used for traffic limit
+		updateUserUsedTraffic(userLogin::getCurrentUserID(), (int)($bytesRead/1024));
 		usleep(1000000);
 	}
 
@@ -214,6 +238,11 @@ function transcodeStream($streamerObj, $file){
 	
 	//bandwidth limit
 	$maxBandwidth = getCurrentMaxBandwidth();
+	if(!(is_numeric($maxBandwidth) && $maxBandwidth >= 0))
+	{
+		reportError("Could not get maxBandwidth or it is 0");
+		exit();
+	}
 	appLog("Limiting bandwidth to ". $maxBandwidth . "KB/s", appLog_DEBUG);
 	
 	//number times per sec that we need to fread to output the max bandwidth
@@ -221,17 +250,34 @@ function transcodeStream($streamerObj, $file){
 	/**
 	* loop until trancode process dies outputing the data stream
 	*/
+	$bytesToRead = 8192; // this is the normal size to read, it will be reduced in order to hit the traffic limit and not exceed it.
 	while(true){
-		
+	
 		//start time for bandwidth throttling
 		$startTime = microtime(true);
 		
 		//try to prevent php timeouts
 		set_time_limit(60);
-	
+		
+		//check traffic limit
+		$remainingTraffic = getRemainingUserTrafficLimit(userLogin::getCurrentUserID());
+		if($remainingTraffic !== false && $remainingTraffic <= 0)
+		{
+			appLog("Traffic limit exceeded for user with id: " . userLogin::getCurrentUserID(), appLog_INFO);
+			exit();
+		} // adjust the number of bytes to read next time to avoid overstepping the limit
+		elseif($remainingTraffic < $bytesToRead/1024)
+		{
+			appLog("Setting \$bytesToRead to $bytesToRead", appLog_DEBUG);
+			$bytesToRead = $remainingTraffic*1024;
+		}
+		
 		//get a chunk of data
-		$output = fread($pipes[1],8192);
+		$output = fread($pipes[1],$bytesToRead);
 		print $output;
+		
+		//update traffic used for traffic limit
+		updateUserUsedTraffic(userLogin::getCurrentUserID(), (int)($bytesToRead/1024));
 		
 		//get error output
 		$errOutput = fgets($pipes[2]);

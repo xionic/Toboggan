@@ -53,3 +53,6 @@ INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,5,4);
 INSERT INTO UserPermission(idUser, idAction) VALUES(2,1);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,5,1);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,4,1);
+
+
+INSERT INTO UserTrafficLimit(`idUser`, `trafficLimit`, `startTime`, `period`) VALUES(2, 10000, strftime('%s', 'now'), 600);

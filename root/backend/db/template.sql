@@ -110,8 +110,6 @@ CREATE TABLE `schema_information` (
 	`version` INTEGER NOT NULL
 );
 
-
-
 CREATE TABLE `Action` (
 	`idAction` INTEGER PRIMARY KEY,
 	`actionName` VARCHAR(45) NOT NULL ,
@@ -120,10 +118,6 @@ CREATE TABLE `Action` (
 		UNIQUE (`actionName`)
 		ON CONFLICT ROLLBACK
 );
-
-
-
-
 
 CREATE TABLE `UserPermission` (
 	`idUserPermission` INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -138,6 +132,20 @@ CREATE TABLE `UserPermission` (
 	CONSTRAINT `actionid`
 		FOREIGN KEY (`idAction` )
 		REFERENCES `Action` (`idAction` )
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION
+);
+
+CREATE TABLE `UserTrafficLimit` (
+	`idUserTrafficLimit` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`idUser` INTEGER NOT NULL,
+	`trafficLimit` INTEGER NOT NULL CHECK (trafficLimit > 0),
+	`trafficUsed` INTEGER NOT NULL DEFAULT 0 CHECK (trafficUsed >= 0),
+	`startTime` INTEGER NULL,
+	`period` INTEGER NOT NULL CHECK (period > 0),
+	CONSTRAINT `userid`
+		FOREIGN KEY (`idUser` )
+		REFERENCES `User` (`idUser` )
 		ON DELETE NO ACTION
 		ON UPDATE NO ACTION
 );

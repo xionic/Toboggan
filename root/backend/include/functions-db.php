@@ -852,7 +852,7 @@ function updateUser($userid, $json_settings){
 	$userSettings = json_decode($json_settings,true);
 
 	$av = new ArgValidator("handleArgValidationError");
-	
+	appLog($userSettings);
 	$av->validateArgs($userSettings, array(
 		"username"				=> "string, notblank",
 		"email"					=> "string",
@@ -914,7 +914,7 @@ function updateUser($userid, $json_settings){
 	$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
 	$stmt->execute();
-	
+		
 	//update user permissions	
 	//build a normalised permissions structure to match the db structure (i.e. merge in the special cases [mediaSources and streamers])
 	$newUserPermissions = array();
@@ -963,13 +963,6 @@ function updateUser($userid, $json_settings){
 	$conn->commit();		
 	
 	closeDBConnection($conn);
-}
-/**
-* either updates an existing permission or inserts 
-*/
-function insertOrUpdatePermission()
-{
-
 }
 
 /**
@@ -1207,5 +1200,122 @@ function checkUserPermission($actionName, $targetObjectID = false)
 	return (count($results)==0?false:true);
 }
 
+/**
+* Returns the number of KB remaining of the user's traffic limit
+*/
+function getRemainingUserTrafficLimit($userid)
+{
+	//check if the limit is due to be reset and reset it if needed
+	resetUserTrafficLimitIfNeeded($userid);
+	
+	$conn = getDBConnection();	
+	$conn->beginTransaction();
+	
+	$stmt = $conn->prepare("SELECT (trafficLimit - trafficUsed) as remainingTraffic FROM UserTrafficLimit WHERE idUser = :userid");	
+	
+	$stmt->bindValue("userid", $userid, PDO::PARAM_INT);
+		
+	$stmt->execute();
+	
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+	$conn->commit();
+	closeDBConnection($conn);	
+
+	//check that the user actually has a limit
+	if(count($results) ==0)
+		return false;
+	else 
+		return (int)$results[0]["remainingTraffic"];
+}
+
+/**
+* Update the used traffic of the given user. Add $KBUsed KB to the used amount.
+* NOTE: This function does not call resetUserTrafficLimitIfNeeded since the traffic
+* used should not be updated (i.e. more traffic used) without first checking the remaining traffic by calling getRemainingUserTrafficLimit which does call
+* resetUserTrafficLimitIfNeeded
+*/
+function updateUserUsedTraffic($userid, $KBUsed)
+{
+	$conn = getDBConnection();	
+	$conn->beginTransaction();
+	
+	$stmt = $conn->prepare("UPDATE UserTrafficLimit SET trafficUsed = (trafficUsed + :kbused) WHERE idUser = :userid");	
+	
+	$stmt->bindValue("userid", $userid, PDO::PARAM_INT);
+	$stmt->bindValue("kbused", $KBUsed, PDO::PARAM_INT);
+		
+	$stmt->execute();
+
+	$conn->commit();
+	closeDBConnection($conn);
+}
+
+/**
+* Checks if a user's traffic limit period has elapsed and resets the limit if it has
+*/
+function resetUserTrafficLimitIfNeeded($userid)
+{
+	$conn = getDBConnection();	
+	$conn->beginTransaction();
+	
+	$stmt = $conn->prepare("SELECT (period - (strftime('%s','now') - (startTime))) as remainingPeriod FROM UserTrafficLimit WHERE idUser = :userid");	
+	
+	$stmt->bindValue("userid", $userid, PDO::PARAM_INT);
+		
+	$stmt->execute();
+
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	
+	//check that the user actually has a limit
+	if(count($results) > 0)
+	{
+		$remainingPeriod = $results[0]["remainingPeriod"];
+		if($remainingPeriod <= 0) 
+		{
+			appLog("Reseting traffic limit for user with id: " . userLogin::getCurrentUserID() . ". The period expired $remainingPeriod seconds ago" ,appLog_DEBUG);
+			$stmt = $conn->prepare("UPDATE UserTrafficLimit SET startTime = strftime('%s','now'), trafficUsed = 0 WHERE idUser = :userid");		
+			$stmt->bindValue("userid", $userid, PDO::PARAM_INT);				
+			$stmt->execute();
+		}		
+	}
+		
+
+	$conn->commit();
+	closeDBConnection($conn);
+	
+}
+
+function outputUserTrafficLimitStats_JSON($userid)
+{ 
+	return restTools::sendResponse(json_encode(getUserTrafficLimitStats($userid),200));
+}
+
+function getUserTrafficLimitStats($userid)
+{
+	//check if the limit is due to be reset and reset it if needed
+	resetUserTrafficLimitIfNeeded($userid);
+
+	$conn = getDBConnection();	
+	$conn->beginTransaction();
+	
+	$stmt = $conn->prepare("SELECT trafficLimit, trafficUsed, period, (period - (strftime('%s','now') - (startTime))) as timeToReset FROM UserTrafficLimit WHERE idUser = :userid");	
+	
+	$stmt->bindValue("userid", $userid, PDO::PARAM_INT);
+		
+	$stmt->execute();
+
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);	
+
+	$conn->commit();
+	closeDBConnection($conn);
+	
+	//check that the user actually has a limit
+	if(count($results) == 0)
+	{
+		return false;
+	}
+	return $results[0];
+}
 
 ?>

@@ -28,6 +28,15 @@ Every request must include an apiver={apiversion} argument or the request will b
 Access to the REST api requires an apikey. Every request must include an apikey={yourapikey} argument or the request will be rejected.
 
 ######################################################
+# Per user traffic limits							 #
+######################################################
+
+The traffic limits which can be configured per user ensure that in a time frame defined by the period of the limit, more traffic than that defined 
+in the limit will not be transmitted to the client as a media stream. The limit will not be reset immediately after the period has expired. The time
+at which the limit is reset depends on many factors and should not be relied upon. However, it can be relied upon that an exceeded limit will be reset
+if a stream is requested after the period has elapsed.
+
+######################################################
 # List of API methods exposed by the backend:		 #
 ######################################################
 
@@ -320,6 +329,17 @@ changeUserPassword
 		userid - (OPTIONAL) id of the user whose password should be changed. if omitted the current user's password will be changed
 		password - (POST) - base64 encoded sha256 of the password
 		
+getUserTrafficStats
+	args:
+		None
+	Retrieves a JSON object repreenting statistics about a user's traffic limit in the form:
+	{
+		"trafficLimit":		"Limit in KB",
+		"trafficUsed":		"Amount of trafficLimit used in KB",
+		"period":			"Length of period in seconds",
+		"timeToReset":		"Time remaining until the limit resets"
+	}
+	
 retrieveMediaSourceSettings
 	args: 
 		None
