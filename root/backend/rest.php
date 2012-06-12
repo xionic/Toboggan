@@ -22,8 +22,8 @@ try
 
 	//check API version and key
 	$apiargs = $av->validateArgs($_GET, array(
-		"apikey" => "string, notblank",
-		"apiver" => "numeric",
+		"apikey" => array("string", "notblank"),
+		"apiver" => array("numeric"),
 	));
 	//api version
 	if($apiargs["apiver"] != APIVERSION)
@@ -65,8 +65,8 @@ try
 		case "listDirContents":
 			//validate args		
 			$args = $av->validateArgs($_GET, array(
-				"dir" => "string",
-				"mediaSourceID"	=>	"int, notzero",
+				"dir" => array("string"),
+				"mediaSourceID"	=>	array("int", "notzero"),
 			));
 			
 				
@@ -81,10 +81,10 @@ try
 			checkActionAllowed("streamFile");	
 			//validate arguments
 			$args = $av->validateArgs($_GET, array(
-				"dir" 				=> "string",
-				"mediaSourceID"		=> "int, notzero",
-				"filename"			=> "string, notblank",
-				"streamerID" 		=> "int"
+				"dir" 				=> array("string"),
+				"mediaSourceID"		=> array("int", "notzero"),
+				"filename"			=> array("string", "notblank"),
+				"streamerID" 		=> array("int")
 			));
 					
 			//get full path to file
@@ -119,8 +119,8 @@ try
 		case "saveClientSettings": 
 			//args validation
 			$args = $av->validateArgs($_GET, array(
-				"settingsBlob" => "string",
-				"apikey"		=> "string, notblank"
+				"settingsBlob" 	=> array("string"),
+				"apikey"		=> array("string", "notblank")
 			));
 			//save the settings
 			saveClientSettings($args["settingsBlob"], $args["apikey"], userLogin::getCurrentUserID());
@@ -129,7 +129,7 @@ try
 			
 		case "retrieveClientSettings":
 			$args = $av->validateArgs($_GET, array(
-				"apikey"		=> "string, notblank"
+				"apikey"		=> array("string", "notblank")
 			));
 
 			$clientSettings = getClientSettings($args["apikey"], userLogin::getCurrentUserID());
@@ -147,9 +147,9 @@ try
 		
 		case "search":
 			$args = $av->validateArgs($_GET, array(
-				"mediaSourceID"		=> "string, notblank", //string to allow for 'all'
-				"dir"				=> "string",
-				"query"				=> "string, notblank",
+				"mediaSourceID"		=> array("string", "notblank"), //string to allow for 'all'
+				"dir"				=> array("string"),
+				"query"				=> array("string", "notblank"),
 			));
 			
 			outputSearchResults_JSON($args["mediaSourceID"], $args["dir"], $args["query"]);
@@ -163,7 +163,7 @@ try
 		case "saveStreamerSettings":
 			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_POST, array(			
-				"settings"		=> "string, notblank",
+				"settings"		=> array("string", "notblank"),
 			));
 			
 			saveStreamerSettings($args["settings"]);
@@ -177,23 +177,18 @@ try
 		case "retrieveUserSettings":
 			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_GET, array(			
-				"userid"	=> "int, notblank",
+				"userid"	=> array("int", "notblank"),
 			));
 			outputUserSettings_JSON($args["userid"]);
 		break;
 		
 		case "updateUserSettings":
 			checkActionAllowed("administrator");
-			$uo = getUserObject(1);
-			$uo["enableTrafficLimit"] = 1;
-			//$uo["trafficLimit"] = 1000;
-			//$uo["trafficLimitPeriod"] = 100;
-			$_POST["settings"] = json_encode($uo);
 			$argsPOST = $av->validateArgs($_POST, array(			
-				"settings"	=> "string, notblank",
+				"settings"	=> array("string", "notblank"),
 			)); 
 			$argsGET = $av->validateArgs($_GET, array(			
-				"userid"	=> "int, notblank",
+				"userid"	=> array("int","notblank"),
 			));
 			
 			updateUser($argsGET["userid"], $argsPOST["settings"]);
@@ -202,7 +197,7 @@ try
 		case "addUser":
 			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_POST, array(			
-				"settings"	=> "string, notblank",
+				"settings"	=> array("string", "notblank"),
 			));
 			addUser($args["settings"]);
 		break;
@@ -210,7 +205,7 @@ try
 		case "deleteUser";
 			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_GET, array(			
-				"userid"	=> "int, notblank",
+				"userid"	=> array("int", "notblank"),
 			));
 			deleteUser($args["userid"]);
 		break;
@@ -218,10 +213,10 @@ try
 		case "changeUserPassword":
 			checkActionAllowed("administrator");
 			$argsGET = $av->validateArgs($_GET, array(
-				"userid"	=> "int, notblank, optional",
+				"userid"	=> array("int", "notblank", "optional"),
 			));
 			$argsPOST = $av->validateArgs($_POST, array(			
-				"password"	=> "string, notblank",
+				"password"	=> array("string", "notblank"),
 			));
 			
 			if(!isset($argsGET["userid"])) // it's optional - if not set use current userid
@@ -243,7 +238,7 @@ try
 		case "saveMediaSourceSettings":
 			checkActionAllowed("administrator");
 			$argsPOST = $av->validateArgs($_POST, array(			
-				"mediaSourceSettings"	=> "string, notblank",
+				"mediaSourceSettings"	=> array("string", "notblank"),
 			));
 			saveMediaSourceSettings($argsPOST["mediaSourceSettings"]);
 			break;	

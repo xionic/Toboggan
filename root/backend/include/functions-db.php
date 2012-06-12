@@ -427,12 +427,12 @@ function saveStreamerSettings($settings_JSON)
 	foreach($settings as $streamer)
 	{
 		$av->validateArgs($streamer, array(
-			"fromExtensions"	=>		"string, notblank",
-			"bitrateCmd"		=>		"string, notblank",
-			"toExtension"		=>		"string, notblank",
-			"MimeType"			=>		"string, notblank",
-			"MediaType"			=>		"string, notblank",
-			"command"			=>		"string, notblank",
+			"fromExtensions"	=>		array("string", "notblank"),
+			"bitrateCmd"		=>		array("string", "notblank"),
+			"toExtension"		=>		array("string", "notblank"),
+			"MimeType"			=>		array("string", "notblank"),
+			"MediaType"			=>		array("string", "notblank"),
+			"command"			=>		array("string", "notblank"),
 		));
 	}
 	//TODO - add more validation - deduplication etc
@@ -858,41 +858,41 @@ function updateUser($userid, $json_settings){
 	$av = new ArgValidator("handleArgValidationError");
 
 	$av->validateArgs($userSettings, array(
-		"username"				=> "string, notblank",
-		"email"					=> "string",
-		"enabled"				=> "int",
-		"maxAudioBitrate"		=> "int",
-		"maxVideoBitrate"		=> "int",
-		"maxBandwidth"			=> "int",
-		"enableTrafficLimit"	=> "int",
-		"trafficLimit"			=> "int",		
-		"trafficLimitPeriod"		=> "int",		
-		"permissions"			=> "array",
+		"username"				=> array("string", "notblank"),
+		"email"					=> array("string"),
+		"enabled"				=> array("int"),
+		"maxAudioBitrate"		=> array("int"),
+		"maxVideoBitrate"		=> array("int"),
+		"maxBandwidth"			=> array("int"),
+		"enableTrafficLimit"	=> array("int"),
+		"trafficLimit"			=> array("int"),		
+		"trafficLimitPeriod"	=> array("int"),		
+		"permissions"			=> array("array"),
 	));
 	$av->validateArgs($userSettings["permissions"], array(
-		"actions"				=> "array",
-		"mediaSources"			=> "array",
-		"streamers"				=> "array",
+		"actions"				=> array("array"),
+		"mediaSources"			=> array("array"),
+		"streamers"				=> array("array"),
 	));
 	foreach($userSettings["permissions"]["actions"] as $perm)
 	{
 		$av->validateArgs($perm, array(
-			"id"				=> "int",
-			"granted"				=> "string, notblank",
+			"id"				=> array("int"),
+			"granted"			=> array("string", "notblank"),
 		));
 	}
 	foreach($userSettings["permissions"]["mediaSources"] as $perm)
 	{
 		$av->validateArgs($perm, array(
-			"id"				=> "int",
-			"granted"				=> "string, notblank",
+			"id"				=> array("int"),
+			"granted"			=> array("string", "notblank"),
 		));
 	}
 	foreach($userSettings["permissions"]["streamers"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> "int",
-			"granted"				=> "string, notblank",
+			"granted"				=> "string", "notblank",
 		));
 	}
 	
@@ -991,13 +991,13 @@ function addUser($json_settings)
 	$av = new ArgValidator("handleArgValidationError");
 	
 	$av->validateArgs($userSettings, array(
-		"username"				=> "string, notblank",
-		"password"				=> "string, notblank",
-		"email"					=> "string",
-		"enabled"				=> "int",
-		"maxAudioBitrate"		=> "int",
-		"maxVideoBitrate"		=> "int",
-		"maxBandwidth"			=> "int",
+		"username"				=> array("string", "notblank"),
+		"password"				=> array("string", "notblank"),
+		"email"					=> array("string"),
+		"enabled"				=> array("int"),
+		"maxAudioBitrate"		=> array("int"),
+		"maxVideoBitrate"		=> array("int"),
+		"maxBandwidth"			=> array("int"),
 	));
 	
 	$conn = null;
@@ -1112,9 +1112,9 @@ function saveMediaSourceSettings($settings_JSON)
 		//validate them
 		$av = new ArgValidator("handleArgValidationError");
 		$mediaSource = $av->validateArgs($mediaSource,array(
-			"mediaSourceID"	=>	"int, notblank, optional",
-			"path" 			=>	"string, notblank",
-			"displayName" 	=> "string, notblank",
+			"mediaSourceID"	=>	array("int", "notblank", "optional"),
+			"path" 			=>	array("string", "notblank"),
+			"displayName" 	=> 	array("string", "notblank"),
 		));
 	}
 	
