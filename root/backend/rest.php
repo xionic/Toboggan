@@ -73,11 +73,19 @@ try
 				"dir" => array("string"),
 				"mediaSourceID"	=>	array("int", "notzero"),
 			));
-			
-				
+							
 			outputDirContents_JSON($args["dir"], $args["mediaSourceID"]);
 			break;
 			
+		case "getFileMetadata":			
+			$args = $av->validateArgs($_GET, array(
+				"dir" 				=> array("string"),
+				"mediaSourceID"		=> array("int", "notzero"),
+				"filename"			=> array("string", "notblank")
+			));
+			outputFileMetaData_JSON($args["mediaSourceID"], $args["dir"], $args["filename"]);
+				break;
+		
 		case "downloadFile": //download a file unmodified
 			checkActionAllowed("downloadFile");	
 			$_GET["streamerID"] = 0; //hack through the switch and allow to follow through the getStream handler

@@ -8,7 +8,7 @@ require_once("classes/userLogin.class.php");
 function getAvailableStreamers($file){
 	//get file extension
 	$pathinfo = pathinfo($file);
-	$extension = strtolower($pathinfo["extension"]);	
+	$extension = strtolower($pathinfo["extension"]);
 	
 	$conn = getDBConnection();
 	

@@ -84,6 +84,25 @@ listDirContents
 		],
 	}
 	
+getFileMetadata
+	args:
+		dir - directory containing file to stream.
+		filename - the filename of the file to stream.
+		mediaSourceID - the ID of the mediaSource containing the dir
+	Returns metadata about the given file in the following form:
+	{
+		filename: "nameOfFile",
+		displayName: "givenNameOfFileWhichShouldBeDisplayed",
+		streamers: 
+		[
+			{
+				extension: "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
+				streamerID: "ID number of streamer",
+				mediaType: "The media type which this streamer outputs",
+			}
+		]
+	}
+	
 getStream
 	args:
 		dir - directory containing file to stream.

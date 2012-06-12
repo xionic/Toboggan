@@ -35,6 +35,18 @@ function getFileObject($path)
 	);
 }
 /**
+* Outputs metadata about a file
+*/
+function outputFileMetaData_JSON($mediaSourceID, $dir, $filename)
+{
+	$mediaSourcePath = getMediaSourcePath($mediaSourceID);
+	$filePath = $mediaSourcePath . "/" . normalisePath($dir . "/" . $filename);
+	
+	$fileMetaData = getFileObject($filePath);
+	restTools::sendResponse(json_encode($fileMetaData), 200, "text/json");
+}
+
+/**
 * checks that the current user is allowed to perform the action given by action name - if not report error and stop.
 */
 function checkActionAllowed($actionName, $targetObjectID = false)
