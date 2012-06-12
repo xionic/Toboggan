@@ -1037,6 +1037,12 @@ function addUser($json_settings)
 */
 function deleteUser($userid)
 {
+	if( userLogin::getCurrentUserID() == ((int)$userid)) //user cannot delete themselves
+	{
+		reportError("Cannot delete current user", 403);
+		exit();
+	}
+
 	$conn = null;
 	
 	$conn = getDBConnection();
