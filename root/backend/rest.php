@@ -48,7 +48,12 @@ try
 			reportError("Authentication failed", 401, "text/plain");
 			exit();
 		}
+		else // header returning the currently logged in user - only output when logged in and not attempting a login
+		{
+			header("X-AuthenticatedUserID: " . userLogin::getCurrentUserID());
+		}
 	}
+	
 	if(isset($_GET) && isset($_GET["action"]))
 		$action = $_GET["action"];
 	else

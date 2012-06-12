@@ -37,6 +37,13 @@ at which the limit is reset depends on many factors and should not be relied upo
 if a stream is requested after the period has elapsed.
 
 ######################################################
+# Authenticated User ID Header						 #
+######################################################
+
+The API will send an HTTP response header 'X-AuthenticatedUserID' indicating the ID of the currently logged in user. 
+This will be send with all requests except those made with the "login" method (i.e. action=login)
+
+######################################################
 # List of API methods exposed by the backend:		 #
 ######################################################
 
