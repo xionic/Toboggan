@@ -331,7 +331,7 @@ addUser
 			
 deleteUser
 	args:
-		userid - a user id of the user to delete
+		userid - a user id of the user to delete NOTE: users cannot delete themselves
 	Removes a user
 	
 changeUserPassword
