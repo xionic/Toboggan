@@ -860,13 +860,13 @@ function updateUser($userid, $json_settings){
 	$av->validateArgs($userSettings, array(
 		"username"				=> array("string", "notblank"),
 		"email"					=> array("string"),
-		"enabled"				=> array("int"),
-		"maxAudioBitrate"		=> array("int"),
-		"maxVideoBitrate"		=> array("int"),
-		"maxBandwidth"			=> array("int"),
-		"enableTrafficLimit"	=> array("int"),
-		"trafficLimit"			=> array("int"),		
-		"trafficLimitPeriod"	=> array("int"),		
+		"enabled"				=> array("int", "lbound 0", "ubound 1"),
+		"maxAudioBitrate"		=> array("int", "lbound 0"),
+		"maxVideoBitrate"		=> array("int", "lbound 0"),
+		"maxBandwidth"			=> array("int", "lbound 0"),
+		"enableTrafficLimit"	=> array("int", "lbound 0", "ubound 1"),
+		"trafficLimit"			=> array("int", "lbound 1"),		
+		"trafficLimitPeriod"	=> array("int", "lbound 1"),		
 		"permissions"			=> array("array"),
 	));
 	$av->validateArgs($userSettings["permissions"], array(
@@ -891,8 +891,8 @@ function updateUser($userid, $json_settings){
 	foreach($userSettings["permissions"]["streamers"] as $perm)
 	{
 		$av->validateArgs($perm, array(
-			"id"				=> "int",
-			"granted"				=> "string", "notblank",
+			"id"				=> array("int"),
+			"granted"				=> array("string", "notblank"),
 		));
 	}
 	
