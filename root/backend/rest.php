@@ -184,6 +184,11 @@ try
 		
 		case "updateUserSettings":
 			checkActionAllowed("administrator");
+			$uo = getUserObject(1);
+			$uo["enableTrafficLimit"] = 1;
+			//$uo["trafficLimit"] = 1000;
+			//$uo["trafficLimitPeriod"] = 100;
+			$_POST["settings"] = json_encode($uo);
 			$argsPOST = $av->validateArgs($_POST, array(			
 				"settings"	=> "string, notblank",
 			)); 

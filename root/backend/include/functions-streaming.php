@@ -171,28 +171,39 @@ function passthroughStream($file){
 	
 	while(!feof($fh))
 	{
+		//traffic limits
 		$remainingTraffic = getRemainingUserTrafficLimit(userLogin::getCurrentUserID());
-		if($remainingTraffic !== false && $remainingTraffic <= 0)
+		if($remainingTraffic !== false)
 		{
-			appLog("Traffic limit exceeded for user with id: " . userLogin::getCurrentUserID(), appLog_INFO);
-			exit();
-		}
-		elseif($remainingTraffic < $bytesToRead/1024)
-		{
-			appLog("Setting \$bytesToRead to $bytesToRead", appLog_DEBUG);
-			$bytesToRead = $remainingTraffic*1024;
+			if($remainingTraffic <= 0)
+			{
+				appLog("Traffic limit exceeded for user with id: " . userLogin::getCurrentUserID(), appLog_INFO);
+				exit();
+			}
+			elseif($remainingTraffic < $bytesToRead/1024)
+			{
+				appLog("Setting \$bytesToRead to $bytesToRead", appLog_DEBUG);
+				$bytesToRead = $remainingTraffic*1024;
+			}
 		}
 		//get start position of file pointer
 		$pointerStart = ftell($fh);
 		
+		//start time for bandwidth throttling
+		$startTime = microtime(true);
+		
 		//read the file and output the data
 		print(fread($fh, $bytesToRead));
 		
+		//calc the number of bytes actually read
 		$bytesRead = ftell($fh) - $pointerStart;
 		
 		//update traffic used for traffic limit
 		updateUserUsedTraffic(userLogin::getCurrentUserID(), (int)($bytesRead/1024));
-		usleep(1000000);
+		
+		//sleep for 1 second minus the time taken to read the data - for bandwidth limiting
+		$sleeptime = (1 - (microtime(true) - $startTime))*1000000;
+		usleep($sleeptime);
 	}
 
 	fclose($fh);
@@ -261,15 +272,18 @@ function transcodeStream($streamerObj, $file){
 		
 		//check traffic limit
 		$remainingTraffic = getRemainingUserTrafficLimit(userLogin::getCurrentUserID());
-		if($remainingTraffic !== false && $remainingTraffic <= 0)
+		if($remainingTraffic !== false)
 		{
-			appLog("Traffic limit exceeded for user with id: " . userLogin::getCurrentUserID(), appLog_INFO);
-			exit();
-		} // adjust the number of bytes to read next time to avoid overstepping the limit
-		elseif($remainingTraffic < $bytesToRead/1024)
-		{
-			appLog("Setting \$bytesToRead to $bytesToRead", appLog_DEBUG);
-			$bytesToRead = $remainingTraffic*1024;
+			if($remainingTraffic <= 0)
+			{
+				appLog("Traffic limit exceeded for user with id: " . userLogin::getCurrentUserID(), appLog_INFO);
+				exit();
+			} // adjust the number of bytes to read next time to avoid overstepping the limit
+			elseif($remainingTraffic < $bytesToRead/1024)
+			{
+				appLog("Setting \$bytesToRead to $bytesToRead", appLog_DEBUG);
+				$bytesToRead = $remainingTraffic*1024;
+			}
 		}
 		
 		//get a chunk of data

@@ -55,7 +55,6 @@ CREATE TABLE `transcode_cmd` (
 
 CREATE TABLE `User` (
 	`idUser` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`idRole` INTEGER NOT NULL,
 	`username` VARCHAR(32) NOT NULL,
 	`password` CHAR(64) NOT NULL,
 	`email` VARCHAR(256),
@@ -63,14 +62,14 @@ CREATE TABLE `User` (
 	`maxAudioBitrate` INT,
 	`maxVideoBitrate` INT,
 	`maxBandwidth` INT,
+	`enableTrafficLimit` BOOLEAN DEFAULT 0,
+	`trafficLimit` INTEGER NOT NULL DEFAULT 0 CHECK (enableTrafficLimit = 0 OR trafficLimit > 0),
+	`trafficUsed` INTEGER NOT NULL DEFAULT 0 CHECK (enableTrafficLimit = 0 OR trafficUsed >= 0),
+	`trafficLimitStartTime` INTEGER NULL,
+	`trafficLimitPeriod` INTEGER NOT NULL DEFAULT 0 CHECK (enableTrafficLimit = 0 OR trafficLimitPeriod > 0),
 	CONSTRAINT `uniqueUsername`
 		UNIQUE (`username`)
 		ON CONFLICT ROLLBACK
-	CONSTRAINT `UserRole`
-		FOREIGN KEY (`idRole` )
-		REFERENCES `Role` (`idRole` )
-		ON DELETE NO ACTION
-		ON UPDATE NO ACTION
 );
 
 CREATE TABLE `ClientSettings` (
@@ -94,14 +93,6 @@ CREATE TABLE `APIKey` (
 	`displayName` VARCHAR(64),
 	CONSTRAINT `apikey`
 		UNIQUE (`apikey`)
-		ON CONFLICT ROLLBACK
-);
-
-CREATE TABLE `Role` (
-	`idRole` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`roleName` VARCHAR(45) NOT NULL ,
-	CONSTRAINT `rolename`
-		UNIQUE (`roleName`)
 		ON CONFLICT ROLLBACK
 );
 
@@ -136,19 +127,6 @@ CREATE TABLE `UserPermission` (
 		ON UPDATE NO ACTION
 );
 
-CREATE TABLE `UserTrafficLimit` (
-	`idUserTrafficLimit` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`idUser` INTEGER NOT NULL,
-	`trafficLimit` INTEGER NOT NULL CHECK (trafficLimit > 0),
-	`trafficUsed` INTEGER NOT NULL DEFAULT 0 CHECK (trafficUsed >= 0),
-	`startTime` INTEGER NULL,
-	`period` INTEGER NOT NULL CHECK (period > 0),
-	CONSTRAINT `userid`
-		FOREIGN KEY (`idUser` )
-		REFERENCES `User` (`idUser` )
-		ON DELETE NO ACTION
-		ON UPDATE NO ACTION
-);
 
 
 

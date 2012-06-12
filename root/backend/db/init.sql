@@ -1,4 +1,4 @@
-INSERT INTO schema_information(version) VALUES("101");
+INSERT INTO schema_information(version) VALUES("102");
 
 INSERT INTO fromExt(Extension, bitrateCmd) VALUES("mp3", "/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'");
 INSERT INTO toExt(Extension, MimeType, MediaType) VALUES("mp3", "audio/mp3", "a");
@@ -21,14 +21,14 @@ INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(4,2,2);
 INSERT INTO mediaSource(path, displayName) VALUES("/mnt/storage/music", "Music");
 INSERT INTO mediaSource(path, displayName) VALUES("/mnt/storage/video", "Video");
 
-INSERT INTO Role(roleName) VALUES("Admin");
-INSERT INTO Role(roleName) VALUES("User");
 
-INSERT INTO User(idRole, username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth)
-	VALUES (0, "testuser", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "test@test.com", 1, 320, 1000, 100);
+INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth)
+	VALUES ("testuser", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "test@test.com", 1, 320, 1000, 100);
 	
-INSERT INTO User(idRole, username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth)
-	VALUES (1, "testuser2", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "test2@test.com", 1, 128, 300, 75);
+INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth, 
+	enableTrafficLimit, trafficLimit, trafficLimitStartTime, trafficLimitPeriod)
+	VALUES ("testuser2", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "test2@test.com", 1, 128, 300, 500,
+		1, 10000, strftime('%s', 'now'), 600);
 	
 INSERT INTO APIKey(apikey, displayName) VALUES("{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}", "Main frontend");
 INSERT INTO APIKey(apikey, displayName) VALUES("testkey1", "Testing apikey 1");
@@ -53,6 +53,6 @@ INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,5,4);
 INSERT INTO UserPermission(idUser, idAction) VALUES(2,1);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,5,1);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,4,1);
-
-
-INSERT INTO UserTrafficLimit(`idUser`, `trafficLimit`, `startTime`, `period`) VALUES(2, 10000, strftime('%s', 'now'), 600);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,4,2);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,5,2);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,4,3);

@@ -80,7 +80,8 @@ function outputSearchResults_JSON($mediaSourceID, $dir, $query)
 	$mediaSourceArr = array();
 	if($allMediaSources) // search all mediaSources
 	{
-		foreach(getMediaSources() as $source)
+		$mediaSourcesList = getMediaSources();
+		foreach($mediaSourcesList as $source)
 		{
 			$mediaSourceArr[] = $source["mediaSourceID"];
 		}
@@ -101,6 +102,10 @@ function outputSearchResults_JSON($mediaSourceID, $dir, $query)
 		}
 				
 		$resultSet = getSearchResults($path,normalisePath($dir),$query, true);
+		if($resultSet === false)
+		{
+			reportError("Non existant directory", 400);
+		}
 		
 		usort($resultSet['files'], function($a,$b){
 			return strcasecmp($a['path'], $b['path'])!==0?strcasecmp($a['path'], $b['path']):strcasecmp($a['fileObject']['displayName'], $b['fileObject']['displayName']);
@@ -167,7 +172,7 @@ function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 		}
 	}
 
-	closedir($dirHandle);
+	closedir($dirHandle);	
 	return array("dirs" => $dirResults, "files" => $fileResults);
 }
 

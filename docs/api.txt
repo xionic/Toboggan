@@ -263,12 +263,15 @@ updateUserSettings
 		settings - (POST) an object representing the user's setting in the following format
 			[
 				{
-					"username":			"theusername",
-					"email":			"theemail",
-					"enabled":			"theenabled",
-					"maxAudioBitrate":	"themaxAudioBitrate (kbps)",
-					"maxVideoBitrate":	"themaxVideoBitrate (kbps)",
-					"maxBandwidth":		"themaxBandwidth (kbps)",
+					"username":				"theusername",
+					"email":				"theemail",
+					"enabled":				"theenabled",
+					"maxAudioBitrate":		"themaxAudioBitrate (kbps)",
+					"maxVideoBitrate":		"themaxVideoBitrate (kbps)",
+					"maxBandwidth":			"themaxBandwidth (kbps)",
+					"enableTrafficLimit"	"1|0",
+					"trafficLimit":			"Limit in KB",
+					"trafficLimitPeriod":	"Length of traffic limit period in seconds",
 					"permissions":
 					{
 						"general":
@@ -334,10 +337,11 @@ getUserTrafficStats
 		None
 	Retrieves a JSON object repreenting statistics about a user's traffic limit in the form:
 	{
-		"trafficLimit":		"Limit in KB",
-		"trafficUsed":		"Amount of trafficLimit used in KB",
-		"period":			"Length of period in seconds",
-		"timeToReset":		"Time remaining until the limit resets"
+		"enableTrafficLimit":	"Y|N"
+		"trafficLimit":			"Limit in KB",  											NOTE:Omitted if enableTrafficLimit is 'N'
+		"trafficUsed":			"Amount of trafficLimit used in KB",						NOTE:Omitted if enableTrafficLimit is 'N'
+		"trafficLimitPeriod":				"Length of traffic limit period in seconds",	NOTE:Omitted if enableTrafficLimit is 'N'
+		"timeToReset":			"Time remaining until the limit resets"						NOTE:Omitted if enableTrafficLimit is 'N'
 	}
 	
 retrieveMediaSourceSettings

@@ -768,8 +768,11 @@ function getUserObject($userid)
 	$conn->beginTransaction();
 	
 	//assemble user info
-	$stmt = $conn->prepare("SELECT idUser, username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth
-	FROM User WHERE idUser = :userid");
+	$stmt = $conn->prepare("
+		SELECT idUser, username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth,
+				enableTrafficLimit, trafficLimit, trafficLimitPeriod
+			FROM User
+			WHERE idUser = :userid");
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->execute();
 	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -838,6 +841,7 @@ function getUserObject($userid)
 	$userStreamerPerms = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	$userObj["permissions"]["streamers"] = $userStreamerPerms;
 	
+	
 	$conn->commit();	
 	closeDBConnection($conn);
 
@@ -852,7 +856,7 @@ function updateUser($userid, $json_settings){
 	$userSettings = json_decode($json_settings,true);
 
 	$av = new ArgValidator("handleArgValidationError");
-	appLog($userSettings);
+
 	$av->validateArgs($userSettings, array(
 		"username"				=> "string, notblank",
 		"email"					=> "string",
@@ -860,6 +864,9 @@ function updateUser($userid, $json_settings){
 		"maxAudioBitrate"		=> "int",
 		"maxVideoBitrate"		=> "int",
 		"maxBandwidth"			=> "int",
+		"enableTrafficLimit"	=> "int",
+		"trafficLimit"			=> "int",		
+		"trafficLimitPeriod"		=> "int",		
 		"permissions"			=> "array",
 	));
 	$av->validateArgs($userSettings["permissions"], array(
@@ -901,7 +908,12 @@ function updateUser($userid, $json_settings){
 		enabled = :enabled,
 		maxAudioBitrate = :maxAudioBitrate,
 		maxVideoBitrate = :maxVideoBitrate,
-		maxBandwidth = :maxBandwidth
+		maxBandwidth = :maxBandwidth,
+		enableTrafficLimit = :enableTrafficLimit,
+		trafficLimit = :trafficLimit,
+		trafficLimitPeriod = :trafficLimitPeriod,
+		trafficUsed = 0,
+		trafficLimitStartTime = strftime('%s','now')
 		WHERE idUser = :idUser
 		
 	");
@@ -913,6 +925,9 @@ function updateUser($userid, $json_settings){
 	$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
+	$stmt->bindValue(":enableTrafficLimit", $userSettings["enableTrafficLimit"], PDO::PARAM_INT);
+	$stmt->bindValue(":trafficLimit", $userSettings["trafficLimit"], PDO::PARAM_INT);
+	$stmt->bindValue(":trafficLimitPeriod", $userSettings["trafficLimitPeriod"], PDO::PARAM_INT);
 	$stmt->execute();
 		
 	//update user permissions	
@@ -922,14 +937,14 @@ function updateUser($userid, $json_settings){
 	foreach($userSettings["permissions"]["actions"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
-			$newUserPermissions[] = array("userid" => userLogin::getCurrentUserID(), "actionid" => $perm["id"]);
+			$newUserPermissions[] = array("userid" => $userid, "actionid" => $perm["id"]);
 	}
 	
 	//mediaSource permissions
 	foreach($userSettings["permissions"]["mediaSources"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
-			$newUserPermissions[] = array("userid" => userLogin::getCurrentUserID(), "actionid" => PERMISSION_ACCESSMEDIASOURCE, "targetObjectID" => $perm["id"]);
+			$newUserPermissions[] = array("userid" => $userid, "actionid" => PERMISSION_ACCESSMEDIASOURCE, "targetObjectID" => $perm["id"]);
 	}
 	
 	//streamer permissions
@@ -941,7 +956,7 @@ function updateUser($userid, $json_settings){
 
 	//remove existing permission for the user
 	$stmt = $conn->prepare("DELETE FROM UserPermission WHERE idUser = :userid");
-	$stmt->bindValue(":userid", userLogin::getCurrentUserID(), PDO::PARAM_INT);
+	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->execute();
 	
 	//insert new permissions
@@ -953,7 +968,7 @@ function updateUser($userid, $json_settings){
 			.")"
 		);
 		
-		$stmt->bindValue(":userid", userLogin::getCurrentUserID(), PDO::PARAM_INT);
+		$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 		$stmt->bindValue(":actionid", $perm["actionid"], PDO::PARAM_INT);
 		if(isset($perm["targetObjectID"]))
 			$stmt->bindValue(":targetObjectID", $perm["targetObjectID"], PDO::PARAM_INT);
@@ -1211,7 +1226,7 @@ function getRemainingUserTrafficLimit($userid)
 	$conn = getDBConnection();	
 	$conn->beginTransaction();
 	
-	$stmt = $conn->prepare("SELECT (trafficLimit - trafficUsed) as remainingTraffic FROM UserTrafficLimit WHERE idUser = :userid");	
+	$stmt = $conn->prepare("SELECT enableTrafficLimit, (trafficLimit - trafficUsed) as remainingTraffic FROM User WHERE idUser = :userid");	
 	
 	$stmt->bindValue("userid", $userid, PDO::PARAM_INT);
 		
@@ -1223,7 +1238,7 @@ function getRemainingUserTrafficLimit($userid)
 	closeDBConnection($conn);	
 
 	//check that the user actually has a limit
-	if(count($results) ==0)
+	if(count($results) == 0  || $results[0]["enableTrafficLimit"] == 0)
 		return false;
 	else 
 		return (int)$results[0]["remainingTraffic"];
@@ -1240,7 +1255,7 @@ function updateUserUsedTraffic($userid, $KBUsed)
 	$conn = getDBConnection();	
 	$conn->beginTransaction();
 	
-	$stmt = $conn->prepare("UPDATE UserTrafficLimit SET trafficUsed = (trafficUsed + :kbused) WHERE idUser = :userid");	
+	$stmt = $conn->prepare("UPDATE User SET trafficUsed = (trafficUsed + :kbused) WHERE idUser = :userid");	
 	
 	$stmt->bindValue("userid", $userid, PDO::PARAM_INT);
 	$stmt->bindValue("kbused", $KBUsed, PDO::PARAM_INT);
@@ -1259,7 +1274,7 @@ function resetUserTrafficLimitIfNeeded($userid)
 	$conn = getDBConnection();	
 	$conn->beginTransaction();
 	
-	$stmt = $conn->prepare("SELECT (period - (strftime('%s','now') - (startTime))) as remainingPeriod FROM UserTrafficLimit WHERE idUser = :userid");	
+	$stmt = $conn->prepare("SELECT enableTrafficLimit, (trafficLimitPeriod - (strftime('%s','now') - (trafficLimitStartTime))) as remainingPeriod FROM User WHERE idUser = :userid");	
 	
 	$stmt->bindValue("userid", $userid, PDO::PARAM_INT);
 		
@@ -1268,13 +1283,13 @@ function resetUserTrafficLimitIfNeeded($userid)
 	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	
 	//check that the user actually has a limit
-	if(count($results) > 0)
+	if(count($results) > 0 && $results[0]["enableTrafficLimit"] == 1)
 	{
 		$remainingPeriod = $results[0]["remainingPeriod"];
 		if($remainingPeriod <= 0) 
 		{
-			appLog("Reseting traffic limit for user with id: " . userLogin::getCurrentUserID() . ". The period expired $remainingPeriod seconds ago" ,appLog_DEBUG);
-			$stmt = $conn->prepare("UPDATE UserTrafficLimit SET startTime = strftime('%s','now'), trafficUsed = 0 WHERE idUser = :userid");		
+			appLog("Reseting traffic limit for user with id: " . userLogin::getCurrentUserID() . ". The period expired ". ($remainingPeriod*-1) . " seconds ago" ,appLog_DEBUG);
+			$stmt = $conn->prepare("UPDATE User SET trafficLimitStartTime = strftime('%s','now'), trafficUsed = 0 WHERE idUser = :userid");		
 			$stmt->bindValue("userid", $userid, PDO::PARAM_INT);				
 			$stmt->execute();
 		}		
@@ -1299,7 +1314,10 @@ function getUserTrafficLimitStats($userid)
 	$conn = getDBConnection();	
 	$conn->beginTransaction();
 	
-	$stmt = $conn->prepare("SELECT trafficLimit, trafficUsed, period, (period - (strftime('%s','now') - (startTime))) as timeToReset FROM UserTrafficLimit WHERE idUser = :userid");	
+	$stmt = $conn->prepare("
+		SELECT enableTrafficLimit, trafficLimit, trafficUsed, trafficLimitPeriod, (trafficLimitPeriod - (strftime('%s','now') - (trafficLimitStartTime))) as timeToReset 
+			FROM User 
+			WHERE idUser = :userid");	
 	
 	$stmt->bindValue("userid", $userid, PDO::PARAM_INT);
 		
@@ -1310,12 +1328,18 @@ function getUserTrafficLimitStats($userid)
 	$conn->commit();
 	closeDBConnection($conn);
 	
+	
 	//check that the user actually has a limit
-	if(count($results) == 0)
+	if(count($results) == 0  || $results[0]["enableTrafficLimit"] == 0)
 	{
-		return false;
+		$returnVal["enableTrafficLimit"] = 0;
 	}
-	return $results[0];
+	else
+	{
+		$returnVal = $results[0];
+	}
+	
+	return $returnVal;
 }
 
 ?>
