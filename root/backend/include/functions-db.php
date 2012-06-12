@@ -1062,6 +1062,11 @@ function deleteUser($userid)
 */
 function changeUserPassword($userid, $password)
 {
+	if($password == "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=") //blank sha1 hash
+	{
+		reportError("Password cannot be blank", 400);
+		exit();
+	}
 	$conn = null;
 	$conn = getDBConnection();
 	$conn->beginTransaction();

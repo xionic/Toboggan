@@ -330,7 +330,7 @@ deleteUser
 changeUserPassword
 	args:
 		userid - (OPTIONAL) id of the user whose password should be changed. if omitted the current user's password will be changed
-		password - (POST) - base64 encoded sha256 of the password
+		password - (POST) - base64 encoded sha256 of the password. NOTE: password may not be base64 encoded sha256 of an empty string. i.e. user's password may not be ""
 		
 getUserTrafficStats
 	args:
