@@ -181,6 +181,29 @@ function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 	return array("dirs" => $dirResults, "files" => $fileResults);
 }
 
+/**
+* Output the last NBytes of the server's application log
+*/
+function outputApplicationLog_JSON($lastNBytes)
+{
+	$file = getConfigItem("logFile");
+	
+	$sizeInBytes = filesize($file);
+	
+	$fh = fopen($file, 'r');
+	
+	$startBytes = $sizeInBytes - $lastNBytes;
+	if($startBytes < 0) // start at the beginning if file is shorter than the length requested
+		$startBytes = 0;
+		
+	fseek($fh, $startBytes);
+	
+	$results = array("logFileText" => fread($fh, $lastNBytes));
+	
+	restTools::sendResponse(json_encode($results), 200, "text/json");
+	
+}
+
 
 
 

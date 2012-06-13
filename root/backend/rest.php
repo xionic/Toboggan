@@ -255,6 +255,15 @@ try
 			));
 			saveMediaSourceSettings($argsPOST["mediaSourceSettings"]);
 			break;	
+			
+		case "getApplicationLog":
+			checkActionAllowed("administrator");
+			$args = $av->validateArgs($_GET, array(			
+				"lastNBytes"	=> array("int", "lbound 32", "ubound 204800", "optional"),
+			));
+			$bytes = isset($args["lastNBytes"])?$args["lastNBytes"]:102400;
+			outputApplicationLog_JSON($bytes);
+			break;
 		
 		case "":
 			restTools::sendResponse("No action specified", 400, "text/plain");
