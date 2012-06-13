@@ -804,8 +804,4 @@ function saveMediaSourceSettings($settings_JSON)
 }
 
 
-
-
-
-
 ?>
