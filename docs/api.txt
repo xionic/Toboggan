@@ -397,7 +397,7 @@ saveMediaSourceSettings
 
 getApplicationLog
 	args:
-		lastNBytes -( OPTIONAL) the number of bytes to read from the end of the file. Defaults to 102400 (100KiB). Maximum 204800 (200KiB)
+		lastNBytes -(OPTIONAL) the number of bytes to read from the end of the file. Defaults to 102400 (100KiB). Maximum 204800 (200KiB)
 	Returns a json object representation of sections from the application's log file in the form below:
 	{
 		logFileText:	"Requested number of byte from the log file"
