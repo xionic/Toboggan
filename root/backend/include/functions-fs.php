@@ -101,7 +101,7 @@ function outputSearchResults_JSON($mediaSourceID, $dir, $query)
 			die;
 		}
 				
-		$resultSet = getSearchResults($path,normalisePath($dir),$query, true);
+		$resultSet = getSearchResults($path,$dir,$query, true);
 		if($resultSet === false)
 		{
 			reportError("Non existant directory", 400);
@@ -117,7 +117,6 @@ function outputSearchResults_JSON($mediaSourceID, $dir, $query)
 		);
 		
 	}
-	//var_dump_pre($results);
 	restTools::sendResponse(json_encode($results), 200, "text/json");
 }
 
@@ -126,11 +125,12 @@ function outputSearchResults_JSON($mediaSourceID, $dir, $query)
 */
 function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 {
-	$path = normalisePath(normalisePath($mediaSourcePath)."/".normalisePath($relPath))."/";
+	$relPath = normalisePath($relPath);
+	$path = $mediaSourcePath."/".$relPath."/";
 
 	if(!is_dir($path))
 	{	
-		appLog("path is not a directory: ".$path, appLog_INFO);
+		reportError("path is not a directory: ".$path, 400);
 		return false;
 	}
 	$dirHandle = opendir($path);
@@ -138,32 +138,37 @@ function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 	$dirResults = array();
 	
 	//loop through all "files" in the dir
-	while(($file = readdir($dirHandle)) !== false)
+	while(($FSObj = readdir($dirHandle)) !== false)
 	{
-		$filepath = $path.$file;
-		//echo $filepath."<br>";
-		if(is_dir($filepath) && $file != "." && $file != "..") //directories
+		$filepath = $path.$FSObj;
+		
+		//handle directories in current dir
+		if(is_dir($filepath) && $FSObj != "." && $FSObj != "..") 
 		{
 			if($recurse)// recurse into subdirs
 			{
-				//echo "recusring into $filepath <br>";
-				$subResults = getSearchResults($mediaSourcePath, $relPath."/".$file, $query, $recurse);  // do subdir search
-				$dirResults = array_merge($dirResults, $subResults["dirs"]);// merge results into our results array - flat structure	
+				$subResults = getSearchResults($mediaSourcePath, $relPath."/".$FSObj, $query, $recurse);  // do subdir search
+				
+				// merge sub-file and sub-directory results into our local results array
+				$dirResults = array_merge($dirResults, $subResults["dirs"]);
 				$fileResults = array_merge($fileResults, $subResults["files"]);
 			}
-			//check the dir name
-			if(stristr($filepath, $query) !== false)
+			// after recursing, check the dir name for match against query
+			if(stristr($FSObj, $query) !== false)
 			{
-				$dirResults[] = array( // add to results
+				//add it to results if it matched
+				$dirResults[] = array( 
 					"path"	=> $relPath,
-					"name"	=> $file,
+					"name"	=> $FSObj,
 				);
 			}
 		}
-		elseif(is_file($filepath)) // check file against queried string
-		{//echo stristr($filepath, $query);
-			if(stristr($filepath, $query) !== false)
+		//handle files in current dir
+		elseif(is_file($filepath)) 
+		{	//match filename against query
+			if(stristr($FSObj, $query) !== false)
 			{
+				//add to result set
 				$fileResults[] = array(
 					"path" 	=> $relPath,
 					"fileObject" => getFileObject($filepath),
