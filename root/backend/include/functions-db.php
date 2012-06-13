@@ -1196,34 +1196,81 @@ function checkUserPermission($actionName, $targetObjectID = false)
 		$actionName . "' with targetObjectID '" . $targetObjectID . "'", appLog_DEBUG
 	);
 	$userID = userLogin::getCurrentUserID();
-	$sql = "SELECT 1 
-			FROM UserPermission 
-			INNER JOIN Action USING(idAction)
-			INNER JOIN User USING(idUser)
-			WHERE 
-				`User`.idUser = :idUser
-			AND
-				actionName = :actionName
-			";
-	if($targetObjectID !== false)
-		$sql .= "AND targetObjectID = :targetObjectID";
-
-	$conn = getDBConnection();	
-	$conn->beginTransaction();
-	$stmt = $conn->prepare($sql);	
 	
-	$stmt->bindValue("idUser", $userID, PDO::PARAM_INT);
-	$stmt->bindValue("actionName", $actionName, PDO::PARAM_STR);
-	if($targetObjectID !== false)
-		$stmt->bindValue("targetObjectID", $targetObjectID);
+	//cache permissions per session if set
+	if(getConfigItem("cache_permissions"))
+	{	
+		// build cache of permissions for speed 	
+		if(!isset($_SESSION["cache_permissions"]))
+		{
+			$sql = "SELECT actionName, targetObjectID 
+					FROM UserPermission 
+					INNER JOIN Action USING(idAction)
+					WHERE 
+						`UserPermission`.idUser = :idUser
+					";		
+
+			$conn = getDBConnection();	
+			$conn->beginTransaction();
+			$stmt = $conn->prepare($sql);	
+			
+			$stmt->bindValue("idUser", $userID, PDO::PARAM_INT);
+						
+			$stmt->execute();
+			
+			$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+			$_SESSION["cache_permissions"] = $results;
+			
+			$conn->commit();
+			closeDBConnection($conn);
+		}
+		//use the cache
+		foreach($_SESSION["cache_permissions"] as $permission)
+		{
+			if($permission["actionName"] == $actionName)
+			{
+				//if the permission relates to a specific object it must match
+				if($targetObjectID === false || $permission["targetObjectID"] == $targetObjectID)
+				{
+					return true;
+				}
+			}
+			
+		}		
+		return false;
+	
+	}
+	else //lookup from DB - do not build or use cache
+	{
+		$sql = "SELECT 1 
+				FROM UserPermission 
+				INNER JOIN Action USING(idAction)
+				INNER JOIN User USING(idUser)
+				WHERE 
+					`User`.idUser = :idUser
+				AND
+					actionName = :actionName
+				";
+		if($targetObjectID !== false)
+			$sql .= "AND targetObjectID = :targetObjectID";
+
+		$conn = getDBConnection();	
+		$conn->beginTransaction();
+		$stmt = $conn->prepare($sql);	
 		
-	$stmt->execute();
-	
-	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+		$stmt->bindValue("idUser", $userID, PDO::PARAM_INT);
+		$stmt->bindValue("actionName", $actionName, PDO::PARAM_STR);
+		if($targetObjectID !== false)
+			$stmt->bindValue("targetObjectID", $targetObjectID);
+			
+		$stmt->execute();
+		
+		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-	$conn->commit();
-	closeDBConnection($conn);	
-	return (count($results)==0?false:true);
+		$conn->commit();
+		closeDBConnection($conn);	
+		return (count($results)==0?false:true);
+	}
 }
 
 /**

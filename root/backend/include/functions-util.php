@@ -3,15 +3,15 @@
 * function to log messages to a file with a verbosity level
 */
 function appLog($message, $level = -1){
-	global $config;
-	if($level > $config["logLevel"]) return; //verbosity cut-off level
+	
+	if($level > getConfigItem("logLevel")) return; //verbosity cut-off level
 	
 	$debugInfo = debug_backtrace(1);
 	if(count($debugInfo) > 1)
 		$callingfn = $debugInfo[1]["function"];
 	else
 		$callingfn = "[origin unknown]";
-	$file = fopen($config["logFile"], "a");
+	$file = fopen(getConfigItem("logFile"), "a");
 	
 	//expand arrays
 	if(is_array($message))
@@ -145,6 +145,15 @@ function reportServerError($errMsg, $httpcode = 500, $mime = 'text/plain')
 		$errMsg = htmlentities($errMsg);
 	restTools::sendResponse	("There was an error in the ". APPNAME ." server application. Please check the server log.",$httpcode, $mime);
 	exit;
+}
+
+/**
+* get a config option
+*/
+function getConfigItem($itemName)
+{
+	global $config;
+	return $config[$itemName];
 }
 
 

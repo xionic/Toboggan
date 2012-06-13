@@ -13,6 +13,9 @@ $config["logFile"] = "/tmp/ultrasonic.log";
 //logging
 $config["logLevel"] = appLog_DEBUG2;
 
+//cache permissions per session
+$config["cache_permissions"] = true;
+
 /**********************************
 *DO NOT EDIT BELOW HERE
 ***********************************/
