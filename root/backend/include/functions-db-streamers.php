@@ -218,6 +218,21 @@ function saveStreamerSettings($settings_JSON)
 	}
 	//TODO - add more validation - deduplication etc
 	
+	//make sure that a toExtension.Extension does not appear more than once with different properties (mediaType, mimetype)
+	foreach($settings as $streamer1)
+	{
+		foreach($settings as $streamer2)
+		{
+			if( // if the extension is the same but the mediaType OR MimeType differ - will not cause DB problem but will produce unexpected results
+				$streamer1["toExtension"] == $streamer2["toExtension"]
+				&& ($streamer1["MimeType"] != $streamer2["MimeType"] || $streamer1["MediaType"] != $streamer2["MediaType"])
+			)
+			{
+				reportError("toExtension's cannot be updated twice in the same request. i.e. you have a multiple toExtension entries with differing settings");
+			}
+		}
+	}
+	
 	//explode fromExt grouping for db entry
 	$expandedStreamers = array();
 	foreach($settings as $streamer)

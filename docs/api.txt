@@ -222,6 +222,13 @@ saveStreamersSettings
 		...
 	]
 	Saves streamer settings. The streamer settings on the server will be entirely replaced by those given here.
+	NOTE: if there are duplicate toExtension rows in the settings object, they must have the same MimeType and MediaType, or an error will be thrown.
+	e.g.
+		row1 ... toExtension: mp3, MimeType: audio/mp3, MediaType: a
+		row2 ... toExtension: mp3, MimeType: audio/mp3, MediaType: v
+		
+	This is invalid because the toExtension contains conflicting settings. toExtension's are unique and cannot have 
+	different MimeType or MediaType for the same toExtension
 	
 listUsers
 	args:

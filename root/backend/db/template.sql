@@ -39,6 +39,7 @@ CREATE TABLE `toExt` (
 	`MediaType` VARCHAR(1) NOT NULL ,
 	CONSTRAINT `Ext`
 		UNIQUE (`Extension`)
+		UNIQUE (`Extension`, `MimeType`, `MediaType`)
 		ON CONFLICT ROLLBACK
 );
 
