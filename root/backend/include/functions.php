@@ -10,6 +10,7 @@ require_once("classes/Streamer.class.php");
 
 require_once("functions-db.php");
 require_once("functions-db-user.php");
+require_once("functions-db-streamers.php");
 require_once("functions-util.php");
 require_once("functions-streaming.php");
 require_once("functions-fs.php");
