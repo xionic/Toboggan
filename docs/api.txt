@@ -323,48 +323,48 @@ Returns a JSON object representing a user in the following format:
 '''Arguments:'''<br />
 *settings - (POST) an object representing the user's setting in the following form:
 <pre>
-	[
+[
+	{
+		"username":				"theusername",
+		"email":				"theemail",
+		"enabled":				"theenabled",
+		"maxAudioBitrate":			"themaxAudioBitrate (kbps)",
+		"maxVideoBitrate":			"themaxVideoBitrate (kbps)",
+		"maxBandwidth":				"themaxBandwidth (kbps)",
+		"enableTrafficLimit"			"1|0",
+		"trafficLimit":				"Limit in KB",
+		"trafficLimitPeriod":			"Length of traffic limit period in seconds",
+		"permissions":
 		{
-			"username":				"theusername",
-			"email":				"theemail",
-			"enabled":				"theenabled",
-			"maxAudioBitrate":			"themaxAudioBitrate (kbps)",
-			"maxVideoBitrate":			"themaxVideoBitrate (kbps)",
-			"maxBandwidth":				"themaxBandwidth (kbps)",
-			"enableTrafficLimit"			"1|0",
-			"trafficLimit":				"Limit in KB",
-			"trafficLimitPeriod":			"Length of traffic limit period in seconds",
-			"permissions":
-			{
-				"general":
-					[
-						{
-							"idAction":		"actionid",
-							"granted":		"Y|N",
-						}
-						...
-					],
-				"mediaSources":
-					[
-						{
-							"mediaSourceId":	"mediaSourceID",
-							"granted":		"Y|N",
-						}
-						...
-					],
-				"streamers":
-					[
-						{
-							"streamerID":		"streamerID",
-							"granted":		"Y|N",
-						}
-						...
-					]
-				
-			}
+			"general":
+				[
+					{
+						"idAction":		"actionid",
+						"granted":		"Y|N",
+					}
+					...
+				],
+			"mediaSources":
+				[
+					{
+						"mediaSourceId":	"mediaSourceID",
+						"granted":		"Y|N",
+					}
+					...
+				],
+			"streamers":
+				[
+					{
+						"streamerID":		"streamerID",
+						"granted":		"Y|N",
+					}
+					...
+				]
+			
 		}
-		...
-	]
+	}
+	...
+]
 </pre>
 *userid - a user id of the user to update as retrieved with listUsers
 
@@ -372,20 +372,20 @@ Updates an existing user's settings
 		
 ===addUser===
 '''Arguments:'''<br />
-*settings - (POST) an object representing the user's setting in the following format
+*settings - (POST) an object representing the user's settings in the following format
 <pre>
-	[
-		{
-			"username":			"theusername",
-			"password":			"thepassword", #base64 encoded sha256 of the password
-			"email":			"theemail",
-			"enabled":			"theenabled",
-			"maxAudioBitrate":		"themaxAudioBitrate (kbps)",
-			"maxVideoBitrate":		"themaxVideoBitrate (kbps)",
-			"maxBandwidth":			"themaxBandwidth (kbps)",
-		}
-		...
-	]
+[
+	{
+		"username":			"theusername",
+		"password":			"thepassword", #base64 encoded sha256 of the password
+		"email":			"theemail",
+		"enabled":			"theenabled",
+		"maxAudioBitrate":		"themaxAudioBitrate (kbps)",
+		"maxVideoBitrate":		"themaxVideoBitrate (kbps)",
+		"maxBandwidth":			"themaxBandwidth (kbps)",
+	}
+	...
+]
 </pre>	
 
 ===deleteUser===
@@ -448,6 +448,7 @@ Saves new media source settings. Entries with a null mediaSourceID are treated a
 
 ===getApplicationLog===
 '''Arguments:'''<br />
+*lastNBytes - (OPTIONAL) the number of bytes to read from the end of the file. Defaults to 102400 (100KiB). Maximum 204800 (200KiB)
 *lastNBytes - (OPTIONAL) the number of bytes to read from the end of the file. Defaults to 102400 (100KiB). Maximum 204800 (200KiB)
 
 Returns a json object representation of sections from the application's log file in the form below:

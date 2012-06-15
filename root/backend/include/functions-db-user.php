@@ -68,6 +68,11 @@ function outputUserSettings_JSON($userid)
 */
 function getUserObject($userid)
 {
+	if(!is_numeric($userid))
+	{
+		throw new Exception("\$userid passed to getUserObject() must be numeric");
+	}
+	
 	$conn = getDBConnection();
 	$conn->beginTransaction();
 	
@@ -303,6 +308,9 @@ function addUser($json_settings)
 		"maxAudioBitrate"		=> array("int"),
 		"maxVideoBitrate"		=> array("int"),
 		"maxBandwidth"			=> array("int"),
+		"enableTrafficLimit"		=> array("int"),
+		"trafficLimit"			=> array("int"),
+		"trafficLimitPeriod"		=> array("int"),
 	));
 	
 	$conn = null;
@@ -310,7 +318,20 @@ function addUser($json_settings)
 	$conn = getDBConnection();
 	$conn->beginTransaction();
 	
-	$stmt = $conn->prepare("INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth) VALUES
+	$stmt = $conn->prepare("
+	INSERT INTO User
+		(
+			username,
+			password,
+			email,
+			enabled, 
+			maxAudioBitrate,
+			maxVideoBitrate,
+			maxBandwidth,
+			enableTrafficLimit,
+			trafficLimit,
+			trafficLimitPeriod
+		) VALUES
 		(
 			:username,
 			:password,
@@ -318,7 +339,10 @@ function addUser($json_settings)
 			:enabled,
 			:maxAudioBitrate,
 			:maxVideoBitrate,
-			:maxBandwidth
+			:maxBandwidth,
+			:enableTrafficLimit,
+			:trafficLimit,
+			:trafficLimitPeriod
 		)
 	");
 	
@@ -329,7 +353,52 @@ function addUser($json_settings)
 	$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
+	$stmt->bindValue(":enableTrafficLimit", $userSettings["enableTrafficLimit"], PDO::PARAM_INT);
+	$stmt->bindValue(":trafficLimit", $userSettings["trafficLimit"], PDO::PARAM_INT);
+	$stmt->bindValue(":trafficLimitPeriod", $userSettings["trafficLimitPeriod"], PDO::PARAM_INT);
 	$stmt->execute();
+	
+	//insert user permissions		
+	$userid = $conn->lastInsertId();
+	
+	//build a normalised permissions structure to match the db structure (i.e. merge in the special cases [mediaSources and streamers])
+	$newUserPermissions = array();
+	//action permissions
+	foreach($userSettings["permissions"]["actions"] as $perm)
+	{
+		if($perm["granted"] == 'Y')
+			$newUserPermissions[] = array("userid" => $userid, "actionid" => $perm["id"]);
+	}
+	
+	//mediaSource permissions
+	foreach($userSettings["permissions"]["mediaSources"] as $perm)
+	{
+		if($perm["granted"] == 'Y')
+			$newUserPermissions[] = array("userid" => $userid, "actionid" => PERMISSION_ACCESSMEDIASOURCE, "targetObjectID" => $perm["id"]);
+	}
+	
+	//streamer permissions
+	foreach($userSettings["permissions"]["streamers"] as $perm)
+	{
+		if($perm["granted"] == 'Y')
+			$newUserPermissions[] = array("actionid" => PERMISSION_ACCESSSTREAMER,  "targetObjectID" => $perm["id"]);
+	}
+	
+	//insert new permissions
+	foreach($newUserPermissions as $perm)
+	{
+		$stmt = $conn->prepare(
+			"INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(:userid, :actionid, "
+				. (isset($perm["targetObjectID"])?":targetObjectID":"NULL") 
+			.")"
+		);
+		
+		$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
+		$stmt->bindValue(":actionid", $perm["actionid"], PDO::PARAM_INT);
+		if(isset($perm["targetObjectID"]))
+			$stmt->bindValue(":targetObjectID", $perm["targetObjectID"], PDO::PARAM_INT);
+		$stmt->execute();
+	}		
 	
 	$conn->commit();
 	

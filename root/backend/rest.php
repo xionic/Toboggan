@@ -208,7 +208,7 @@ try
 		break;
 		
 		case "addUser":
-			checkActionAllowed("administrator");
+			checkActionAllowed("administrator");			
 			$args = $av->validateArgs($_POST, array(			
 				"settings"	=> array("string", "notblank"),
 			));
