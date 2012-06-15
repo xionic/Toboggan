@@ -98,6 +98,9 @@ function getAllStreamers()
 */
 function getStreamerByExtensions($fromExt, $toExt)
 {
+	//only admins can use this function
+	checkActionAllowed("administrator",$row["idextensionMap"]);
+	
 	$conn = getDBConnection();
 	
 	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
@@ -116,7 +119,7 @@ function getStreamerByExtensions($fromExt, $toExt)
 	$stmt->closeCursor();
 	closeDBConnection($conn);
 	
-	if($row &&checkUserPermission("accessStreamer",$row["idextensionMap"]))//check user has permission to access the streamer)
+	if($row)//check user has permission to access the streamer)
 		return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
 	else
 		return false;
@@ -218,21 +221,7 @@ function saveStreamerSettings($settings_JSON)
 	}
 	//TODO - add more validation - deduplication etc
 	
-	//make sure that a toExtension.Extension does not appear more than once with different properties (mediaType, mimetype)
-	foreach($settings as $streamer1)
-	{
-		foreach($settings as $streamer2)
-		{
-			if( // if the extension is the same but the mediaType OR MimeType differ - will not cause DB problem but will produce unexpected results
-				$streamer1["toExtension"] == $streamer2["toExtension"]
-				&& ($streamer1["MimeType"] != $streamer2["MimeType"] || $streamer1["MediaType"] != $streamer2["MediaType"])
-			)
-			{
-				reportError("toExtension's cannot be updated twice in the same request. i.e. you have a multiple toExtension entries with differing settings");
-			}
-		}
-	}
-	
+		
 	//explode fromExt grouping for db entry
 	$expandedStreamers = array();
 	foreach($settings as $streamer)
@@ -256,6 +245,32 @@ function saveStreamerSettings($settings_JSON)
 	
 	//replace old streamers with explanded ones
 	$settings = $expandedStreamers;
+	
+	///POST EXPANSION VALIDATION
+	//make sure that a toExtension.Extension does not appear more than once with different properties (mediaType, mimetype)
+	// and make sure that a fromExtension.Extension does not appear more than once with different properties (bitrateCmd)
+	foreach($settings as $streamer1)
+	{
+		foreach($settings as $streamer2)
+		{
+			if( // if the extension is the same but the mediaType OR MimeType differ - will not cause DB problem but will produce unexpected results
+				$streamer1->toExt == $streamer2->toEx
+				&& ($streamer1->mime != $streamer2->mime || $streamer1->outputMediaType != $streamer2->outputMediaType)
+			)
+			{
+				reportError("toExtension's cannot be updated twice in the same request. i.e. you have a multiple toExtension entries with differing settings");
+			}
+			elseif( // if the extension is the same but the mediaType OR MimeType differ - will not cause DB problem but will produce unexpected results
+				$streamer1->fromExt == $streamer2->fromExt
+				&& ($streamer1->bitrateCmd != $streamer2->bitrateCmd )
+			)
+			{
+				reportError("fromExtension's cannot be updated twice in the same request. i.e. you have a multiple fromExtension entries with differing bitrateCmd's");
+			}
+		}
+	}
+	
+	//Start whacking them in the DB
 	
 	$conn = null;
 
@@ -289,6 +304,7 @@ function saveStreamerSettings($settings_JSON)
 	{
 		$DBStreamer = null;
 		
+		appLog($newStreamer->fromExt . " " . $newStreamer->toExt);
 		if(($DBStreamer = getStreamerByExtensions($newStreamer->fromExt, $newStreamer->toExt)) !== false)
 		{//existing streamer to update
 			//port existing id into the newStreamer's class to simply update the existing record
