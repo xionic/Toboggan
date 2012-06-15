@@ -178,6 +178,8 @@ function updateUser($userid, $json_settings){
 		"trafficLimitPeriod"	=> array("int", "lbound 1"),		
 		"permissions"			=> array("array"),
 	));
+	
+	
 	$av->validateArgs($userSettings["permissions"], array(
 		"actions"				=> array("array"),
 		"mediaSources"			=> array("array"),
@@ -312,6 +314,34 @@ function addUser($json_settings)
 		"trafficLimit"			=> array("int"),
 		"trafficLimitPeriod"		=> array("int"),
 	));
+	//validate permissions
+	$av->validateArgs($userSettings["permissions"], array(
+		"actions"				=> array("array"),
+		"mediaSources"			=> array("array"),
+		"streamers"				=> array("array"),
+	));
+	foreach($userSettings["permissions"]["actions"] as $perm)
+	{
+		$av->validateArgs($perm, array(
+			"id"				=> array("int"),
+			"granted"			=> array("string", "notblank"),
+		));
+	}
+	foreach($userSettings["permissions"]["mediaSources"] as $perm)
+	{
+		$av->validateArgs($perm, array(
+			"id"				=> array("int"),
+			"granted"			=> array("string", "notblank"),
+		));
+	}
+	foreach($userSettings["permissions"]["streamers"] as $perm)
+	{
+		$av->validateArgs($perm, array(
+			"id"				=> array("int"),
+			"granted"				=> array("string", "notblank"),
+		));
+	}
+	
 	
 	$conn = null;
 	
