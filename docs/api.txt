@@ -1,267 +1,345 @@
-Ultrasonic REST API Documentation for API Version 0.5
+Ultrasonic REST API Documentation for API Version '''''0.58'''''
 
-######################################################
-# API Authentication:								 #
-######################################################
+== Access to the API ==
+
+Access to the API is via /''approot''/backend/rest.php
+
+Arguments are to be sent as GET variables unless otherwise specified by the specific method documentation
+
+Data returned by the API is in JSON format unless otherwise specified.
+
+== API Authentication ==
 
 There are 2 methods to authenticate:
-1. Form based starting s session:
-	Post "username" and "password" to rest.php&action=login. The password must be a sha256 hash of the password.
+# Form based starting a session:
+#: Post "username" and "password" to <code>rest.php&action=login</code>. The password must be a sha256 hash of the password encoded in base64. This method does not require future requests to re-authenticate unless the session has expired.
+# A HTTP header can be sent with each request to authenticate in the form:
+#: <code>X-US-Authorization: method userStr|passStr</code> <br> where method is US-Auth1, userStr is the username base64 encoded, and passStr is a sha256 hash of the password encoded in base64
 
-2. A HTTP header can be sent with each request to authenticate in the form:
 
-	X-US-Authorization: method userStr|passStr
+== API Versions == 		 
 
-	where method is US-Auth1, userStr is the username base64 encoded, and passStr is a sha256 hash of the password encoded in base64
-
-######################################################
-# API Versions :							 		 #
-######################################################
-
-Every request must include an apiver={apiversion} argument or the request will be rejected. If the version sent by the client is unsupported a 
+Every request must include an <code>apiver={apiversion}</code> argument or the request will be rejected. If the version sent by the client is unsupported a 
 412 Precondition failed HTTP response will be sent.
 
-######################################################
-# API Keys :								 		 #
-######################################################
+== API Keys ==
 
-Access to the REST api requires an apikey. Every request must include an apikey={yourapikey} argument or the request will be rejected.
+Access to the REST API requires an apikey. Every request must include an <code>apikey={yourapikey}</code> argument or the request will be rejected.
 
-######################################################
-# Per user traffic limits							 #
-######################################################
+== Authenticated User ID Header ==
 
-The traffic limits which can be configured per user ensure that in a time frame defined by the period of the limit, more traffic than that defined 
-in the limit will not be transmitted to the client as a media stream. The limit will not be reset immediately after the period has expired. The time
-at which the limit is reset depends on many factors and should not be relied upon. However, it can be relied upon that an exceeded limit will be reset
-if a stream is requested after the period has elapsed.
+The API will send an HTTP response header <code>X-AuthenticatedUserID</code> indicating the ID of the currently logged in user. 
+This will be returned by the server with all responses except those made to requests with the "login" method (i.e. <code>action=login</code>)
 
-######################################################
-# Authenticated User ID Header						 #
-######################################################
 
-The API will send an HTTP response header 'X-AuthenticatedUserID' indicating the ID of the currently logged in user. 
-This will be send with all requests except those made with the "login" method (i.e. action=login)
+== List of API methods exposed by the backend==
 
-######################################################
-# List of API methods exposed by the backend:		 #
-######################################################
+These are utilised by calling <code>rest.php?action=methodName&arg1=val1...</code>
 
-These are utilised by calling rest.php?action=methodName&arg1=val1...
-
-listMediaSources
-	args:
+===listMediaSources===
+	'''Arguments:'''<br />
 		none
+		
 	Returns JSON representing an array of mediaSourceIDs which are integers, and displayNames for each mediaSource. 
-	These represent a list of media directories which can be accessed.
-	
-listDirContents
-	args:
-		dir - the path of the directory to get the contents of.
-		mediaSourceID - the mediaSource in which the directory is located in.
-	Returns JSON representing an array structured as follows:
+	These represent a list of media directories which can be accessed by the current user. The data is returned in the form:
+<pre>
+[
 	{
-		CurrrentPath: "pathBeingListed",
-		Directories:[
-			"subDir1",
-			"subDir2",
-			...
-		],
-		Files:[
-			{
-				filename: "nameOfFile",
-				displayName: "givenNameOfFileWhichShouldBeDisplayed",
-				streamers: [
+		mediaSourceID: "1",
+		displayName: "Music"
+	},
+	{
+		mediaSourceID: "2",
+		displayName: "Video"
+	}
+]	
+</pre>
+	
+===listDirContents===
+	'''Arguments:'''<br />
+*dir - the path of the directory to get the contents of. <code>dir=/</code> will return the contents of the root of the mediaSource
+*mediaSourceID - the mediaSource in which the directory is located.
+
+Returns JSON representing an array structured as follows:
+<pre>
+{
+	CurrrentPath: "pathBeingListed",
+	Directories:[
+		"subDir1",
+		"subDir2",
+		...
+	],
+	Files:[
+		{
+			filename: "nameOfFile",
+			displayName: "givenNameOfFileWhichShouldBeDisplayed",
+			streamers: [
+				{
+					extension: "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
+					streamerID: "ID number of streamer",
+					mediaType: "The media type which this streamer outputs",
+				}
+				...
+			],
+		},
+		...
+	],
+}
+</pre>
+	
+===getFileMetadata===
+	'''Arguments:'''<br />
+*dir - directory containing the file to stream.
+*filename - the filename of the file to stream.
+*mediaSourceID - the ID of the mediaSource containing the dir
+
+Returns metadata about the given file in the following form:
+<pre>
+{
+	filename: "nameOfFile",
+	displayName: "givenNameOfFileWhichShouldBeDisplayed",
+	streamers: 
+	[
+		{
+			extension: "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
+			streamerID: "ID number of streamer",
+			mediaType: "The media type which this streamer outputs",
+		}
+	]
+}
+</pre>
+	
+===getStream===
+'''Arguments:'''<br />
+*dir - directory containing file to stream.
+*filename - the filename of the file to stream.
+*mediaSourceID - the ID of the mediaSource containing the dir
+*streamerID - the ID of the streamer which should be used to stream the file
+
+Outputs a binary media stream of the file, which if needed and supported may be transcoded, which is in dir contained by the mediaSource specified by mediaSourceID using the streamer identified by streamerID.
+	
+===downloadFile===
+'''Arguments:'''<br />
+*dir - directory containing file to stream.
+*filename - the filename of the file to stream.
+*mediaSourceID - the ID of the mediaSource containing the dir
+
+Outputs a binary media stream of the file, as it exists on the server, which is in dir contained by the mediaSource specified by mediaSourceID using the streamer identified by streamerID.
+	
+===login===
+'''Arguments:'''<br />
+	None (see authentication section above)
+	
+Authenticates the user and starts a session<br>
+Note: Only for use with session based authentication
+	
+===logout===
+'''Arguments:'''<br />
+None
+
+Destroy a session created using the login method
+Note: Only for use with session based authentication
+	
+===saveClientSettngs===
+'''Arguments:'''<br />
+*settingsBlob - a string representing the settings to be saved
+
+A method to save client specific settings on the server. These are saved per user and per apikey, such that multiple of the same client can share settings
+to allow portability.
+
+===retrieveClientSettings===
+'''Arguments:'''<br />
+	none
+	
+Retrieves the settings blob previously saved by a client using the same apikey and user.  These are saved per user and per apikey, such that multiple of the same client can share settings to allow portability. If none have been saved it returns a 204 'No Content' HTTP status
+	
+===search===
+	'''Arguments:'''<br />
+*mediaSourceID - a mediaSourceID of a media source to search within or 'all' for all media sources
+*dir - a directory relative to the mediaSourceID's root to confine to search to. If mediaSourceID is 'all', dir is relative to all of them.
+*query - a string to match against file and directory names
+
+Returns a JSON object in the form:
+<pre>
+[
+	{
+		"mediaSourceID": "id"
+		"results":
+		[
+			"dirs":
+			[
+				{
+					"path": "path of the dir" // path relative to the mediaSource root (does not include the dirname which matched the query)
+					"name": "filename" // the name of the dir which matched the query
+				}
+				...
+			]
+			"files":
+			[
+				{
+					"path": "path of the file" // path relative to the mediaSource root (does not include the filename which matched the query)
+					"fileObject": 
 					{
-						extension: "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
-						streamerID: "ID number of streamer",
-						mediaType: "The media type which this streamer outputs",
+						"filename": "nameOfFile",
+						"displayName": "givenNameOfFileWhichShouldBeDisplayed",
+						"streamers": [
+							{
+								"extension": "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
+								"streamerID": "ID number of streamer",
+								"mediaType": "The media type which this streamer outputs",
+							}
+							...
+						]
+					},
+				},
+				...
+			]
+		]
+	},
+	...
+]
+</pre>
+	
+===retrieveStreamerSettings===
+'''Arguments:'''<br />
+	None
+	
+Retrieves a data structure representing the backend Streamer settings. These can be altered/added to 
+and sent back in the same format to the "saveStreamerSettings" action. The structure is of the form:
+<pre>
+[
+	{
+		  "fromExtensions":	"value",
+		  "bitrateCmd":		"value",
+		  "toExtension":	"value",
+		  "MimeType":		"value",
+		  "MediaType":		"value",
+		  "command":		"value",
+	}
+	...
+]
+</pre>
+	
+===saveStreamersSettings===
+'''Arguments:'''<br />
+*settings - (POST) a json string representing the streamer settings to be saved in the following form:
+<pre>
+[
+	{
+		  "fromExtensions":	"value",
+		  "bitrateCmd":		"value",
+		  "toExtension":	"value",
+		  "MimeType":		"value",
+		  "MediaType":		"value",
+		  "command":		"value",
+	}
+	...
+]
+</pre>
+	
+Saves streamer settings. The streamer settings on the server will be entirely replaced by those given here.
+NOTE: if there are duplicate toExtension rows in the settings object, they must have the same MimeType and MediaType, or an error will be thrown.
+e.g.
+<pre>
+	row1 ... toExtension: mp3, MimeType: audio/mp3, MediaType: a
+	row2 ... toExtension: mp3, MimeType: audio/mp3, MediaType: v
+</pre>
+This example is invalid because the toExtension contains conflicting settings. toExtension's are unique and cannot have 
+different MimeType or MediaType for the same toExtension. 
+
+The same applies to rows with the same fromExtension's and differing bitrateCmd's
+	
+===listUsers===
+	'''Arguments:'''<br />
+		None
+		
+Returns a JSON object representing the users of the system in the format:
+<pre>
+[
+	{
+		"idUser":	"theuserid",
+		"username":	"theusername",
+	}
+	...
+]
+</pre>
+	
+===retrieveUserSettings===
+'''Arguments:'''<br />
+*userid - a user id as retrieved with listUsers
+	
+Returns a JSON object representing a user in the following format:
+<pre>
+[
+	{
+		"idUser": 			"theuserid",
+		"username": 			"theusername",
+		"email": 			"theemail",
+		"enabled": 			"theenabled",
+		"maxAudioBitrate": 		"themaxAudioBitrate (kbps)",
+		"maxVideoBitrate": 		"themaxVideoBitrate (kbps)",
+		"maxBandwidth": 		"themaxBandwidth (kbps)",		
+		"enableTrafficLimit"		"1|0",
+		"trafficLimit":			"Limit in KB",
+		"trafficLimitPeriod":		"Length of traffic limit period in seconds",
+		"permissions":
+		{
+			"general":
+				[
+					{
+						"idAction":		"actionid",
+						"actionDisplayName":	"displayable name of the permitable action",
+						"granted":		"Y|N",
 					}
 					...
 				],
-			},
-			...
-		],
-	}
-	
-getFileMetadata
-	args:
-		dir - directory containing file to stream.
-		filename - the filename of the file to stream.
-		mediaSourceID - the ID of the mediaSource containing the dir
-	Returns metadata about the given file in the following form:
-	{
-		filename: "nameOfFile",
-		displayName: "givenNameOfFileWhichShouldBeDisplayed",
-		streamers: 
-		[
-			{
-				extension: "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
-				streamerID: "ID number of streamer",
-				mediaType: "The media type which this streamer outputs",
-			}
-		]
-	}
-	
-getStream
-	args:
-		dir - directory containing file to stream.
-		filename - the filename of the file to stream.
-		mediaSourceID - the ID of the mediaSource containing the dir
-		streamerID - the ID of the streamer which should be used to stream the file
-	Outputs a binary media stream of the file which is in dir contained by the mediaSource specified by mediaSourceID using the streamer identified by streamerID.
-	
-downloadFile
-	args:
-		dir - directory containing file to stream.
-		filename - the filename of the file to stream.
-		mediaSourceID - the ID of the mediaSource containing the dir
-	Output the file as it is on the server
-	
-login
-	args:
-		None (see authentication section above)
-	Authenticates the user and starts a session 
-	Note: Only for use with form based authentication
-	
-logout
-	args:
-		none
-	destroy a session created using the login method
-	
-saveClientSettngs
-	args:
-		settingsBlob - a string representing the settings to be saved
-	A method to save client specific settings on the server. These are saved per user and per apikey, such that multiple of the same client can share settings
-	to allow portability.
-	
-	retrieveClientSettings
-	args:
-		None
-	A method to retrieve previously saved settings for the client. These are saved per user and per apikey, such that multiple of the same client can share settings
-	to allow portability
-
-retrieveClientSettings
-	args:
-		none
-	Retrieves the settings blob previously saved by a client using the same apikey and user. If none have been saved it returns a 204 'No Content' HTTP status
-	
-search
-	args:
-		mediaSourceID - a mediaSourceID of a media source to search within or 'all' for all media sources
-		dir - a directory relative to the mediaSourceID's root to confine to search to. If mediaSourceID is 'all', dir is relative to all of them.
-		query - a string to match against file and directory names
-	Returns a JSON object in the form:
-	[
-		{
-			"mediaSourceID": "id"
-			"results":
-			[
-				"dirs":
+			"mediaSources":
 				[
 					{
-						"path": "path of the dir" // path relative to the mediaSource root (does not include the dirname which matched the query)
-						"name": "filename" // the name of the dir which matched the query
+						"mediaSourceId":		"mediaSourceID",
+						"mediaSourceDisplayName":	"displayable name of media source",
+						"granted":			"Y|N",
+					}
+					...
+				],
+			"streamers":
+				[
+					{
+						"streamerID":			"streamerID",
+						"fromExt":			"fromExtension of the streamer",
+						"toExt":			"toExtension of the streamer",
+						"granted":			"Y|N",
 					}
 					...
 				]
-				"files":
-				[
-					{
-						"path": "path of the file" // path relative to the mediaSource root (does not include the filename which matched the query)
-						"fileObject": 
-						{
-							"filename": "nameOfFile",
-							"displayName": "givenNameOfFileWhichShouldBeDisplayed",
-							"streamers": [
-								{
-									"extension": "extension representing the format of the media stream which will be output by this streamer e.g.(mp3)",
-									"streamerID": "ID number of streamer",
-									"mediaType": "The media type which this streamer outputs",
-								}
-								...
-							]
-						},
-					},
-					...
-				]
-			]
-		},
-		...
-	]
-	
-retrieveStreamerSettings
-	args:
-		None
-	Retrieves a data structure representing the backend Streamer settings. These can be altered/added to 
-	and sent back in the same format to the "saveStreamerSettings" action. The structure is of the form:
-	[
-		{
-			  "fromExtensions":	"value",
-			  "bitrateCmd":		"value",
-			  "toExtension":	"value",
-			  "MimeType":		"value",
-			  "MediaType":		"value",
-			  "command":		"value",
+			
 		}
-		...
-	]
+	}
+	...
+]
+</pre>
 	
-saveStreamersSettings
-	args:
-		settings - (POST) a json string representing the streamer settings to be saved in the following form:
+===updateUserSettings===
+'''Arguments:'''<br />
+*settings - (POST) an object representing the user's setting in the following form:
+<pre>
 	[
 		{
-			  "fromExtensions":	"value",
-			  "bitrateCmd":		"value",
-			  "toExtension":	"value",
-			  "MimeType":		"value",
-			  "MediaType":		"value",
-			  "command":		"value",
-		}
-		...
-	]
-	Saves streamer settings. The streamer settings on the server will be entirely replaced by those given here.
-	NOTE: if there are duplicate toExtension rows in the settings object, they must have the same MimeType and MediaType, or an error will be thrown.
-	e.g.
-		row1 ... toExtension: mp3, MimeType: audio/mp3, MediaType: a
-		row2 ... toExtension: mp3, MimeType: audio/mp3, MediaType: v
-		
-	This is invalid because the toExtension contains conflicting settings. toExtension's are unique and cannot have 
-	different MimeType or MediaType for the same toExtension
-	
-listUsers
-	args:
-		None
-	Returns a JSON object representing the users of the system in the format:
-	[
-		{
-			"idUser":	"theuserid",
-			"username":	"theusername",
-		}
-		...
-	]
-	
-retrieveUserSettings
-	args:
-		userid - a user id as retrieved with listUsers
-	Returns a JSON object representing a user in the following format:
-	[
-		{
-			"idUser": 			"theuserid",
-			"username": 		"theusername",
-			"email": 			"theemail",
-			"enabled": 			"theenabled",
-			"maxAudioBitrate": 	"themaxAudioBitrate (kbps)",
-			"maxVideoBitrate": 	"themaxVideoBitrate (kbps)",
-			"maxBandwidth": 	"themaxBandwidth (kbps)",
+			"username":				"theusername",
+			"email":				"theemail",
+			"enabled":				"theenabled",
+			"maxAudioBitrate":			"themaxAudioBitrate (kbps)",
+			"maxVideoBitrate":			"themaxVideoBitrate (kbps)",
+			"maxBandwidth":				"themaxBandwidth (kbps)",
+			"enableTrafficLimit"			"1|0",
+			"trafficLimit":				"Limit in KB",
+			"trafficLimitPeriod":			"Length of traffic limit period in seconds",
 			"permissions":
 			{
 				"general":
 					[
 						{
 							"idAction":		"actionid",
-							"actionDisplayName":	"displayable name of the permitable action",
 							"granted":		"Y|N",
 						}
 						...
@@ -269,8 +347,7 @@ retrieveUserSettings
 				"mediaSources":
 					[
 						{
-							"mediaSourceId":			"mediaSourceID",
-							"mediaSourceDisplayName":	"displayable name of media source",
+							"mediaSourceId":	"mediaSourceID",
 							"granted":		"Y|N",
 						}
 						...
@@ -278,9 +355,7 @@ retrieveUserSettings
 				"streamers":
 					[
 						{
-							"streamerID":			"streamerID",
-							"fromExt":	"fromExtension of the streamer",
-							"toExt":	"toExtension of the streamer",
+							"streamerID":		"streamerID",
 							"granted":		"Y|N",
 						}
 						...
@@ -290,123 +365,102 @@ retrieveUserSettings
 		}
 		...
 	]
-	
-updateUserSettings
-	args:
-		settings - (POST) an object representing the user's setting in the following format
-			[
-				{
-					"username":				"theusername",
-					"email":				"theemail",
-					"enabled":				"theenabled",
-					"maxAudioBitrate":		"themaxAudioBitrate (kbps)",
-					"maxVideoBitrate":		"themaxVideoBitrate (kbps)",
-					"maxBandwidth":			"themaxBandwidth (kbps)",
-					"enableTrafficLimit"	"1|0",
-					"trafficLimit":			"Limit in KB",
-					"trafficLimitPeriod":	"Length of traffic limit period in seconds",
-					"permissions":
-					{
-						"general":
-							[
-								{
-									"idAction":		"actionid",
-									"granted":		"Y|N",
-								}
-								...
-							],
-						"mediaSources":
-							[
-								{
-									"mediaSourceId":			"mediaSourceID",
-									"granted":		"Y|N",
-								}
-								...
-							],
-						"streamers":
-							[
-								{
-									"streamerID":			"streamerID",
-									"granted":		"Y|N",
-								}
-								...
-							]
-						
-					}
-				}
-				...
-			]
-		userid - a user id of the user to update as retrieved with listUsers
-	Updates an existing user's settings
-		
-addUser
-	args:
-		settings - (POST) an object representing the user's setting in the following format
-			[
-				{
-					"username":			"theusername",
-					"password":			"thepassword", #base64 encoded sha256 of the password
-					"email":			"theemail",
-					"enabled":			"theenabled",
-					"maxAudioBitrate":	"themaxAudioBitrate (kbps)",
-					"maxVideoBitrate":	"themaxVideoBitrate (kbps)",
-					"maxBandwidth":		"themaxBandwidth (kbps)",
-				}
-				...
-			]
-			
-deleteUser
-	args:
-		userid - a user id of the user to delete NOTE: users cannot delete themselves
-	Removes a user
-	
-changeUserPassword
-	args:
-		userid - (OPTIONAL) id of the user whose password should be changed. if omitted the current user's password will be changed
-		password - (POST) - base64 encoded sha256 of the password. NOTE: password may not be base64 encoded sha256 of an empty string. i.e. user's password may not be ""
-		
-getUserTrafficStats
-	args:
-		None
-	Retrieves a JSON object repreenting statistics about a user's traffic limit in the form:
-	{
-		"enableTrafficLimit":	"Y|N"
-		"trafficLimit":			"Limit in KB",  											NOTE:Omitted if enableTrafficLimit is 'N'
-		"trafficUsed":			"Amount of trafficLimit used in KB",						NOTE:Omitted if enableTrafficLimit is 'N'
-		"trafficLimitPeriod":				"Length of traffic limit period in seconds",	NOTE:Omitted if enableTrafficLimit is 'N'
-		"timeToReset":			"Time remaining until the limit resets"						NOTE:Omitted if enableTrafficLimit is 'N'
-	}
-	
-retrieveMediaSourceSettings
-	args: 
-		None
-	Returns a JSON object representing the media source settings in the following format:
-	[
-		{
-			"mediaSourceID":	"theMediaSourceID",
-			"path":				"thePath",
-			"displayName: 		"theDisplayName,
-		}
-		...
-	]
-saveMediaSourceSettings
-	args:
-		mediaSourceSettings - a json object representing(see below) the new media source settings to completely replace the old ones
-	Saves new media source settings. Entries with a null mediaSourceID are treated as new mediaSources. To remove a media source, omit it from the list. 
-	[
-		{
-			"mediaSourceID":	"theMediaSourceID",
-			"path":				"thePath",
-			"displayName: 		"theDisplayName,
-		}
-		...
-	]
+</pre>
+*userid - a user id of the user to update as retrieved with listUsers
 
-getApplicationLog
-	args:
-		lastNBytes -(OPTIONAL) the number of bytes to read from the end of the file. Defaults to 102400 (100KiB). Maximum 204800 (200KiB)
-	Returns a json object representation of sections from the application's log file in the form below:
-	{
-		logFileText:	"Requested number of byte from the log file"
-	}
+Updates an existing user's settings
+		
+===addUser===
+'''Arguments:'''<br />
+*settings - (POST) an object representing the user's setting in the following format
+<pre>
+	[
+		{
+			"username":			"theusername",
+			"password":			"thepassword", #base64 encoded sha256 of the password
+			"email":			"theemail",
+			"enabled":			"theenabled",
+			"maxAudioBitrate":		"themaxAudioBitrate (kbps)",
+			"maxVideoBitrate":		"themaxVideoBitrate (kbps)",
+			"maxBandwidth":			"themaxBandwidth (kbps)",
+		}
+		...
+	]
+</pre>	
+
+===deleteUser===
+'''Arguments:'''<br />
+*userid - a user id of the user to delete NOTE: users cannot delete themselves
+
+Removes a user
 	
+===changeUserPassword===
+'''Arguments:'''<br />
+*userid - (OPTIONAL) id of the user whose password should be changed. If omitted the current user's password will be changed
+*password - (POST) - base64 encoded sha256 of the password. NOTE: password may not be base64 encoded sha256 of an empty string. i.e. user's password may not be ""
+		
+===getUserTrafficStats===
+'''Arguments:'''<br />
+	None
+	
+Retrieves a JSON object repreenting statistics about the current user's traffic limit in the form:
+<pre>
+{
+	"enableTrafficLimit":		"Y|N"
+	"trafficLimit":			"Limit in KB",  											NOTE:Omitted if enableTrafficLimit is 'N'
+	"trafficUsed":			"Amount of trafficLimit used in KB",						NOTE:Omitted if enableTrafficLimit is 'N'
+	"trafficLimitPeriod":	"Length of traffic limit period in seconds",				NOTE:Omitted if enableTrafficLimit is 'N'
+	"timeToReset":			"Time remaining until the limit resets"						NOTE:Omitted if enableTrafficLimit is 'N'
+}
+</pre>
+	
+===retrieveMediaSourceSettings===
+'''Arguments:'''<br /> 
+	None
+	
+Returns a JSON object representing the media source settings in the following format:
+<pre>
+[
+	{
+		"mediaSourceID":	"theMediaSourceID",
+		"path":			"thePath",
+		"displayName: 		"theDisplayName,
+	}
+	...
+]
+</pre>
+
+===saveMediaSourceSettings===
+'''Arguments:'''<br />
+*mediaSourceSettings - a json object representing(see below) the new media source settings to completely replace the old ones
+
+Saves new media source settings. Entries with a null mediaSourceID are treated as new mediaSources. To remove a media source, omit it from the list. 
+<pre>
+[
+	{
+		"mediaSourceID":	"theMediaSourceID",
+		"path":			"thePath",
+		"displayName: 		"theDisplayName,
+	}
+	...
+]
+</pre>
+
+===getApplicationLog===
+'''Arguments:'''<br />
+*lastNBytes - (OPTIONAL) the number of bytes to read from the end of the file. Defaults to 102400 (100KiB). Maximum 204800 (200KiB)
+
+Returns a json object representation of sections from the application's log file in the form below:
+<pre>
+{
+	logFileText:	"Requested number of bytes from the log file"
+}
+</pre>
+	
+	
+== A note on per-user traffic limits==
+
+The traffic limits which can be configured per user ensure that in a time frame defined by the period of the limit, more traffic than that defined 
+by the limit will not be transmitted to the client as a media stream. The limit will not be reset immediately after the period has expired. The time
+at which the limit is reset depends on many factors and should not be relied upon. However, it can be relied upon that an exceeded limit will be reset
+if a stream is requested after the period has elapsed.
