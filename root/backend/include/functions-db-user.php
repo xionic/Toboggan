@@ -427,10 +427,17 @@ function deleteUser($userid)
 	$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT); 
 	$stmt->execute();
 	
+	//remove the user's permissions 
+	$stmt = $conn->prepare("DELETE FROM UserPermission WHERE idUser = :idUser");		
+	$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT); 
+	$stmt->execute();
+	
 	//remove the user
 	$stmt = $conn->prepare("DELETE FROM User WHERE idUser = :idUser");		
 	$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT); 
 	$stmt->execute();
+	
+	
 	
 	$conn->commit();
 		
