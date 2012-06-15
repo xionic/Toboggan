@@ -1,4 +1,2 @@
-*dev.db
+*.db
 createDB.sh
-*dev.db.old
-/*.old.db

@@ -14,14 +14,14 @@ $config["logFile"] = "/tmp/ultrasonic.log";
 $config["logLevel"] = appLog_DEBUG2;
 
 //cache permissions per session
-$config["cache_permissions"] = true;
+$config["cache_permissions"] = true; // this option might be removed in future
 
 /**********************************
 *DO NOT EDIT BELOW HERE
 ***********************************/
 
 //db 
-define("DBPATH", "db/nick-dev.db");
+define("DBPATH", "db/main.db");
 define("PDO_DSN", "sqlite:".DBPATH);
 define("DB_VERSION", 102); // indicates what version of the db the code uses - to be matched against the one in the db
 
