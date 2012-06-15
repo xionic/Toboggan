@@ -16,7 +16,7 @@ if [[ ! -w "$(dirname $DBFile)" ]]; then
 	exit
 fi
 if [[ -e "$DBFile" ]]; then
-	echo "db file at $DBFile already exists. This script is intended to initialise a database where none exists"
+	echo "db file at $DBFile already exists. This script is intended to initialise a database where none exists. "
 	exit
 fi
 if [[ ! -x "$sqlitePath" ]]; then
