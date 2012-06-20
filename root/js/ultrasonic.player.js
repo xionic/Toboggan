@@ -726,7 +726,15 @@
 		displayLoading();
 		$.ajax({
 			cache: false,
-			url: g_ultrasonic_basePath+"/backend/rest.php?apikey="+apikey+"&apiver="+apiversion+"&action=search&mediaSourceID="+mediaSourceID+"&query="+query+"&dir="+dir,
+			url: g_ultrasonic_basePath+"/backend/rest.php",
+			data: {
+				'apikey':			apikey,
+				'apiver':			apiversion,
+				'action':			"search",
+				'mediaSourceID':	mediaSourceID,
+				'query':			query,
+				'dir':				dir	
+			},
 			type: "GET",
 			complete: function(jqxhr,status) {},
 			error: function(jqxhr, status, errorThrown) {
