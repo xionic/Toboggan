@@ -799,6 +799,7 @@
 			},
 			success: function(){
 				currentUserName = $("#username").val();
+				$("#topBarContainer span.username").text("Logged in as: "+currentUserName+" | ");
 				$("#loginFormContainer").dialog("close");
 				getMediaSources();
 			},
