@@ -202,6 +202,12 @@ p label
 	width: 10em;
 }
 
+//"fix" for the options being 'kin wankly arranged
+#permissionsTarget fieldset {
+	float: left;
+	margin-right: 1em;
+}
+
 /*
 #jPlayerInspector
 {
@@ -236,5 +242,5 @@ p label
 
 .dynatree-container li 
 {
-overflow-y: hidden;
+	overflow-y: hidden;
 }
