@@ -203,7 +203,7 @@ p label
 }
 
 //"fix" for the options being 'kin wankly arranged
-#permissionsTarget fieldset {
+#configDialog #permissionsTarget fieldset {
 	float: left;
 	margin-right: 1em;
 }
