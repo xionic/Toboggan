@@ -21,15 +21,22 @@ if ( ! preg_match("/^[a-zA-Z0-9_-]+\.css$/", $filename) || ! file_exists($filena
 	exit();
 }
 
+$inBulkComment=false;
 $fh = fopen($filename, "r");
 $userVars = array();
 while (!feof($fh)) {
 	$buffer = rtrim(fgets($fh), "\n\r");
 
-	//support "//" comments
-	//TODO: detect if we're within a /* */ pair already and
-	// don't replace if we are
-	$buffer = preg_replace("/(^|[^:]+)\/\/(.*)$/", "$1/*$2*/", $buffer);
+	if(strpos($buffer,'/*')!==false)
+		$inBulkComment=true;
+	if( ($l = strpos($buffer,'*/')) !== false && ($l==0 || ($l>0 && substr($buffer, $l-1, 1) !== '/')) )
+		$inBulkComment=false;
+
+	//support converting "//" comments into /* */
+	// but only if we've not inside a /* */ block
+	if($inBulkComment===false && strpos($buffer,"*/")===false ||
+		strpos($buffer, "*/") < strpos($buffer,"//") )
+			$buffer = preg_replace("/(^|[^:]+)\/\/(.*)$/", "$1/*$2*/", $buffer);
 
 	/**
 		Supporting variables
