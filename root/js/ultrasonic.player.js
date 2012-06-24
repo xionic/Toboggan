@@ -353,7 +353,7 @@
 	/**
 		Add a track to the list of playable files (centre container)
 	*/
-	function addTrackToFileList(file, folderName, mediaSourceID)
+	function addTrackToFileList(file, folderName, mediaSourceID, appendTarget)
 	{
 		var className = (file.streamers.length == 0)?"unplayable":"playable";
 				
@@ -401,7 +401,7 @@
 
 				return false;
 			})
-			.appendTo($("#tracklist"));
+			.appendTo(appendTarget);
 	}
 	
 	/**
@@ -666,10 +666,12 @@
 				refreshFileListState();
 
 				//add files
+				var appendTarget=$("<ol id='tracklist' />");
 				for (file in data.Files)
 				{	
-					addTrackToFileList(data.Files[file], folderName, mediaSourceID);
+					addTrackToFileList(data.Files[file], folderName, mediaSourceID, appendTarget);
 				}
+				$("#tracklist").replaceWith(appendTarget);
 				addTrackClickHandlers();
 			}
 		});
@@ -746,16 +748,18 @@
 				refreshFileListState();
 				
 				$("#tracklistHeader").text("Search Results Within "+$("#search_mediaSourceSelector option:selected").text()+" For: "+query);
-				
+				var appendTarget=$("<ol id='tracklist' />");
 				for (var x=0; x<data.length; ++x)
 				{
 					//data[x].mediaSourceID
 					//data[x].results.dirs
 					for (var fx=0; fx<data[x].results.files.length; ++fx)
 					{
-						addTrackToFileList(data[x].results.files[fx].fileObject, data[x].results.files[fx].path, data[x].mediaSourceID);
+						addTrackToFileList(data[x].results.files[fx].fileObject, data[x].results.files[fx].path, data[x].mediaSourceID, appendTarget);
 					}
 				}
+				$("#tracklist").replaceWith(appendTarget);
+				
 				addTrackClickHandlers();
 				
 				//reset the search bar
