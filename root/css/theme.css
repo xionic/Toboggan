@@ -243,6 +243,7 @@ a.jPlaying {
 	background-image: none;
 	background-color: black;
 }
+
 .ui-widget
 {
 	font-size: inherit;
@@ -342,8 +343,7 @@ select#mediaSourceSelector option
 }
 
 #searchContainer input, 
-#searchContainer select, 
-#searchContainer button, 
+#searchContainer select,  
 #searchContainer span.selectWrapper
 {
 	border: 1px solid grey;
@@ -356,7 +356,7 @@ select#mediaSourceSelector option
 	background: $ButtonColour1;
 }
 
-#searchContainer input, #searchContainer button
+#searchContainer input
 {
 	padding: 5px;
 }
@@ -395,7 +395,6 @@ img.loading
 	font-weight: bold;
 }
 
-}
 /** 
 	mini-icons 
 **/
@@ -430,7 +429,7 @@ img.loading
 /**
 	Styles for the configuration dialog
 */
-#configDialog li.streamer, #configDialog a.add
+#configDialog li.streamer, #configDialog .ui-button-text
 {
 	font-size: smaller;
 }
@@ -441,6 +440,16 @@ img.loading
 	font-family: "consolas", monospace;
 }
 
+
+#configDialog h1.miniheading {
+	margin-top: 2ex;
+	margin-bottom: 0.5ex;
+	font-weight: bold;
+}
+
+#permissionsTarget {
+	margin-bottom: 2ex;
+}
 
 /**
 	Trick for "zebra"ing the tables

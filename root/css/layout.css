@@ -196,6 +196,12 @@ p label
 	
 }
 
+.ui-dialog input[type='text'],
+.ui-dialog input[type='number'],
+.ui-dialog input[type='password'] {
+	margin: 0.25ex 0.5ex;
+}
+
 //labels for the config dialog
 #configDialog p label
 {
