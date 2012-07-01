@@ -212,16 +212,16 @@ p label
 #jPlayerInspector
 {
 	position: fixed;
-	top: 0px;
 	right: 20em;
-	top: 0px;
+	top: 90px;
 	width: 100ex;
 	height: 50ex;
 	overflow-y: scroll;
 	background: white;
+	color: black;
 	border: 1px solid red;
-}*/
-
+}
+*/
 #searchContainer
 {
 	display: block;

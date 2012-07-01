@@ -20,9 +20,6 @@ $InlineButtonOperaBGColour = -o-linear-gradient(#efefef, #9f9f9f);
 $InlineButtonBorderColour = #606060;
 $InlineButtonTextShadowHighlight = #666 1px -1px 1px;
 
-$FieldsetColour1 = #f4f4f4;
-$FieldsetColour2 = #ffffff;
-
 $liEvenColour1 	= #050505;
 $liEvenColour2 	= #151515;
 $liOddColour1 	= #333333;
@@ -324,8 +321,6 @@ select#mediaSourceSelector option
 #configDialog fieldset
 {
 	border: 1px solid grey;
-	background: $FieldsetColour1;
-	background: -o-linear-gradient($FieldsetColour1,$FieldsetColour2);
 	padding: 1ex 1ex;
 	margin: 0ex 0ex 1ex 0ex;
 }
@@ -400,12 +395,6 @@ img.loading
 	font-weight: bold;
 }
 
-/**
-	Login dialog tweaks
-*/
-.ui-dialog *
-{
-	color: black;
 }
 /** 
 	mini-icons 
