@@ -19,8 +19,7 @@
 	<script type="text/javascript" src="./js/jQuery.jPlayer.2.1.0/add-on/jquery.jplayer.inspector.js"></script>
 	<script type="text/javascript">
 <?php
-	//TODO: make this handle if the URI was accessed via index.php
-	echo "var g_ultrasonic_basePath=\"{$_SERVER['REQUEST_URI']}\";";
+	echo "var g_ultrasonic_basePath=\"".dirname($_SERVER['REQUEST_URI'])."/\";";
 ?>
 	</script>
 	<script type="text/javascript" src="./js/ultrasonic.player.js"></script>
