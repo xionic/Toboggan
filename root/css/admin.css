@@ -87,7 +87,7 @@ li.streamer input, #tab_server_mediaSources li input {
 	padding-bottom: 1ex;
 }
 
-h1 {
+h1,h2 {
 	font-size: larger;
 	margin-bottom: 1ex;
 	font-weight: bold;
@@ -101,4 +101,29 @@ h1 {
 //server log contents!
 #server_log_contents_target {
 	font-family: monospace;
+}
+
+/**
+	Styles for the configuration dialog
+*/
+#configDialog li.streamer, #configDialog .ui-button-text
+{
+	font-size: smaller;
+}
+#configDialog li.streamer input[name=fromExt],
+#configDialog li.streamer input[name=toExt]
+{
+	width: 6em;
+	font-family: "consolas", monospace;
+}
+
+
+h2 {
+	margin-top: 2ex;
+	margin-bottom: 0.5ex;
+	font-weight: bold;
+}
+
+#permissionsTarget {
+	margin-bottom: 2ex;
 }

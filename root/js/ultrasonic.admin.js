@@ -123,7 +123,7 @@
 				{
 					case 'tab_server_streamers':
 						$(ui.panel).empty();
-						
+						$(ui.panel).append("<h1>Add/Remove Streamers</h1>");
 						$.ajax({
 							url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=retrieveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
 							success: function(data, textStatus, jqXHR){
@@ -240,6 +240,7 @@
 					break;
 					case 'tab_server_mediaSources':
 						$(ui.panel).empty();
+						$(ui.panel).append("<h1>Add/Remove Media Sources</h1>");
 						//list mediaSources
 						$.ajax({
 							cache: false,
@@ -340,7 +341,6 @@
 						});	
 					break;
 					case 'tab_server_log_contents':
-						alert("Loading Contents");
 						//TODO: Loading placeholder
 						$.ajax({
 							url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=getApplicationLog&apikey="+apikey+"&apiver="+apiversion,
@@ -371,8 +371,11 @@
 		$.ajax({
 			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listUsers&apikey="+apikey+"&apiver="+apiversion,
 			success: function(data, textStatus, jqXHR){
-			
+				
+				currentUserID = jqXHR.getResponseHeader("X-AuthenticatedUserID");
+				
 				$(ui.panel).empty();
+				$(ui.panel).append("<h1>Add/Remove and Configure Users</h1>");
 				var userList = $("<select name='userList' id='opt_user_select' />");
 				
 				for (var intx=0; intx<data.length; ++intx)
@@ -416,7 +419,7 @@
 										
 										$("#permissionsTarget").remove();
 										$("#opt_usr_rightFrameTarget").append(
-											$("<h1 class='miniheading'>Permissions</h1>"),
+											$("<h2 class='miniheading'>Permissions</h2>"),
 											$("<div id='permissionsTarget' ></div>")
 										);
 										
@@ -513,6 +516,7 @@
 							).append(	//add the delete button
 								$("<button id='opt_usr_input_deleteBtn'>Delete User</button>")
 									.button({
+										disabled: (currentUserID==$("#opt_usr_input_idUser").val()),
 										icons: { primary: 'ui-icon-circle-minus'},
 										text: true
 									}).click(function(e){
@@ -541,7 +545,6 @@
 											});
 										}
 									})
-									.attr("disabled", !(currentUserName=="" || currentUserName !== $("#opt_user_select option:selected").text()) )
 							)
 							.append(	//add the fields to change the password
 								$("<div id='opt_usr_input_changePasswd_container' />")
