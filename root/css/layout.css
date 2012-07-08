@@ -202,18 +202,6 @@ p label
 	margin: 0.25ex 0.5ex;
 }
 
-//labels for the config dialog
-#configDialog p label
-{
-	width: 10em;
-}
-
-//"fix" for the options being 'kin wankly arranged
-#configDialog #permissionsTarget fieldset {
-	float: left;
-	margin-right: 1em;
-}
-
 /*
 #jPlayerInspector
 {

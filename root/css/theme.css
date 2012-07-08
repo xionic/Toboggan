@@ -302,34 +302,12 @@ select#mediaSourceSelector option
 	bottom: 10px;
 }
 
-//Config Styles
-#configButton
-{
-	width: 32px; 
-	height: 32px;
-	background: url('../img/cog.png');
-	cursor: pointer;
-}
-
 #searchButton
 {
 	width: 32px; 
 	height: 32px;
 	background: url('../img/find.png');
 	cursor: pointer;
-}
-
-#configDialog fieldset
-{
-	border: 1px solid grey;
-	padding: 1ex 1ex;
-	margin: 0ex 0ex 1ex 0ex;
-}
-
-#configDialog fieldset legend
-{
-	margin-left: 2ex;
-	padding: 0ex 1ex;
 }
 
 /**
