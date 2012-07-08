@@ -19,7 +19,8 @@
 	<script type="text/javascript" src="./js/jQuery.jPlayer.2.1.0/add-on/jquery.jplayer.inspector.js"></script>
 	<script type="text/javascript">
 <?php
-	echo "var g_ultrasonic_basePath=\"".dirname($_SERVER['REQUEST_URI'])."/\";";
+	// the ./ makes it work in all relevent situations - hack !
+	echo "var g_ultrasonic_basePath=\"".dirname($_SERVER['REQUEST_URI']."./")."/\";";
 ?>
 	</script>
 	<script type="text/javascript" src="./js/ultrasonic.player.js"></script>
