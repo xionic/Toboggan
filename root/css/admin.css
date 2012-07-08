@@ -86,9 +86,19 @@ li.streamer input, #tab_server_mediaSources li input {
 #tab_server_streamers>ul, #tab_server_mediaSources>ul {
 	padding-bottom: 1ex;
 }
-#tab_welcome h1 {
+
+h1 {
 	font-size: larger;
 	margin-bottom: 1ex;
 	font-weight: bold;
-	border-bottom: 1px solid #D00004;
+	color: #D00004;
+	border-bottom: 1px solid grey;
+}
+
+#tab_server_log_contents {
+}
+
+//server log contents!
+#server_log_contents_target {
+	font-family: monospace;
 }

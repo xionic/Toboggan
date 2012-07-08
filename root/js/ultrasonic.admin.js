@@ -76,6 +76,7 @@
 						.append($("<li><a href='#tab_server_streamers'>Streamers</a></li>"))
 						.append($("<li><a href='#tab_server_users'>Users</a></li>"))
 						.append($("<li><a href='#tab_server_mediaSources'>Media Sources</a></li>"))
+						.append($("<li><a href='#tab_server_log_contents'>View Server Log</a></li>"))
 				)
 				/*.append(
 					$("<div id='tab_client'></div>")
@@ -107,6 +108,9 @@
 				)
 				.append(
 					$("<div id='tab_server_mediaSources'></div>")
+				)
+				.append(
+					$("<div id='tab_server_log_contents'><h1>The last 10KiB of the Server Log</h1><pre id='server_log_contents_target' ></pre></div>")
 				)
 				.appendTo("body");
 		
@@ -335,8 +339,23 @@
 							},
 						});	
 					break;
-					case 'tab_client':
-					
+					case 'tab_server_log_contents':
+						alert("Loading Contents");
+						//TODO: Loading placeholder
+						$.ajax({
+							url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=getApplicationLog&apikey="+apikey+"&apiver="+apiversion,
+							type:'POST',
+							data: {lastNBytes: 10240},
+							success: function(data, textStatus, jqXHR){
+								//TODO: probably trim up until the first newline as this line is probably incomplete and just
+								//clouds the view
+								$("#server_log_contents_target").text(data.logFileText);
+							},
+							error: function(jqHXR, textStatus, errorThrown){
+								alert("A mild loading catastrophe has occurred, please check the error log");
+								console.error(jqHXR, textStatus, errorThrown);
+							}	
+						});
 					break;
 					default:
 						
