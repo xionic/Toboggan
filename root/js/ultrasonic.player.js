@@ -562,8 +562,10 @@
 		/** Make the playlist drag-sortable & Droppable*/
 		$("#playlistTracks").droppable({
 			accept: ":not(.ui-sortable-helper)",	//make sure that if its being rearranged this doesn't count as a drop
+			activeClass: "playlistDropZoneActive",
 			drop: function( event, ui ) {
 				$( this ).find( ".placeholder" ).remove();
+				
 				
 				//TODO: Extract the metadata information for the track and clone it as well as the filename etc
 				//or some sort of deep clone:
@@ -588,6 +590,7 @@
 				// gets added unintentionally by droppable interacting with sortable
 				// using connectWithSortable fixes this, but doesn't allow you to customize active/hoverClass options
 				$( this ).removeClass( "ui-state-default" );
+				$( this ).removeClass( "playlistDropZoneActive");
 			}
 		});
 		
