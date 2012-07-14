@@ -404,7 +404,11 @@
 					.click(function() {
 						$(this).remove();
 						$cmenu.hide();
-					}).bind('contextmenu' , function(){return false;})
+					}).bind('contextmenu' , function(e){
+						e.preventDefault();
+						$('#trackMenu').hide();
+						$('.overlay').hide();
+					})
 					.appendTo(document.body);
 				
 				$("#trackMenu").css({ left: e.pageX, top: e.pageY, zIndex: '1001' }).show();
