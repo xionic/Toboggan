@@ -305,20 +305,62 @@
 			e.preventDefault();
 			e.stopPropagation();
 			
-			if($(this).hasClass("add_to_playlist"))
+			var mediaSourceID = $(rightClickedObject).find("span.trackName").attr("data-media_source");
+			
+			if($(this).hasClass("show_containing_dir"))
+			{
+				displayLoading();
+				//un-highlight the selected folder			
+				if(activeNode = $("#folderlist").dynatree("getTree").getActiveNode())
+					activeNode.deactivate();
+					
+				//TODO: make this somehow select the correct folder in the tree?
+				
+				$.ajax({
+					cache: false,
+					url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listDirContents&apikey="+apikey+"&apiver="+apiversion,
+					type: "GET",
+					data: { 
+						'dir' : $(rightClickedObject).find("span.trackName").attr("data-dir"), 
+						'mediaSourceID' : mediaSourceID
+					},
+					complete: function(jqxhr, status) {},
+					error: function(jqxhr, status, errorThrown) {
+						alert("AJAX ERROR - check the console!");
+						console.error(jqxhr, status, errorThrown);
+					},
+					
+					success: function(data, status, jqxhr) {
+
+						refreshFileListState();
+						
+						//$("#tracklistHeader").text($("#mediaSourceSelector option:selected").text()+""+(folderName==""?"/":folderName));
+						$("#tracklistHeader").text($("#mediaSourceSelector option[value='"+mediaSourceID+"']").text()+""+data.CurrentPath);
+
+						//add files
+						var appendTarget=$("<ol id='tracklist' />");
+						for (file in data.Files)
+						{	
+							addTrackToFileList(data.Files[file], data.CurrentPath, mediaSourceID, appendTarget);
+						}
+						$("#tracklist").replaceWith(appendTarget);
+						addTrackClickHandlers();
+					}
+				});
+			}
+			else if($(this).hasClass("add_to_playlist"))
 			{
 				$(rightClickedObject).find("a.addToPlaylistButton").click();
 			}
-			if($(this).hasClass("play_now"))
+			else if($(this).hasClass("play_now"))
 			{
 				$(rightClickedObject).find("a.playNowButton").click();
 			}
-			if($(this).hasClass("download"))
+			else if($(this).hasClass("download"))
 			{
 				$(rightClickedObject).find("a.downloadButton").click();
 			}
-			
-			if($(this).hasClass("downcode_streamer"))
+			else if($(this).hasClass("downcode_streamer"))
 			{
 				var trackObject = $(rightClickedObject).find("span.trackName");
 				var		remote_filename = $(trackObject).attr("data-filename"),
