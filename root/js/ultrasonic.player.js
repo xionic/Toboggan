@@ -609,6 +609,7 @@
 		$("#playlistTracks").droppable({
 			accept: ":not(.ui-sortable-helper)",	//make sure that if its being rearranged this doesn't count as a drop
 			activeClass: "playlistDropZoneActive",
+			hoverClass: "playlistDropZoneHover",
 			drop: function( event, ui ) {
 				$( this ).find( ".placeholder" ).remove();
 				

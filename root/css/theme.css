@@ -107,6 +107,13 @@ html, #loginForm
 	background: rgba(208,0,4,0.05);
 }
 
+.playlistDropZoneHover
+{
+	overflow-x: hidden;
+	outline: 1px solid rgba(208,0,4,0.8);
+	background: rgba(208,0,4,0.1);
+}
+
 #centreContainer 
 {
 	background: none;
