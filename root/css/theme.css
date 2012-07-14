@@ -86,6 +86,7 @@ html, #loginForm
 {
 	border-left: 1px solid black;
 	box-sizing: border-box;
+	overflow-x: hidden;
 }
 
 #folderbrowserContainer

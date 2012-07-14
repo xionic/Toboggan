@@ -4,10 +4,6 @@
 
 */
 
-body {
-	background: black;
-}
-
 #configDialog {
 	position: fixed;
 	top: 0px;
