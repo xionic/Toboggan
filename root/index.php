@@ -60,11 +60,13 @@
 </div>
 
 <div id='jPlayerInspector'></div>
+
 <div class='contextMenu vmenu' id='trackMenu' unselectable='on'> <!-- http://www.webdeveloperjuice.com/2010/02/22/create-simple-jquery-right-click-cross-browser-vertical-menu/ -->
 	
 	<div class="first_li show_containing_dir"><span>Show Containing Directory</span></div>
-	<div class="first_li add_to_playlist"><span>Add to Playlist</span></div>
-	<div class="first_li play_now"><span>Play Now</span></div>
+	<div class="first_li add_to_playlist hideInPlaylist"><span>Add to Playlist</span></div>
+	<div class="first_li del_from_playlist hideInTracklist"><span>Remove From Playlist</span></div>
+	<div class="first_li play_now hideInPlaylist"><span>Play Now</span></div>
 	<div class="first_li download"><span>Download</span></div>
 	<div class="first_li"><span>Downcode to...</span>
 		<div class="inner_li" id='trackMenu_downcodestreamers'>

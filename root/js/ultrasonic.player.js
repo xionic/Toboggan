@@ -286,13 +286,22 @@
 			$("<li></li>").append(
 				$("<a href='javascript:;' class='removeFromPlaylist'>&minus;</a>")
 			).append(
-				$("<a href='javascript:;' class='playNow'></a>")
+				$("<a href='javascript:;' class='playNow trackObject'></a>")
 					.text( trackObject.text )
 					.attr( "data-filename", trackObject.filename )
 					.attr( "data-dir", trackObject.dir )
 					.attr( "data-streamers", trackObject.streamers )
 					.attr( "data-media_source", trackObject.media_source )
-			)
+			).bind('contextmenu', function(e){
+
+				e.preventDefault();
+				rightClickedObject = this;
+				$("#trackMenu .hideInPlaylist").hide();
+
+				return setupContextMenu(e,{
+					streamers: JSON.parse(trackObject.streamers)
+				})
+			})
 		);
 	}
 	
@@ -305,23 +314,25 @@
 			e.preventDefault();
 			e.stopPropagation();
 			
-			var mediaSourceID = $(rightClickedObject).find("span.trackName").attr("data-media_source");
+			var mediaSourceID = $(rightClickedObject).find(".trackObject").attr("data-media_source");
 			
 			if($(this).hasClass("show_containing_dir"))
 			{
 				displayLoading();
+				
 				//un-highlight the selected folder			
 				if(activeNode = $("#folderlist").dynatree("getTree").getActiveNode())
 					activeNode.deactivate();
 					
 				//TODO: make this somehow select the correct folder in the tree?
+				//	 tree.loadKeyPath(keyPath, callback) won't work as it requires the secret ID things
 				
 				$.ajax({
 					cache: false,
 					url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listDirContents&apikey="+apikey+"&apiver="+apiversion,
 					type: "GET",
 					data: { 
-						'dir' : $(rightClickedObject).find("span.trackName").attr("data-dir"), 
+						'dir' : $(rightClickedObject).find(".trackObject").attr("data-dir"), 
 						'mediaSourceID' : mediaSourceID
 					},
 					complete: function(jqxhr, status) {},
@@ -352,17 +363,21 @@
 			{
 				$(rightClickedObject).find("a.addToPlaylistButton").click();
 			}
+			else if($(this).hasClass("del_from_playlist"))
+			{
+				$(rightClickedObject).find(".removeFromPlaylist").click();
+			}
 			else if($(this).hasClass("play_now"))
 			{
-				$(rightClickedObject).find("a.playNowButton").click();
+				$(rightClickedObject).find(".playNowButton, .playNow").click();
 			}
 			else if($(this).hasClass("download"))
 			{
-				$(rightClickedObject).find("a.downloadButton").click();
+				doDownloadOfTrack(rightClickedObject);
 			}
 			else if($(this).hasClass("downcode_streamer"))
 			{
-				var trackObject = $(rightClickedObject).find("span.trackName");
+				var trackObject = $(rightClickedObject).find(".trackObject");
 				var		remote_filename = $(trackObject).attr("data-filename"),
 						remote_directory = $(trackObject).attr("data-dir"),
 						remote_mediaSource = $(trackObject).attr("data-media_source");
@@ -381,14 +396,12 @@
 	
 		$('#trackMenu .first_li').live('click',function() {
 			if( $(this).children().size() == 1 ) {
-				$('#trackMenu').hide();
-				$('.overlay').hide();
+				hideContextMenu();
 			}
 		});
 
 		$('#trackMenu .inner_li span').live('click',function() {
-				$('#trackMenu').hide();
-				$('.overlay').hide();
+			hideContextMenu();
 		});
 
 
@@ -400,6 +413,43 @@
 		function () {
 			$(this).find('.inner_li').hide();
 		});
+	}
+	
+	function setupContextMenu(e, file)
+	{
+		e.preventDefault();
+		//dynamically update submenu
+		$("#trackMenu_downcodestreamers").empty();
+		
+		for ( x in file.streamers)
+		{
+			$("#trackMenu_downcodestreamers").append(
+				$("<span/>")
+					.addClass("downcode_streamer")
+					.text(file.streamers[x].extension)
+					.attr("data-streamerID",file.streamers[x].streamerID)
+			);
+		}
+		
+		$('<div class="overlay"></div>').css({left : '0px', top : '0px',position: 'absolute', width:'100%', height: '100%', zIndex: '1000' })
+			.click(function() {
+				hideContextMenu();
+			}).bind('contextmenu' , function(e){
+				e.preventDefault();
+				hideContextMenu();
+			})
+			.appendTo(document.body);
+		
+		$("#trackMenu").css({ left: e.pageX, top: e.pageY, zIndex: '1001' }).show();
+
+		return false;
+	}
+	
+	function hideContextMenu()
+	{
+		$("#trackMenu .hideInPlaylist, #trackMenu .hideInTracklist").show();
+		$('#trackMenu').hide();
+		$('.overlay').hide();
 	}
 	
 	/**
@@ -421,6 +471,7 @@
 				$("<span></span>")
 					.text(file.displayName)
 					.addClass("trackName")
+					.addClass("trackObject")
 					.attr("data-dir", folderName+"/")
 					.attr("data-filename", file.filename)					
 					.attr("data-streamers", JSON.stringify(file.streamers))
@@ -428,34 +479,10 @@
 			)
 			.addClass(className)
 			.bind('contextmenu', function(e){
-				var $cmenu = $("#trackMenu");
+				e.preventDefault();
 				rightClickedObject = this;
-				//dynamically update submenu
-				$("#trackMenu_downcodestreamers").empty();
-				for ( x in file.streamers)
-				{
-					$("#trackMenu_downcodestreamers").append(
-						$("<span/>")
-							.addClass("downcode_streamer")
-							.text(file.streamers[x].extension)
-							.attr("data-streamerID",file.streamers[x].streamerID)
-					);
-				}
-				
-				$('<div class="overlay"></div>').css({left : '0px', top : '0px',position: 'absolute', width:'100%', height: '100%', zIndex: '1000' })
-					.click(function() {
-						$(this).remove();
-						$cmenu.hide();
-					}).bind('contextmenu' , function(e){
-						e.preventDefault();
-						$('#trackMenu').hide();
-						$('.overlay').hide();
-					})
-					.appendTo(document.body);
-				
-				$("#trackMenu").css({ left: e.pageX, top: e.pageY, zIndex: '1001' }).show();
-
-				return false;
+				$("#trackMenu .hideInTracklist").hide();
+				return setupContextMenu(e,file)
 			})
 			.appendTo(appendTarget);
 	}
@@ -531,27 +558,12 @@
 
 		var parentElement = $("#tracklist").children("li");
 		parentElement.children("a.downloadButton").click(function(){
-			
-			var trackObject = $(this).parent().children("span.trackName");
-			var     remote_filename = $(trackObject).attr("data-filename"),
-			        remote_directory = $(trackObject).attr("data-dir"),
-			        remote_streamers = $(trackObject).attr("data-streamers"),
-			        remote_mediaSource = $(trackObject).attr("data-media_source");
-			                                                 
-
-			var url = g_ultrasonic_basePath+"/backend/rest.php"+"?action=downloadFile"+
-					"&filename="+encodeURIComponent(remote_filename)+
-			    	"&dir="+encodeURIComponent(remote_directory)+
-		    		"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
-		    		"&apikey="+apikey+
-					"&apiver="+apiversion;
-		    		
-			window.location = url;
+			doDownloadOfTrack($(this).parent());
 		});
 		
 		parentElement.children("a.addToPlaylistButton").click(function(){
 			var parentObj = $(this).parent(),
-				trackTagObject = parentObj.children("span.trackName");
+				trackTagObject = parentObj.children(".trackObject");
 			
 			if(parentObj.hasClass("unplayable"))
 				return false;
@@ -571,7 +583,7 @@
 		
 		parentElement.children("a.playNowButton").click(function(){
 			var parentObj = $(this).parent(),
-				trackTagObject = parentObj.children("span.trackName");
+				trackTagObject = parentObj.children(".trackObject");
 			
 			if(parentObj.hasClass("unplayable"))
 				return false;
@@ -613,11 +625,10 @@
 			drop: function( event, ui ) {
 				$( this ).find( ".placeholder" ).remove();
 				
-				
 				//TODO: Extract the metadata information for the track and clone it as well as the filename etc
 				//or some sort of deep clone:
 				//$(ui.draggable).clone().appendTo(this);
-				var trackTagObject = $(ui.draggable).children("span.trackName");
+				var trackTagObject = $(ui.draggable).children(".trackObject");
 							
 				trackObject = {
 					'text': $(trackTagObject).text(),
@@ -659,6 +670,29 @@
 			$(this).parent().remove();
 			saveNowPlaying();
 		});
+	}
+	
+	/**
+		Refactored out of the click handler into a separate function :)
+	*/
+	function doDownloadOfTrack(trackSrc)
+	{
+		
+		var trackObject = $(trackSrc).find(".trackObject");
+		var     remote_filename = $(trackObject).attr("data-filename"),
+				remote_directory = $(trackObject).attr("data-dir"),
+				remote_streamers = $(trackObject).attr("data-streamers"),
+				remote_mediaSource = $(trackObject).attr("data-media_source");
+														 
+
+		var url = g_ultrasonic_basePath+"/backend/rest.php"+"?action=downloadFile"+
+				"&filename="+encodeURIComponent(remote_filename)+
+				"&dir="+encodeURIComponent(remote_directory)+
+				"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
+				"&apikey="+apikey+
+				"&apiver="+apiversion;
+				
+		window.location = url;
 	}
 	
 	/**
