@@ -230,8 +230,6 @@
 		
 		configureContextMenuCallbacks();
 		
-		addKeepAlives();
-		
 		//load jPlayer Inspector
 	//	$("#jPlayerInspector").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
 	});
@@ -926,6 +924,7 @@
 				'password': hash
 			},
 			success: function(){
+				addKeepAlives();
 				currentUserName = $("#username").val();
 				$("#topBarContainer span.username").text("Logged in as: "+currentUserName+" | ");
 				$("#loginFormContainer").dialog("close");
