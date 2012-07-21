@@ -230,6 +230,8 @@
 		
 		configureContextMenuCallbacks();
 		
+		addKeepAlives();
+		
 		//load jPlayer Inspector
 	//	$("#jPlayerInspector").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
 	});
@@ -275,6 +277,34 @@
 		}
 		
 		localStorage.setItem(nowPlayingKey, JSON.stringify(nowPlaying));
+	}
+	
+	/**
+		Add a periodic AJAX call to ensure the session stays alive
+			This uses retrieveClientSettings REST call for now
+			until a more appropriate verb is created/discovered
+	*/
+	function addKeepAlives()
+	{
+	
+		setInterval(function(){
+			
+			$.ajax({
+				cache: false,
+				url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=retrieveClientSettings&apikey="+apikey+"&apiver="+apiversion,
+				type: "GET",
+				data: { },
+				complete: function(jqxhr, status) {},
+				error: function(jqxhr, status, errorThrown) {
+					alert("AJAX ERROR - check the console!");
+					console.error(jqxhr, status, errorThrown);
+				},
+				
+				success: function(data, status, jqxhr) {
+				}
+			});
+			
+		},60000);
 	}
 	
 	/**
