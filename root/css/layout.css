@@ -238,3 +238,7 @@ p label
 {
 	overflow-y: hidden;
 }
+
+.trackMetadata ul li {
+	margin-left: 1em;
+}

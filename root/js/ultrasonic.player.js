@@ -373,7 +373,6 @@
 
 						refreshFileListState();
 						
-						//$("#tracklistHeader").text($("#mediaSourceSelector option:selected").text()+""+(folderName==""?"/":folderName));
 						$("#tracklistHeader").text($("#mediaSourceSelector option[value='"+mediaSourceID+"']").text()+""+data.CurrentPath);
 
 						//add files
@@ -418,6 +417,58 @@
 											"&apikey="+apikey+
 											"&apiver="+apiversion;
 				window.location = url;
+			}
+			else if($(this).hasClass("metadata"))
+			{
+			
+				var trackObject = $(rightClickedObject).find(".trackObject");
+				var		remote_filename = $(trackObject).attr("data-filename"),
+						remote_directory = $(trackObject).attr("data-dir"),
+						remote_mediaSource = $(trackObject).attr("data-media_source");
+			
+				$.ajax({
+					cache: false,
+					url: g_ultrasonic_basePath+"/backend/rest.php",
+					data: {
+						'apikey':			apikey,
+						'apiver':			apiversion,
+						'action':			"getFileMetadata",
+						'mediaSourceID':	remote_mediaSource,
+						'filename':			remote_filename,
+						'dir':				remote_directory	
+					},
+					type: "GET",
+					complete: function(jqxhr,status) {},
+					error: function(jqxhr, status, errorThrown) {
+						alert("AJAX Error - check the console");
+						console.error(jqxhr, status, errorThrown);
+					},
+					success: function(data, status, jqxhr) {	
+						console.log(data);
+						
+						var innerHTML = $("<div/>");
+						for (x in data)
+						{
+							innerHTML.append($("<div class='trackMetadata'/>")
+												.append($("<p/>").text(x))
+												.append($("<ul/>")
+													.append($("<li/>")
+															.text(JSON.stringify(data[x])))
+												)
+											);
+						}
+						
+						var $d = $("<div></div>")
+									.html(innerHTML)
+									.dialog({
+										autoOpen: true,
+										title: "File Information",
+										modal: true,
+										draggable: false,
+										width: '75%'
+									});
+					},
+				});	
 			}
 			
 		});
