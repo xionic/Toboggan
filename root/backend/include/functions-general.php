@@ -61,4 +61,15 @@ function checkActionAllowed($actionName, $targetObjectID = false)
 		reportError("Permission Denied", 403);
 	}
 }
+
+/**
+* Handle session starting and setup
+*/
+function start_session()
+{
+	//start session
+	session_name(getConfig("sessionName"));
+	session_start();
+}
+
 ?>

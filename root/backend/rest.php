@@ -36,9 +36,8 @@ try
 		reportError("Invalid API Key", 412, "text/plain");
 	}
 
-	//start session
-	session_name(getConfig("sessionName"));
-	session_start();
+	//start the session
+	start_session();
 
 	//check user is auth'd
 	if(isset($_GET["action"]) && $_GET["action"] != "login") // special case

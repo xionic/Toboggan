@@ -38,6 +38,11 @@ class userLogin {
 	*/
 	public static function validate()
 	{			
+		//trash old session if there is one - this needs to be a new one
+		userLogin::logout();
+		$_COOKIE = array();
+		start_session();
+		
 		//try POST VAR auth
 		if(isset($_POST["username"]) && isset($_POST["password"]))
 		{
