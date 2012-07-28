@@ -50,7 +50,6 @@
 				'password': hash
 			},
 			success: function(data,textStatus,jqHXR){	
-				currentUserID = jqHXR.getResponseHeader("X-AuthenticatedUserID");
 				$("#loginFormContainer").dialog("close");
 				displayConfig();
 			},
@@ -469,7 +468,7 @@
 													"name": lbl,
 													"value": data[lbl],
 													"disabled": newinputDisabled,
-													"checked": (lbl=="enabled" && data[lbl]=="1")
+													"checked": (lbl=="enabled" && data[lbl]=="Y")
 													})
 											
 									)
@@ -493,7 +492,7 @@
 										$("#opt_usr_rightFrameTarget>p>input").each(function(){
 											saveData[$(this).attr("name")] = $(this).val();
 											if($(this).attr("type") == "checkbox")
-												saveData[$(this).attr("name")] = $(this).attr("checked")?"1":"0";	
+												saveData[$(this).attr("name")] = $(this).attr("checked")?"Y":"N";	
 										});
 										
 										saveData.permissions = {};
@@ -504,7 +503,7 @@
 												
 											saveData.permissions[$(this).attr("data-permcat")].push({
 													id:			$(this).attr("data-permindex"),
-													granted:	$(this).attr("checked")?"1":"0"
+													granted:	$(this).attr("checked")?"Y":"N"
 												});
 										});
 
@@ -686,7 +685,7 @@
 													saveData[$(this).attr("name")] = $(this).val();
 													
 													if($(this).attr("type") == "checkbox")
-														saveData[$(this).attr("name")] = $(this).attr("checked")?"1":"0";
+														saveData[$(this).attr("name")] = $(this).attr("checked")?"Y":"N";
 													else if ($(this).attr("name")=="password")
 													{
 														//SHA256 the password

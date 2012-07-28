@@ -224,12 +224,10 @@
 			}
 		});
 	
-		getMediaSources();
-		//load the nowPlaying from localStorage
-		loadNowPlaying();
-		
 		configureContextMenuCallbacks();
-		
+	
+		doLogin();
+	
 		//load jPlayer Inspector
 	//	$("#jPlayerInspector").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
 	});
@@ -239,7 +237,7 @@
 	*/
 	function loadNowPlaying()
 	{
-		var nowPlayingKey = "nowPlaying-" + window.location.host + window.location.pathname,
+		var nowPlayingKey = "nowPlaying-" + currentUserID + "-" + window.location.host + window.location.pathname,
 			nowPlaying = localStorage.getItem(nowPlayingKey);
 		
 		if(typeof nowPlaying === "undefined" || !nowPlaying)
@@ -261,7 +259,7 @@
 	{
 		var trackList = $("#playlistTracks li a.playNow"),
 			nowPlaying = [],
-			nowPlayingKey = nowPlayingKey = "nowPlaying-" + window.location.host + window.location.pathname;
+			nowPlayingKey = nowPlayingKey = "nowPlaying-" + currentUserID + "-" + window.location.host + window.location.pathname;
 		
 		for(var x=0; x<trackList.length; ++x)
 		{
@@ -866,7 +864,8 @@
 				if(jqxhr.status==401)
 					doLogin();
 			},
-			success: function(data, status, jqxhr) {		
+			success: function(data, status, jqxhr) {	
+				
 				$("#mediaSourceSelector, #search_mediaSourceSelector").empty();
 				$("#search_mediaSourceSelector").append("<option value='all'>All</option>");
 				for (var x=0; x<data.length; ++x)
@@ -965,7 +964,6 @@
 	
 	function ajaxLogin()
 	{
-	
 		var hash = new jsSHA($("#passwordInput").val()).getHash("SHA-256","B64");
 		$.ajax({
 			url:'backend/rest.php?action=login&apikey='+apikey+"&apiver="+apiversion,
@@ -974,11 +972,16 @@
 				'username': $("#username").val(),
 				'password': hash
 			},
-			success: function(){
+			success: function(data,textStatus, jqXHR){
 				addKeepAlives();
-				currentUserName = $("#username").val();
+				currentUserName	= data.username;
+				currentUserID 	= data.idUser;
 				$("#topBarContainer span.username").text("Logged in as: "+currentUserName+" | ");
 				$("#loginFormContainer").dialog("close");
+				
+				//load the nowPlaying from localStorage
+				loadNowPlaying();
+				
 				getMediaSources();
 			},
 			error: function(jqhxr,textstatus,errorthrown){
