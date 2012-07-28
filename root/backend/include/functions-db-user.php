@@ -187,11 +187,11 @@ function updateUser($userid, $json_settings){
 	}
 	
 	$av->validateArgs($userSettings["permissions"], array(
-		"actions"				=> array("array"),
+		"general"				=> array("array"),
 		"mediaSources"			=> array("array"),
 		"streamers"				=> array("array"),
 	));
-	foreach($userSettings["permissions"]["actions"] as $perm)
+	foreach($userSettings["permissions"]["general"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
@@ -251,7 +251,7 @@ function updateUser($userid, $json_settings){
 	//build a normalised permissions structure to match the db structure (i.e. merge in the special cases [mediaSources and streamers])
 	$newUserPermissions = array();
 	//action permissions
-	foreach($userSettings["permissions"]["actions"] as $perm)
+	foreach($userSettings["permissions"]["general"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
 			$newUserPermissions[] = array("userid" => $userid, "actionid" => $perm["id"]);
@@ -329,11 +329,11 @@ function addUser($json_settings)
 	
 	//validate permissions
 	$av->validateArgs($userSettings["permissions"], array(
-		"actions"				=> array("array"),
+		"general"				=> array("array"),
 		"mediaSources"			=> array("array"),
 		"streamers"				=> array("array"),
 	));
-	foreach($userSettings["permissions"]["actions"] as $perm)
+	foreach($userSettings["permissions"]["general"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
@@ -407,7 +407,7 @@ function addUser($json_settings)
 	//build a normalised permissions structure to match the db structure (i.e. merge in the special cases [mediaSources and streamers])
 	$newUserPermissions = array();
 	//action permissions
-	foreach($userSettings["permissions"]["actions"] as $perm)
+	foreach($userSettings["permissions"]["general"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
 			$newUserPermissions[] = array("userid" => $userid, "actionid" => $perm["id"]);
