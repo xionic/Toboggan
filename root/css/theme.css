@@ -1,6 +1,6 @@
 /**
 
-$PanelColour1 = rgba(17,17,17,1);
+$PanelColour1 = rgba(7,7,7,1);
 $PanelColour2 = rgba(25,25,25,1);
 $BasePanelColour = #fafafa;
 
@@ -20,13 +20,10 @@ $InlineButtonOperaBGColour = -o-linear-gradient(#efefef, #9f9f9f);
 $InlineButtonBorderColour = #606060;
 $InlineButtonTextShadowHighlight = #666 1px -1px 1px;
 
-$FieldsetColour1 = #f4f4f4;
-$FieldsetColour2 = #ffffff;
-
-$liEvenColour1 	= #050505;
-$liEvenColour2 	= #151515;
-$liOddColour1 	= #333333;
-$liOddColour2 	= #222222;
+$liEvenColour1 	= rgba(5,5,5,0.7);
+$liEvenColour2 	= rgba(21,21,21,0.7);
+$liOddColour1 	= rgba(51,51,51,0.7);
+$liOddColour2 	= rgba(34,34,34,0.7);
 
 $liSubSirEvenColour1 = rgba(255,255,255,0.2); 
 $liSubSirEvenColour2 = rgba(245,245,245,0.2);
@@ -41,6 +38,10 @@ $playerControlsColour2 = rgba(40,40,40,1);
 $textShadowHighlight = #111 1px -1px 1px;
 
 */
+
+body {
+	background: url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
+}
 
 #centreContainer
 {
@@ -81,16 +82,41 @@ html, #loginForm
 	border-bottom: 3px solid black;
 }
 
-#playlistTracks, #folderbrowserContainer
+#playlistContainer
 {
-	background: $PanelColour1;
-	background: -o-linear-gradient($PanelColour1 0%, $PanelColour1 90%,$PanelColour2 100%);
+	border-left: 1px solid black;
+	box-sizing: border-box;
+	overflow-x: hidden;
+}
+
+#folderbrowserContainer
+{
+	border-right: 1px solid black;
+	box-sizing: border-box;
+}
+
+#playlistContainer, #folderbrowserContainer
+{
+	background: none ;
+}
+
+.playlistDropZoneActive 
+{
+	overflow-x: hidden;
+	outline: 1px solid rgba(208,0,4,0.5);
+	background: rgba(208,0,4,0.05);
+}
+
+.playlistDropZoneHover
+{
+	overflow-x: hidden;
+	outline: 1px solid rgba(208,0,4,0.8);
+	background: rgba(208,0,4,0.1);
 }
 
 #centreContainer 
 {
-	background: $PanelColour2;
-	background: -o-linear-gradient($PanelColour2 0%, $PanelColour1 20%);
+	background: none;
 }
 
 #playlistTracks
@@ -168,11 +194,9 @@ html, #loginForm
 	overflow-x: hidden;
 }
 
-#playlistTracks li:nth-of-type(even),
-#tracklist li:nth-of-type(even)
+#playlistTracks li:nth-of-type(even)
 {
 	background: $liEvenColour1;
-	background: -o-linear-gradient($liEvenColour1,$liEvenColour2);
 }
 
 #playlistTracks li:nth-of-type(odd),
@@ -210,8 +234,8 @@ html, #loginForm
 
 #trackListHeaderContainer 
 {
-	background: $PanelColour2;
-	background: -o-linear-gradient($PanelColour2,$PanelColour1);
+	//background: $PanelColour2;
+	background: url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
 }
 
 a.jPlaying {
@@ -246,6 +270,7 @@ a.jPlaying {
 	background-image: none;
 	background-color: black;
 }
+
 .ui-widget
 {
 	font-size: inherit;
@@ -304,36 +329,12 @@ select#mediaSourceSelector option
 	bottom: 10px;
 }
 
-//Config Styles
-#configButton
-{
-	width: 32px; 
-	height: 32px;
-	background: url('../img/cog.png');
-	cursor: pointer;
-}
-
 #searchButton
 {
 	width: 32px; 
 	height: 32px;
 	background: url('../img/find.png');
 	cursor: pointer;
-}
-
-#configDialog fieldset
-{
-	border: 1px solid grey;
-	background: $FieldsetColour1;
-	background: -o-linear-gradient($FieldsetColour1,$FieldsetColour2);
-	padding: 1ex 1ex;
-	margin: 0ex 0ex 1ex 0ex;
-}
-
-#configDialog fieldset legend
-{
-	margin-left: 2ex;
-	padding: 0ex 1ex;
 }
 
 /**
@@ -347,8 +348,7 @@ select#mediaSourceSelector option
 }
 
 #searchContainer input, 
-#searchContainer select, 
-#searchContainer button, 
+#searchContainer select,  
 #searchContainer span.selectWrapper
 {
 	border: 1px solid grey;
@@ -361,7 +361,7 @@ select#mediaSourceSelector option
 	background: $ButtonColour1;
 }
 
-#searchContainer input, #searchContainer button
+#searchContainer input
 {
 	padding: 5px;
 }
@@ -400,13 +400,6 @@ img.loading
 	font-weight: bold;
 }
 
-/**
-	Login dialog tweaks
-*/
-.ui-dialog *
-{
-	color: black;
-}
 /** 
 	mini-icons 
 **/
@@ -436,20 +429,6 @@ img.loading
 .removeFromPlaylist, .downloadButton 
 {
 	margin-right: 0.3ex;
-}
-
-/**
-	Styles for the configuration dialog
-*/
-#configDialog li.streamer, #configDialog a.add
-{
-	font-size: smaller;
-}
-#configDialog li.streamer input[name=fromExt],
-#configDialog li.streamer input[name=toExt]
-{
-	width: 6em;
-	font-family: "consolas", monospace;
 }
 
 

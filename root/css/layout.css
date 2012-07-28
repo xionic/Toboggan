@@ -196,26 +196,26 @@ p label
 	
 }
 
-//labels for the config dialog
-#configDialog p label
-{
-	width: 10em;
+.ui-dialog input[type='text'],
+.ui-dialog input[type='number'],
+.ui-dialog input[type='password'] {
+	margin: 0.25ex 0.5ex;
 }
 
 /*
 #jPlayerInspector
 {
 	position: fixed;
-	top: 0px;
 	right: 20em;
-	top: 0px;
+	top: 90px;
 	width: 100ex;
 	height: 50ex;
 	overflow-y: scroll;
 	background: white;
+	color: black;
 	border: 1px solid red;
-}*/
-
+}
+*/
 #searchContainer
 {
 	display: block;
@@ -236,5 +236,9 @@ p label
 
 .dynatree-container li 
 {
-overflow-y: hidden;
+	overflow-y: hidden;
+}
+
+.trackMetadata ul li {
+	margin-left: 1em;
 }

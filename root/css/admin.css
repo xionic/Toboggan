@@ -1,0 +1,125 @@
+/**
+
+"Admin" page styles
+
+*/
+
+#configDialog {
+	position: fixed;
+	top: 0px;
+	right: 0px;
+	left: 0px;
+	bottom: 0px;
+	overflow: auto;
+	border: 0px !important;
+	border-radius: 0px;
+}
+
+//labels for the config dialog
+#configDialog p label
+{
+	width: 10em;
+}
+
+//"fix" for the options being 'kin wankly arranged
+#configDialog #permissionsTarget fieldset {
+	float: left;
+	margin-right: 1em;
+}
+
+//Config Styles
+#configButton
+{
+	width: 32px; 
+	height: 32px;
+	background: url('../img/cog.png');
+	cursor: pointer;
+}
+
+.ui-button {
+	margin-left: 1em;
+}
+
+#configDialog fieldset
+{
+	border: 1px solid grey;
+	padding: 1ex 1ex;
+	margin: 0ex 0ex 1ex 0ex;
+}
+
+#configDialog fieldset legend
+{
+	margin-left: 2ex;
+	padding: 0ex 1ex;
+}
+.saveBar, #opt_usr_input_changePasswd_container {
+	margin-top: 2ex;
+}
+
+#opt_usr_input_changePasswd_button
+{
+	margin-top: 2ex;
+}
+
+//make fieldsets appear like jQuery UI stuff
+fieldset {
+	border-radius: 6px;
+	border: 1px solid #555555;
+}
+.ui-tabs-panel {
+	border: 0px solid #D00004 !important;
+	border-radius: 6px;
+}
+
+li.streamer, #tab_server_mediaSources li {
+	margin: 1ex 0em;
+}
+
+li.streamer input, #tab_server_mediaSources li input {
+	margin-right: 0.5em;
+}
+
+#tab_server_streamers>ul, #tab_server_mediaSources>ul {
+	padding-bottom: 1ex;
+}
+
+h1,h2 {
+	font-size: larger;
+	margin-bottom: 1ex;
+	font-weight: bold;
+	color: #D00004;
+	border-bottom: 1px solid grey;
+}
+
+#tab_server_log_contents {
+}
+
+//server log contents!
+#server_log_contents_target {
+	font-family: monospace;
+}
+
+/**
+	Styles for the configuration dialog
+*/
+#configDialog li.streamer, #configDialog .ui-button-text
+{
+	font-size: smaller;
+}
+#configDialog li.streamer input[name=fromExt],
+#configDialog li.streamer input[name=toExt]
+{
+	width: 6em;
+	font-family: "consolas", monospace;
+}
+
+
+h2 {
+	margin-top: 2ex;
+	margin-bottom: 0.5ex;
+	font-weight: bold;
+}
+
+#permissionsTarget {
+	margin-bottom: 2ex;
+}
