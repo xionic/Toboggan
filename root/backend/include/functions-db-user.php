@@ -169,11 +169,11 @@ function updateUser($userid, $json_settings){
 	$av->validateArgs($userSettings, array(
 		"username"				=> array("string", "notblank"),
 		"email"					=> array("string"),
-		"enabled"				=> array("int", "lbound 0", "ubound 1"),
+		"enabled"				=> array("int", "regex /[YN]/"),
 		"maxAudioBitrate"		=> array("int", "lbound 0"),
 		"maxVideoBitrate"		=> array("int", "lbound 0"),
 		"maxBandwidth"			=> array("int", "lbound 0"),
-		"enableTrafficLimit"	=> array("int", "lbound 0", "ubound 1"),	
+		"enableTrafficLimit"	=> array("int",  "regex /[YN]/"),	
 		"permissions"			=> array("array"),
 	));
 	
@@ -191,25 +191,26 @@ function updateUser($userid, $json_settings){
 		"mediaSources"			=> array("array"),
 		"streamers"				=> array("array"),
 	));
+	
 	foreach($userSettings["permissions"]["general"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
-			"granted"			=> array("string", "notblank"),
+			"granted"			=> array("string", "notblank", "regex /[YN]/"),
 		));
 	}
 	foreach($userSettings["permissions"]["mediaSources"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
-			"granted"			=> array("string", "notblank"),
+			"granted"			=> array("string", "notblank", "regex /[YN]/"),
 		));
 	}
 	foreach($userSettings["permissions"]["streamers"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
-			"granted"				=> array("string", "notblank"),
+			"granted"				=> array("string", "notblank", "regex /[YN]/"),
 		));
 	}
 	
@@ -238,11 +239,11 @@ function updateUser($userid, $json_settings){
 	$stmt->bindValue(":idUser", $userid, PDO::PARAM_INT);
 	$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
 	$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
-	$stmt->bindValue(":enabled", $userSettings["enabled"], PDO::PARAM_INT);
+	$stmt->bindValue(":enabled", $userSettings["enabled"]==='Y', PDO::PARAM_BOOL);
 	$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
-	$stmt->bindValue(":enableTrafficLimit", $userSettings["enableTrafficLimit"], PDO::PARAM_INT);
+	$stmt->bindValue(":enableTrafficLimit", $userSettings["enableTrafficLimit"] === 'Y', PDO::PARAM_BOOL );
 	$stmt->bindValue(":trafficLimit", $userSettings["trafficLimit"], PDO::PARAM_INT);
 	$stmt->bindValue(":trafficLimitPeriod", $userSettings["trafficLimitPeriod"], PDO::PARAM_INT);
 	$stmt->execute();
@@ -275,6 +276,8 @@ function updateUser($userid, $json_settings){
 	$stmt = $conn->prepare("DELETE FROM UserPermission WHERE idUser = :userid");
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->execute();
+	
+	
 	
 	//insert new permissions
 	foreach($newUserPermissions as $perm)
@@ -337,21 +340,21 @@ function addUser($json_settings)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
-			"granted"			=> array("string", "notblank"),
+			"granted"			=> array("string", "notblank", "regex /[YN]/"),
 		));
 	}
 	foreach($userSettings["permissions"]["mediaSources"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
-			"granted"			=> array("string", "notblank"),
+			"granted"			=> array("string", "notblank", "regex /[YN]/"),
 		));
 	}
 	foreach($userSettings["permissions"]["streamers"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
-			"granted"				=> array("string", "notblank"),
+			"granted"				=> array("string", "notblank", "regex /[YN]/"),
 		));
 	}
 	
@@ -526,9 +529,9 @@ function checkUserPermission($actionName, $targetObjectID = false)
 	
 	//cache permissions per session if set
 	if(getConfigItem("cache_permissions"))
-	{	
+	{	//appLog(var_export($GLOBALS,true));
 		// build cache of permissions for speed 	
-		if(!isset($_SESSION["cache_permissions"]))
+		if(!isset($GLOBALS["cache_permissions"]))
 		{
 			$sql = "SELECT actionName, targetObjectID 
 					FROM UserPermission 
@@ -536,7 +539,7 @@ function checkUserPermission($actionName, $targetObjectID = false)
 					WHERE 
 						`UserPermission`.idUser = :idUser
 					";		
-
+			
 			$conn = getDBConnection();	
 			$conn->beginTransaction();
 			$stmt = $conn->prepare($sql);	
@@ -546,14 +549,16 @@ function checkUserPermission($actionName, $targetObjectID = false)
 			$stmt->execute();
 			
 			$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-			$_SESSION["cache_permissions"] = $results;
+		
+			$GLOBALS["cache_permissions"] = $results;
 			
 			$conn->commit();
 			closeDBConnection($conn);
 		}
+		
 		//use the cache
-		foreach($_SESSION["cache_permissions"] as $permission)
-		{
+		foreach($GLOBALS["cache_permissions"] as $permission)
+		{	
 			if($permission["actionName"] == $actionName)
 			{
 				//if the permission relates to a specific object it must match

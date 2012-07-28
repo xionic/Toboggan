@@ -195,7 +195,7 @@ try
 			outputUserSettings_JSON($args["userid"]);
 		break;
 		
-		case "updateUserSettings":
+		case "updateUserSettings":		
 			checkActionAllowed("administrator");
 			$argsPOST = $av->validateArgs($_POST, array(			
 				"settings"	=> array("string", "notblank"),
