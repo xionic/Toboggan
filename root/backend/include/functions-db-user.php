@@ -172,11 +172,11 @@ function updateUser($userid, $json_settings){
 	$av->validateArgs($userSettings, array(
 		"username"				=> array("string", "notblank"),
 		"email"					=> array("string"),
-		"enabled"				=> array("int", "regex /[YN]/"),
+		"enabled"				=> array("string", "regex /[YN]/"),
 		"maxAudioBitrate"		=> array("int", "lbound 0"),
 		"maxVideoBitrate"		=> array("int", "lbound 0"),
 		"maxBandwidth"			=> array("int", "lbound 0"),
-		"enableTrafficLimit"	=> array("int",  "regex /[YN]/"),	
+		"enableTrafficLimit"	=> array("string", "regex /[YN]/"),	
 		"permissions"			=> array("array"),
 	));
 	
@@ -318,11 +318,11 @@ function addUser($json_settings)
 		"username"				=> array("string", "notblank"),
 		"password"				=> array("string", "notblank"),
 		"email"					=> array("string"),
-		"enabled"				=> array("int"),
+		"enabled"				=> array("string", "regex /[YN]/"),
 		"maxAudioBitrate"		=> array("int"),
 		"maxVideoBitrate"		=> array("int"),
 		"maxBandwidth"			=> array("int"),
-		"enableTrafficLimit"		=> array("int"),
+		"enableTrafficLimit"		=> array("string", "regex /[YN]/"),
 	));
 	//validate conditionally
 	if($userSettings["enableTrafficLimit"] == 1)
