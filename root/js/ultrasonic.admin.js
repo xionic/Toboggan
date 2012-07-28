@@ -468,7 +468,7 @@
 													"name": lbl,
 													"value": data[lbl],
 													"disabled": newinputDisabled,
-													"checked": (lbl=="enabled" && data[lbl]=="Y")
+													"checked": (newinputType=="checkbox" && data[lbl]=="Y")
 													})
 											
 									)
