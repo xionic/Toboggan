@@ -28,7 +28,8 @@ function expandCmdString($cmd, $data){
 
 	$allowedPatterns = array(
 		"path",
-		"bitrate"
+		"bitrate",
+		"skipToTime",
 	);
 	
 	$patterns = array();

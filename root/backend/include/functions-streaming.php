@@ -1,7 +1,7 @@
 <?php
 require_once("functions.php");
 
-function outputStream($streamerID, $file){
+function outputStream($streamerID, $file, $skipToTime = 0){
 
 	//set errorhandler so errors are captures and not output
 	set_error_handler("appErrorHandler");
@@ -59,7 +59,7 @@ function outputStream($streamerID, $file){
 			$maxBitrate = NO_MAX_BITRATE; // failover to no max bitrate
 		}
 		appLog("Max bitrate to be applied is: ". $maxBitrate, appLog_DEBUG);
-		$mustAdjustBitrate = false;
+		$mustTranscode = false;
 		
 		if($maxBitrate != NO_MAX_BITRATE)//if there is a max bitrate
 		{ 
@@ -72,7 +72,7 @@ function outputStream($streamerID, $file){
 			//check that the bitrate command is defined
 			if(!$bitrateCommand){ 
 				appLog("No valid command to get bitrate - skipping", appLog_VERBOSE);
-				$mustAdjustBitrate = true; //don't know source file bitrate - be safe and transcode
+				$mustTranscode = true; //don't know source file bitrate - be safe and transcode
 			}
 			else{ // if there is a command to get the bitrate - get the bitrate and compare with the max
 				appLog("Retreiving bitrate from file using command: ". $bitrateCommand, appLog_DEBUG);
@@ -87,14 +87,14 @@ function outputStream($streamerID, $file){
 				if($bitrate > $maxBitrate)
 				{
 					appLog("Source file bitrate($bitrate) is greater than the max player bitrate($maxBitrate) - need to change bitrate", appLog_DEBUG);
-					$mustAdjustBitrate = true;
+					$mustTranscode = true;
 				}
 			}
 		}
 		else//no max bitrate
 		{ 
 			appLog("No maximum bitrate is to be applied", appLog_VERBOSE);
-			$mustAdjustBitrate = false;
+			$mustTranscode = false;
 		}
 		//mimetype of file to be output
 		$mimeType = $streamerObj->mime;		
@@ -103,6 +103,12 @@ function outputStream($streamerID, $file){
 		$filenameToSend = substr($filepathInfo["basename"], 0, strrpos($filepathInfo["basename"], ".")). "." . $streamerObj->toExt;
 		
 	}// end if download
+	
+	//check skipToTime as we must not passThough if the file is to be seeked -- this needs to be addressed so that passthrough streams can be seeked too. 
+	if($skipToTime != 0)
+	{
+		$mustTranscode= true;
+	}
 	
 	/**
 	* setup for streaming data and headers
@@ -129,7 +135,7 @@ function outputStream($streamerID, $file){
 	
 	if(
 		$streamerID == 0 || //straight passthrough file download
-		(!$mustAdjustBitrate && $streamerObj->toExt == $streamerObj->fromExt)
+		(!$mustTranscode && $streamerObj->toExt == $streamerObj->fromExt)
 	) // if the file's bitrate does not need to be change and the format is supported by the player, do not transcode
 	{
 		appLog("File does not need to be transcoded, streaming straight through", appLog_VERBOSE);
@@ -138,7 +144,7 @@ function outputStream($streamerID, $file){
 	else
 	{	
 		appLog("File must be transcoded", appLog_VERBOSE);
-		transcodeStream($streamerObj, $file);
+		transcodeStream($streamerObj, $file, $skipToTime);
 	}
 	
 }
@@ -212,7 +218,7 @@ function passthroughStream($file){
 /**
 * Transcodes a file using the streamerObj data provideded and streams it out
 */
-function transcodeStream($streamerObj, $file){
+function transcodeStream($streamerObj, $file, $skipToTime){
 	/**
 	* Set up streamer execution environment
 	*/
@@ -228,6 +234,7 @@ function transcodeStream($streamerObj, $file){
 		array(
 			"path" 		=> $file,
 			"bitrate"	=> getCurrentMaxBitrate($streamerObj->outputMediaType),
+			"skipToTime"	=> $skipToTime,
 		)
 	);
 
@@ -257,7 +264,7 @@ function transcodeStream($streamerObj, $file){
 	appLog("Limiting bandwidth to ". $maxBandwidth . "KB/s", appLog_DEBUG);
 	
 	//number times per sec that we need to fread to output the max bandwidth
-	$iterationsPerSec = getCurrentMaxBandwidth()/8;
+	$iterationsPerSec = $maxBandwidth/8.0;
 	/**
 	* loop until trancode process dies outputing the data stream
 	*/
@@ -313,7 +320,8 @@ function transcodeStream($streamerObj, $file){
 		//flush();
 		
 		//sleep for 1 second minus the time taken to read the data - for bandwidth limiting
-		$sleeptime = ((1 - (microtime(true) - $startTime))*1000000)/$iterationsPerSec;
+		$sleeptime = ((1.0/$iterationsPerSec) - (microtime(true) - $startTime))*1000000;
+		$sleeptime = ($sleeptime < 0 ? 0:$sleeptime);
 		usleep($sleeptime);
 	}
 	

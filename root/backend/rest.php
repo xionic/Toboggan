@@ -97,7 +97,8 @@ try
 				"dir" 				=> array("string"),
 				"mediaSourceID"		=> array("int", "notzero"),
 				"filename"			=> array("string", "notblank"),
-				"streamerID" 		=> array("int")
+				"streamerID" 		=> array("int"),
+				"skipToTime" 		=> array("int", "optional", "lbound 1")
 			));
 					
 			//get full path to file
@@ -109,11 +110,10 @@ try
 			}
 			$fullfilepath = getMediaSourcePath($args["mediaSourceID"]).normalisePath($args["dir"].$args["filename"]);
 			
+			$args["skipToTime"] = (isset($args["skipToTime"])?$args["skipToTime"]:0); //default to 0
+			
 			//output the media stream via a streamer
-			if(!outputStream($args["streamerID"], $fullfilepath))
-			{
-				return; //error outputting stream - error should have been reported by outputStream()
-			}
+			outputStream($args["streamerID"], $fullfilepath, $args["skipToTime"]);			
 			break;
 			
 		case "login":	

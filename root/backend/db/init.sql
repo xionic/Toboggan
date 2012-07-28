@@ -7,7 +7,7 @@ INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(1,1,1);
 
 INSERT INTO fromExt(Extension, bitrateCmd) VALUES("avi", "/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'");
 INSERT INTO toExt(Extension, MimeType, MediaType) VALUES("flv", "video/flv", "v");
-INSERT INTO transcode_cmd(command) VALUES("/usr/bin/ffmpeg -i %path -async 1 -b %bitrate -vf 'scale=320:trunc((320/a)/2)*2' -ar 44100 -ac 2 -v 0 -f flv -vcodec libx264 -preset superfast -");
+INSERT INTO transcode_cmd(command) VALUES("/usr/bin/ffmpeg -ss %skipToTime -i %path -async 1 -b %bitrate -vf 'scale=320:trunc((320/a)/2)*2' -ar 44100 -ac 2 -v 0 -f flv -vcodec libx264 -preset superfast -");
 INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(2,2,2);
 
 INSERT INTO fromExt(Extension, bitrateCmd) VALUES("wma", "/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'");
