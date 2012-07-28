@@ -75,7 +75,7 @@ li.streamer, #tab_server_mediaSources li {
 	margin: 1ex 0em;
 }
 
-li.streamer input, #tab_server_mediaSources li input {
+li.streamer input, li.streamer select, #tab_server_mediaSources li input {
 	margin-right: 0.5em;
 }
 
