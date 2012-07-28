@@ -148,7 +148,7 @@ function checkAPIKey($apikey)
 
 	$result = $stmt->fetch(PDO::FETCH_ASSOC);
 	closeDBConnection($conn);
-	return $result ? true:false;	
+	return $result ? true:false;
 }
 
 
@@ -257,10 +257,14 @@ function saveMediaSourceSettings($settings_JSON)
 	//list of mediaSourceIDs that should be in the DB - all others will be removed at the end
 	$mediaSourceIDsToKeep = array();
 	foreach($settings as $mediaSource)
-	{			
-		//var_dump_pre(getMediaSourcePath($mediaSource["mediaSourceID"]));
+	{	
 		//see if the mediaSourceID is already in the db
-		if(!getMediaSourcePath($mediaSource["mediaSourceID"]))
+		$stmt = $conn->prepare("SELECT 1 FROM mediaSource WHERE idmediaSource = :idmediaSource");
+		$stmt->bindValue(":idmediaSource",$mediaSource["mediaSourceID"], PDO::PARAM_INT);
+		$stmt->execute();
+		$row = $stmt->fetchAll(PDO::FETCH_ASSOC);	
+		
+		if(!$row)
 		{
 			//insert a new mediaSource
 			appLog("Inserting new Media Source with path " . $mediaSource["path"], appLog_DEBUG);
@@ -290,7 +294,6 @@ function saveMediaSourceSettings($settings_JSON)
 	//build a query with the correct number of placeholders	
 	$tempArr = array_fill(0, count($mediaSourceIDsToKeep), "?")	;
 	$query = "DELETE FROM mediaSource WHERE idmediaSource NOT IN (" . implode($tempArr,","). ");";
-
 	
 	$stmt = $conn->prepare($query);		
 	for($n=0; $n < count($mediaSourceIDsToKeep); $n++)
@@ -298,6 +301,17 @@ function saveMediaSourceSettings($settings_JSON)
 		$stmt->bindValue($n+1, $mediaSourceIDsToKeep[$n], PDO::PARAM_INT);
 	}
 	$stmt->execute();
+	
+	//clear up permissions too
+	$query = "DELETE FROM UserPermission WHERE idAction = " . PERMISSION_ACCESSMEDIASOURCE . " AND targetObjectID NOT IN (" . implode($tempArr,","). ");";
+	
+	$stmt = $conn->prepare($query);		
+	for($n=0; $n < count($mediaSourceIDsToKeep); $n++)
+	{
+		$stmt->bindValue($n+1, $mediaSourceIDsToKeep[$n], PDO::PARAM_INT);
+	}
+	$stmt->execute();
+	
 	
 	$conn->commit();
 		

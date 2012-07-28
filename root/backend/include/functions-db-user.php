@@ -181,7 +181,7 @@ function updateUser($userid, $json_settings){
 	));
 	
 	//validate conditionally
-	if($userSettings["enableTrafficLimit"] == 1)
+	if($userSettings["enableTrafficLimit"] === 1)
 	{
 		$av->validateArgs($userSettings, array(
 			"trafficLimit"			=> array("int", "lbound 1"),	
@@ -322,10 +322,11 @@ function addUser($json_settings)
 		"maxAudioBitrate"		=> array("int"),
 		"maxVideoBitrate"		=> array("int"),
 		"maxBandwidth"			=> array("int"),
-		"enableTrafficLimit"		=> array("string", "regex /[YN]/"),
+		"enableTrafficLimit"	=> array("string", "regex /[YN]/"),
+		"permissions"			=> array("array"),
 	));
 	//validate conditionally
-	if($userSettings["enableTrafficLimit"] == 1)
+	if($userSettings["enableTrafficLimit"] === 1)
 	{
 		$av->validateArgs($userSettings, array(
 			"trafficLimit"			=> array("int", "lbound 1"),	
@@ -571,7 +572,11 @@ function checkUserPermission($actionName, $targetObjectID = false)
 				}
 			}
 			
-		}		
+		}	
+		appLog(
+			"Permission denied to user with userid '" . userLogin::getCurrentUserID() . "' for action '" . 
+			$actionName . "' with targetObjectID '" . $targetObjectID . "'", appLog_DEBUG
+		);
 		return false;
 	
 	}
