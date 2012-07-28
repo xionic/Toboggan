@@ -22,8 +22,8 @@ $InlineButtonTextShadowHighlight = #666 1px -1px 1px;
 
 $liEvenColour1 	= rgba(5,5,5,0.7);
 $liEvenColour2 	= rgba(21,21,21,0.7);
-$liOddColour1 	= rgba(51,51,51,0.7);
-$liOddColour2 	= rgba(34,34,34,0.7);
+$liOddColour1 	= rgba(51,51,51,0.9);
+$liOddColour2 	= rgba(34,34,34,0.9);
 
 $liSubSirEvenColour1 = rgba(255,255,255,0.2); 
 $liSubSirEvenColour2 = rgba(245,245,245,0.2);
@@ -129,6 +129,7 @@ html, #loginForm
 	left: 0px;
 	right: 0px;
 	bottom: 0px;
+	overflow: hidden;
 }
 
 #topBarContainer, #trackListAddControls
@@ -168,9 +169,10 @@ html, #loginForm
 
 #playlistTracks li 
 {
-	padding-top: 0.3ex;
-	padding-left: 0.5ex;
-	padding-bottom: 0.3ex;
+	
+	position: relative;
+	height: 3.5ex;
+	line-height: 3.5ex;
 }
 
 #playlistTracks li a
@@ -189,14 +191,34 @@ html, #loginForm
 {
 	padding-top: 0.125ex;
 	padding-bottom: 0.125ex;
-	white-space: nowrap;
 	text-overflow: ellipsis;
 	overflow-x: hidden;
 }
 
+#playlistTracks li a {
+	white-space: nowrap;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+	overflow: visible;
+}
+
+#playlistTracks li a.removeFromPlaylist {
+	position: absolute;
+	left: 0.25em;
+	top: 0.5ex;
+}
+
+#playlistTracks li a.trackObject {
+	display: inline;
+	text-overflow: ellipsis;
+	overflow-x: visible;
+	overflow: visible;
+	margin-left: 2em;
+}
+
 #playlistTracks li:nth-of-type(even)
 {
-	background: $liEvenColour1;
+//	background: $liEvenColour1;
 }
 
 #playlistTracks li:nth-of-type(odd),
