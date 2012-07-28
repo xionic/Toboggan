@@ -50,7 +50,6 @@
 				'password': hash
 			},
 			success: function(data,textStatus,jqHXR){	
-				currentUserID = jqHXR.getResponseHeader("X-AuthenticatedUserID");
 				$("#loginFormContainer").dialog("close");
 				displayConfig();
 			},
@@ -504,7 +503,7 @@
 												
 											saveData.permissions[$(this).attr("data-permcat")].push({
 													id:			$(this).attr("data-permindex"),
-													granted:	$(this).attr("checked")?"1":"0"
+													granted:	$(this).attr("checked")?"Y":"N"
 												});
 										});
 
