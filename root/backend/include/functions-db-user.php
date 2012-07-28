@@ -106,7 +106,7 @@ function getUserObject($userid)
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->execute();
 	$userStandardPerms = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$userObj["permissions"]["actions"] = $userStandardPerms;
+	$userObj["permissions"]["general"] = $userStandardPerms;
 	
 	//get  permissions for accessMediaSource action - special case for accessing certain mediaSources
 	$stmt = $conn->prepare("
@@ -173,12 +173,18 @@ function updateUser($userid, $json_settings){
 		"maxAudioBitrate"		=> array("int", "lbound 0"),
 		"maxVideoBitrate"		=> array("int", "lbound 0"),
 		"maxBandwidth"			=> array("int", "lbound 0"),
-		"enableTrafficLimit"	=> array("int", "lbound 0", "ubound 1"),
-		"trafficLimit"			=> array("int", "lbound 1"),		
-		"trafficLimitPeriod"	=> array("int", "lbound 1"),		
+		"enableTrafficLimit"	=> array("int", "lbound 0", "ubound 1"),	
 		"permissions"			=> array("array"),
 	));
 	
+	//validate conditionally
+	if($userSettings["enableTrafficLimit"] == 1)
+	{
+		$av->validateArgs($userSettings, array(
+			"trafficLimit"			=> array("int", "lbound 1"),	
+			"trafficLimitPeriod"	=> array("int", "lbound 1"),	
+		));
+	}
 	
 	$av->validateArgs($userSettings["permissions"], array(
 		"actions"				=> array("array"),
@@ -311,9 +317,16 @@ function addUser($json_settings)
 		"maxVideoBitrate"		=> array("int"),
 		"maxBandwidth"			=> array("int"),
 		"enableTrafficLimit"		=> array("int"),
-		"trafficLimit"			=> array("int"),
-		"trafficLimitPeriod"		=> array("int"),
 	));
+	//validate conditionally
+	if($userSettings["enableTrafficLimit"] == 1)
+	{
+		$av->validateArgs($userSettings, array(
+			"trafficLimit"			=> array("int", "lbound 1"),	
+			"trafficLimitPeriod"	=> array("int", "lbound 1"),	
+		));
+	}
+	
 	//validate permissions
 	$av->validateArgs($userSettings["permissions"], array(
 		"actions"				=> array("array"),
