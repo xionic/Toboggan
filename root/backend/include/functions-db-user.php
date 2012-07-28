@@ -78,8 +78,11 @@ function getUserObject($userid)
 	
 	//assemble user info
 	$stmt = $conn->prepare("
-		SELECT idUser, username, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth,
-				enableTrafficLimit, trafficLimit, trafficLimitPeriod
+		SELECT idUser, username, email, 
+			CASE WHEN enabled = 1 THEN 'Y' ELSE 'N' END as enabled, 
+			maxAudioBitrate, maxVideoBitrate, maxBandwidth,				
+			CASE WHEN enableTrafficLimit = 1 THEN 'Y' ELSE 'N' END as enableTrafficLimit	,			
+			trafficLimit, trafficLimitPeriod
 			FROM User
 			WHERE idUser = :userid");
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
