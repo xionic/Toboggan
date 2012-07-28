@@ -107,7 +107,7 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 	//check skipToTime as we must not passThough if the file is to be seeked -- this needs to be addressed so that passthrough streams can be seeked too. 
 	if($skipToTime != 0)
 	{
-		$mustTranscode= true;
+		$mustTranscode = true;
 	}
 	
 	/**
