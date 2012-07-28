@@ -20,8 +20,8 @@ $InlineButtonOperaBGColour = -o-linear-gradient(#efefef, #9f9f9f);
 $InlineButtonBorderColour = #606060;
 $InlineButtonTextShadowHighlight = #666 1px -1px 1px;
 
-$liEvenColour1 	= rgba(5,5,5,0.7);
-$liEvenColour2 	= rgba(21,21,21,0.7);
+$liEvenColour1 	= rgba(5,5,5,0.4);
+$liEvenColour2 	= rgba(21,21,21,0.4);
 $liOddColour1 	= rgba(51,51,51,0.9);
 $liOddColour2 	= rgba(34,34,34,0.9);
 
@@ -218,7 +218,7 @@ html, #loginForm
 
 #playlistTracks li:nth-of-type(even)
 {
-//	background: $liEvenColour1;
+	background: $liEvenColour1;
 }
 
 #playlistTracks li:nth-of-type(odd),
