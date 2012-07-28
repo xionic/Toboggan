@@ -440,8 +440,11 @@
 												$(categoryContainer).append(
 													$("<p>")
 														.append($("<label />").text(data[lbl][permissionCategory][permIndex]["displayName"]))
-														.append($("<input type='checkbox' />").attr('checked',data[lbl][permissionCategory][permIndex]["granted"]==="Y"))
-														.append($("<input type='hidden' />").attr(data[lbl][permissionCategory][permIndex]["id"]))
+														.append($("<input type='checkbox' />")
+																	.attr('checked',data[lbl][permissionCategory][permIndex]["granted"]==="Y")
+																	.attr("data-permIndex", data[lbl][permissionCategory][permIndex]["id"])
+																	.attr("data-permCat", permissionCategory)
+																)
 												);
 											}
 											categoryContainer.appendTo("#permissionsTarget");
@@ -488,11 +491,23 @@
 										btnObj.attr("disabled",true);
 										$("#opt_user_select").attr("disabled",true);
 										
-										var saveData = {};
-										$("#opt_usr_rightFrameTarget input").each(function(){
+										var saveData = { };
+										$("#opt_usr_rightFrameTarget>p>input").each(function(){
 											saveData[$(this).attr("name")] = $(this).val();
 											if($(this).attr("type") == "checkbox")
 												saveData[$(this).attr("name")] = $(this).attr("checked")?"1":"0";	
+										});
+										
+										saveData.permissions = {};
+										//do permissions object
+										$("#permissionsTarget input[type='checkbox']").each(function(){
+											if(!$.isArray(saveData.permissions[$(this).attr("data-permcat")]))
+												saveData.permissions[$(this).attr("data-permcat")] = []
+												
+											saveData.permissions[$(this).attr("data-permcat")].push({
+													id:			$(this).attr("data-permindex"),
+													granted:	$(this).attr("checked")?"1":"0"
+												});
 										});
 
 										//save the user's settings
