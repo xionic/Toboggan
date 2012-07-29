@@ -63,6 +63,21 @@ function outputUserSettings_JSON($userid)
 	$user = getUserObject($userid);
 	restTools::sendResponse(json_encode($user), 200, "text/json");
 }
+
+/**
+* outputs a json representation of a user
+*/
+function outputUserMetaData_JSON($userid)
+{
+	$user = getUserObject($userid);
+	$outputObj = array(
+		"idUser" 		=> $user["idUser"], 
+		"username" 		=> $user["username"],
+		"permissions" 	=> $user["permissions"]["general"],
+	);
+	restTools::sendResponse(json_encode($outputObj), 200);
+}
+
 /**
 * returns an array representing a user
 */

@@ -50,6 +50,7 @@ try
 		else // header returning the currently logged in user - only output when logged in and not attempting a login
 		{
 			header("X-AuthenticatedUserID: " . userLogin::getCurrentUserID());
+			header("X-AuthenticatedUsername: " . userLogin::getCurrentUsername());
 		}
 	}
 	
@@ -116,12 +117,14 @@ try
 			break;
 			
 		case "login":	
-			if(!userLogin::validate())
+			$userid = userLogin::validate();
+			if($userid !== true)
 			{
 				reportError("Login failed", 401, "text/plain");
 				exit();
 			}
-			restTools::sendResponse("Login successful", 200, "text/plain");
+			outputUserMetaData_JSON(userLogin::getCurrentUserID());
+			//restTools::sendResponse("Login successful", 200, "text/plain");
 			break;
 			
 		case "logout":

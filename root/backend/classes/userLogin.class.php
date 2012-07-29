@@ -33,8 +33,15 @@ class userLogin {
 		return userLogin::checkLoggedIn();
 	}
 	
+	public static function getCurrentUsername()
+	{
+		$userid =  userLogin::checkLoggedIn();
+		$userinfo = getUserInfoFromID($userid);
+		return $userinfo["username"];
+	}
+	
 	/**
-	* check sent login credentials and return user id
+	* check sent login credentials
 	*/
 	public static function validate()
 	{			
@@ -55,9 +62,7 @@ class userLogin {
 				//store userid
 				$_SESSION["userid"] = $userid;
 			}
-			
-			//return userid
-			return $userid;
+			return true;
 		}
 		//if not session and no POST vars try HTTP header auth
 		else{
