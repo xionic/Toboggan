@@ -47,8 +47,12 @@ function getFileTags($file)
 */
 function getTag($tag, &$id3data)
 {
-	
-	return (isset($id3data["comments_html"][$tag]) ? $id3data["comments_html"][$tag][0] : null);
+	if(isset($id3data["comments_html"][$tag]))
+	{
+		return $id3data["comments_html"][$tag][count($id3data["comments_html"][$tag])-1] ;
+	}
+	else
+		return null;
 }
 
 /**

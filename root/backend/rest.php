@@ -263,7 +263,7 @@ try
 			$args = $av->validateArgs($_GET, array(			
 				"lastNBytes"	=> array("int", "lbound 32", "ubound 204800", "optional"),
 			));
-			$bytes = isset($args["lastNBytes"])?$args["lastNBytes"]:102400;
+			$bytes = isset($args["lastNBytes"])?$args["lastNBytes"]:1024;
 			outputApplicationLog_JSON($bytes);
 			break;
 		
