@@ -170,7 +170,7 @@
 
 	        $.ajax({
 	            cache: false,
-	            url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=logout&apikey="+apikey+"&apiver="+apiversion,
+	            url: g_Toboggan_basePath+"/backend/rest.php"+"?action=logout&apikey="+apikey+"&apiver="+apiversion,
    		        type: "GET",
             	complete: function(jqxhr, status) {},
             	error: function(jqxhr, status, errorThrown) {
@@ -279,7 +279,7 @@
 			
 			$.ajax({
 				cache: false,
-				url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=retrieveClientSettings&apikey="+apikey+"&apiver="+apiversion,
+				url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveClientSettings&apikey="+apikey+"&apiver="+apiversion,
 				type: "GET",
 				data: { },
 				complete: function(jqxhr, status) {},
@@ -347,7 +347,7 @@
 				
 				$.ajax({
 					cache: false,
-					url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listDirContents&apikey="+apikey+"&apiver="+apiversion,
+					url: g_Toboggan_basePath+"/backend/rest.php"+"?action=listDirContents&apikey="+apikey+"&apiver="+apiversion,
 					type: "GET",
 					data: { 
 						'dir' : $(rightClickedObject).find(".trackObject").attr("data-dir"), 
@@ -399,7 +399,7 @@
 						remote_directory = $(trackObject).attr("data-dir"),
 						remote_mediaSource = $(trackObject).attr("data-media_source");
 				
-				var url = g_ultrasonic_basePath+"/backend/rest.php"+"?action=getStream"+
+				var url = g_Toboggan_basePath+"/backend/rest.php"+"?action=getStream"+
 											"&filename="+encodeURIComponent(remote_filename)+
 											"&dir="+encodeURIComponent(remote_directory)+
 											"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
@@ -418,7 +418,7 @@
 			
 				$.ajax({
 					cache: false,
-					url: g_ultrasonic_basePath+"/backend/rest.php",
+					url: g_Toboggan_basePath+"/backend/rest.php",
 					data: {
 						'apikey':			apikey,
 						'apiver':			apiversion,
@@ -574,7 +574,7 @@
 		var streamerObject = $.parseJSON(remote_streamers), mediaObject = {}, mediaType="a";
 		for(var x=0; x<streamerObject.length; ++x)
 		{
-			mediaObject[streamerObject[x].extension] = g_ultrasonic_basePath+"/backend/rest.php"+"?action=getStream"+
+			mediaObject[streamerObject[x].extension] = g_Toboggan_basePath+"/backend/rest.php"+"?action=getStream"+
 														"&filename="+encodeURIComponent(remote_filename)+
 														"&dir="+encodeURIComponent(remote_directory)+
 														"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
@@ -754,7 +754,7 @@
 				remote_mediaSource = $(trackObject).attr("data-media_source");
 														 
 
-		var url = g_ultrasonic_basePath+"/backend/rest.php"+"?action=downloadFile"+
+		var url = g_Toboggan_basePath+"/backend/rest.php"+"?action=downloadFile"+
 				"&filename="+encodeURIComponent(remote_filename)+
 				"&dir="+encodeURIComponent(remote_directory)+
 				"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
@@ -790,7 +790,7 @@
 			
 		$.ajax({
 			cache: false,
-			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listDirContents&apikey="+apikey+"&apiver="+apiversion,
+			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=listDirContents&apikey="+apikey+"&apiver="+apiversion,
 			type: "GET",
 			data: { 
 				'dir' : folderName, 
@@ -847,7 +847,7 @@
 	{
 		$.ajax({
 			cache: false,
-			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listMediaSources&apikey="+apikey+"&apiver="+apiversion,
+			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=listMediaSources&apikey="+apikey+"&apiver="+apiversion,
 			type: "GET",
 			complete: function(jqxhr,status) {},
 			error: function(jqxhr, status, errorThrown) {
@@ -892,7 +892,7 @@
 		displayLoading();
 		$.ajax({
 			cache: false,
-			url: g_ultrasonic_basePath+"/backend/rest.php",
+			url: g_Toboggan_basePath+"/backend/rest.php",
 			data: {
 				'apikey':			apikey,
 				'apiver':			apiversion,

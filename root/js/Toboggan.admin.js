@@ -142,7 +142,7 @@
 						$(ui.panel).empty();
 						$(ui.panel).append("<h1>Add/Remove Streamers</h1>");
 						$.ajax({
-							url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=retrieveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
+							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
 							success: function(data, textStatus, jqXHR){
 								
 								var outputUL = $("<ul/>");
@@ -232,7 +232,7 @@
 											});
 											
 											$.ajax({
-												url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=saveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
+												url: g_Toboggan_basePath+"/backend/rest.php"+"?action=saveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
 												type: 'POST',
 												data: {settings: JSON.stringify(streamersArray)},
 												success: function(data, textStatus, jqXHR){
@@ -261,7 +261,7 @@
 						//list mediaSources
 						$.ajax({
 							cache: false,
-							url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=retrieveMediaSourceSettings&apikey="+apikey+"&apiver="+apiversion,
+							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveMediaSourceSettings&apikey="+apikey+"&apiver="+apiversion,
 							type: "GET",
 							complete: function(jqxhr,status) {},
 							error: function(jqxhr, status, errorThrown) {
@@ -341,7 +341,7 @@
 											//console.debug(mediaSourceArray);
 											
 											$.ajax({
-												url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=saveMediaSourceSettings&apikey="+apikey+"&apiver="+apiversion,
+												url: g_Toboggan_basePath+"/backend/rest.php"+"?action=saveMediaSourceSettings&apikey="+apikey+"&apiver="+apiversion,
 												type:'POST',
 												data: {mediaSourceSettings: JSON.stringify(mediaSourceArray)},
 												success: function(data, textStatus, jqXHR){
@@ -360,7 +360,7 @@
 					case 'tab_server_log_contents':
 						//TODO: Loading placeholder
 						$.ajax({
-							url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=getApplicationLog&apikey="+apikey+"&apiver="+apiversion,
+							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=getApplicationLog&apikey="+apikey+"&apiver="+apiversion,
 							type:'POST',
 							data: {lastNBytes: 1024},
 							success: function(data, textStatus, jqXHR){
@@ -384,7 +384,7 @@
 	function updateUserList(ui)
 	{
 		$.ajax({
-			url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=listUsers&apikey="+apikey+"&apiver="+apiversion,
+			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=listUsers&apikey="+apikey+"&apiver="+apiversion,
 			success: function(data, textStatus, jqXHR){
 				
 				currentUserID = jqXHR.getResponseHeader("X-AuthenticatedUserID");
@@ -405,7 +405,7 @@
 					$("#opt_usr_rightFrameTarget").empty();
 					//TODO: display loading placeholder here
 					$.ajax({
-						url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=retrieveUserSettings&apikey="+apikey+"&apiver="+apiversion,
+						url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveUserSettings&apikey="+apikey+"&apiver="+apiversion,
 						data: { 'userid': $(this).val() },
 						success: function(data, textStatus,jqHXR){
 							
@@ -527,7 +527,7 @@
 
 										//save the user's settings
 										$.ajax({
-											url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=updateUserSettings&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
+											url: g_Toboggan_basePath+"/backend/rest.php"+"?action=updateUserSettings&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
 											type: "POST",
 											data: {
 												settings:	JSON.stringify(saveData)
@@ -559,7 +559,7 @@
 											$("#opt_user_select").attr("disabled",true);
 											
 											$.ajax({
-												url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=deleteUser&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
+												url: g_Toboggan_basePath+"/backend/rest.php"+"?action=deleteUser&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
 												type: "POST",
 												success: function(data, textStatus,jqHXR){
 													btnObj.text("Delete User");
@@ -602,7 +602,7 @@
 												$("#opt_user_select").attr("disabled",false);
 												
 												$.ajax({
-													url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=changeUserPassword&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
+													url: g_Toboggan_basePath+"/backend/rest.php"+"?action=changeUserPassword&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
 													type: "POST",
 													data: {
 														password:	passwd
@@ -713,7 +713,7 @@
 
 												//save the new user
 												$.ajax({
-													url: g_ultrasonic_basePath+"/backend/rest.php"+"?action=addUser&apikey="+apikey+"&apiver="+apiversion,
+													url: g_Toboggan_basePath+"/backend/rest.php"+"?action=addUser&apikey="+apikey+"&apiver="+apiversion,
 													type: "POST",
 													data: {
 														settings:	JSON.stringify(saveData)

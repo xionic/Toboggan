@@ -3,7 +3,7 @@
 <head>
 
 	<!-- jPlayer theme -->
-	<link href='./css/jQuery.jPlayer.Theme/jplayer.ultrasonic.css' rel='stylesheet' type='text/css' />
+	<link href='./css/jQuery.jPlayer.Theme/jplayer.Toboggan.css' rel='stylesheet' type='text/css' />
 	<link href='./css/jQuery-ui/custom-theme/jquery-ui-1.8.21.custom.css' rel='stylesheet' type='text/css' />
 	<link href='./css/jQuery.dynatree/default.css' rel='stylesheet' type='text/css' />
 
@@ -20,15 +20,15 @@
 	<script type="text/javascript">
 <?php
 	// the ./ makes it work in all relevent situations - hack !
-	echo "var g_ultrasonic_basePath=\"".dirname($_SERVER['REQUEST_URI']."./")."/\";";
+	echo "var g_Toboggan_basePath=\"".dirname($_SERVER['REQUEST_URI']."./")."/\";";
 ?>
 	</script>
-	<script type="text/javascript" src="./js/ultrasonic.player.js"></script>
+	<script type="text/javascript" src="./js/Toboggan.player.js"></script>
 
 	<!-- login form related -->
 	<script type="text/javascript" src="./js/sha.js"></script>
 
-	<title>"Ultrasonic" Mockup</title>
+	<title>Toboggan</title>
 </head>
 <body>
 
