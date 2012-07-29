@@ -49,9 +49,27 @@
 				'username': $("#username").val(),
 				'password': hash
 			},
-			success: function(data,textStatus,jqHXR){	
-				$("#loginFormContainer").dialog("close");
-				displayConfig();
+			success: function(data,textStatus,jqHXR){
+				var allowedAdminLogin=false;
+				for (var x=0; x < data.permissions.length; ++x)
+				{
+					//3 == is Administrator
+					if(data.permissions[x].id==3 && data.permissions[x].granted=='Y')
+					{
+						allowedAdminLogin=true;
+						break;
+					}
+				}
+				
+				if(allowedAdminLogin)
+				{
+					$("#loginFormContainer").dialog("close");
+					displayConfig();
+				}
+				else
+				{
+					alert("Administrative access has not been granted by the remote server");
+				}
 			},
 			error: function(jqhxr,textstatus,errorthrown){
 				console.debug(jqhxr,textstatus,errorthrown);
