@@ -40,7 +40,7 @@ function getFileObject($path)
 function outputFileMetaData_JSON($mediaSourceID, $dir, $filename)
 {	
 	$fileMetaData = getFileMetaData($mediaSourceID, $dir, $filename);
-	restTools::sendResponse(json_encode($fileMetaData), 200, "text/json");
+	restTools::sendResponse(json_encode($fileMetaData), 200, JSON_MIME_TYPE);
 }
 
 function getFileMetaData($mediaSourceID, $dir, $filename)

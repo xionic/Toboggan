@@ -156,7 +156,7 @@ try
 			else
 			{
 				appLog("Returning Client settings for apikey:'".$args['apikey']."' and userid:".userLogin::getCurrentUserID(), appLog_DEBUG);
-				restTools::sendResponse($clientSettings,200, "text/json");
+				restTools::sendResponse($clientSettings,200, JSON_MIME_TYPE);
 			}
 			break;
 		
@@ -263,7 +263,7 @@ try
 			$args = $av->validateArgs($_GET, array(			
 				"lastNBytes"	=> array("int", "lbound 32", "ubound 204800", "optional"),
 			));
-			$bytes = isset($args["lastNBytes"])?$args["lastNBytes"]:1024;
+			$bytes = isset($args["lastNBytes"])?$args["lastNBytes"]:5120;
 			outputApplicationLog_JSON($bytes);
 			break;
 		

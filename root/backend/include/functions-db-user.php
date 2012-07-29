@@ -39,7 +39,7 @@ function getUserInfoFromID($userid)
 function outputUserList_JSON()
 {
 	$users = getUsers();
-	restTools::sendResponse(json_encode($users), 200, "text/json");
+	restTools::sendResponse(json_encode($users), 200, JSON_MIME_TYPE);
 }
 
 /**
@@ -61,7 +61,7 @@ function getUsers()
 function outputUserSettings_JSON($userid)
 {
 	$user = getUserObject($userid);
-	restTools::sendResponse(json_encode($user), 200, "text/json");
+	restTools::sendResponse(json_encode($user), 200, JSON_MIME_TYPE);
 }
 
 /**

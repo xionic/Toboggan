@@ -20,7 +20,6 @@ function getFileTags($file)
 	$tags["album"] = getTag("album", $fileID3Data);
 	$tags["albumartist"] = getTag("albumartist", $fileID3Data);
 	$tags["tracknum"] = getTag("track", $fileID3Data);
-	$tags["artist"] = getTag("artist", $fileID3Data);
 	$tags["year"] = getTag("year", $fileID3Data);
 	$tags["title"] = getTag("title", $fileID3Data);
 	$tags["discnum"] = getTag("part_of_a_set", $fileID3Data);

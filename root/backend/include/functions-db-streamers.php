@@ -134,7 +134,7 @@ function getStreamerByExtensions($fromExt, $toExt)
 function outputStreamerSettings_JSON()
 {
 	$settings = getStreamerSettings();
-	restTools::sendResponse(json_encode($settings), 200, "text/json");
+	restTools::sendResponse(json_encode($settings), 200, JSON_MIME_TYPE);
 }
 /**
 * get an object representing the server settings
