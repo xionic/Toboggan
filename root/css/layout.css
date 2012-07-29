@@ -202,9 +202,9 @@ p label
 	margin: 0.25ex 0.5ex;
 }
 
-/*
 #jPlayerInspector
 {
+	display: none;
 	position: fixed;
 	right: 20em;
 	top: 90px;
@@ -215,7 +215,7 @@ p label
 	color: black;
 	border: 1px solid red;
 }
-*/
+
 #searchContainer
 {
 	display: block;
