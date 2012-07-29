@@ -38,12 +38,31 @@ function getFileObject($path)
 * Outputs metadata about a file
 */
 function outputFileMetaData_JSON($mediaSourceID, $dir, $filename)
-{
+{	
+	$fileMetaData = getFileMetaData($mediaSourceID, $dir, $filename);
+	restTools::sendResponse(json_encode($fileMetaData), 200, "text/json");
+}
+
+function getFileMetaData($mediaSourceID, $dir, $filename)
+{	
+	//standard file object info
 	$mediaSourcePath = getMediaSourcePath($mediaSourceID);
 	$filePath = $mediaSourcePath . "/" . normalisePath($dir . "/" . $filename);
+
+	if(!file_exists($filePath))
+	{
+		reportError("Non existant file:" . $filePath);
+		exit();
+	}
 	
+	//filesize
 	$fileMetaData = getFileObject($filePath);
-	restTools::sendResponse(json_encode($fileMetaData), 200, "text/json");
+	$fileMetaData["filesize"] = filesize($filePath);
+	
+	//tags
+	$fileMetaData["tags"] = getFileTags($filePath);
+	
+	return $fileMetaData;
 }
 
 /**

@@ -15,9 +15,10 @@ require_once("functions-util.php");
 require_once("functions-streaming.php");
 require_once("functions-fs.php");
 require_once("functions-general.php");
+require_once("functions-filetags.php");
 
 //id3 library
-//require_once("lib/getid3/getid3.php");
+require_once("lib/getid3/getid3.php");
 
 
 ?>
