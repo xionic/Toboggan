@@ -1055,6 +1055,7 @@
 	
 	function chooseSensibleDataUnit(limit)
 	{
+		limit = 1.0*limit; 
 		var limitUnits = ["K","M","G","T","P", "E", "Z","Y"];
 		var limitIndex = 0;
 		while(limit > 1024 && limitIndex<limitUnits.length)
@@ -1063,7 +1064,9 @@
 			++limitIndex;
 		}
 		
-		return (limit.toFixed(1)=="0.0"?0:limit.toFixed(1))+limitUnits[limitIndex]+"B";
+		limit = limit.toFixed(1);
+		
+		return limit+limitUnits[limitIndex]+"B";
 	}
 	
 	function setImmediateInterval(callback, interval)
