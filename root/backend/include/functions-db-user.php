@@ -730,7 +730,7 @@ function getUserTrafficLimitStats($userid)
 	$conn->beginTransaction();
 	
 	$stmt = $conn->prepare("
-		SELECT enableTrafficLimit, trafficLimit, trafficUsed, trafficLimitPeriod, (trafficLimitPeriod - (strftime('%s','now') - (trafficLimitStartTime))) as timeToReset 
+		SELECT CASE WHEN enableTrafficLimit = 1 THEN 'Y' ELSE 'N' END as enableTrafficLimit, trafficLimit, trafficUsed, trafficLimitPeriod, (trafficLimitPeriod - (strftime('%s','now') - (trafficLimitStartTime))) as timeToReset 
 			FROM User 
 			WHERE idUser = :userid");	
 	
@@ -745,9 +745,9 @@ function getUserTrafficLimitStats($userid)
 	
 	
 	//check that the user actually has a limit
-	if(count($results) == 0  || $results[0]["enableTrafficLimit"] == 0)
+	if(count($results) == 0  || $results[0]["enableTrafficLimit"] == 'N')
 	{
-		$returnVal["enableTrafficLimit"] = 0;
+		$returnVal["enableTrafficLimit"] = 'N';
 	}
 	else
 	{
