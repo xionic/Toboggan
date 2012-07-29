@@ -112,14 +112,6 @@
 			
 			play_jPlayerTrack(nextObjectSpan);
 		});
-		
-		$("#jp_container_1 ul.jp-controls .jp-play").click(function(){
-			//if there is no track being played then play the first
-			if($("#playlistTracks .jPlaying").length == 0)
-			{
-				$("#playlistTracks li:first a.playNow").click();
-			}
-		});
 
 		//add an additional handler onto the stop buttn
 		$("#jp_container_1 ul.jp-controls .jp-stop").click(function(){
@@ -229,7 +221,7 @@
 		doLogin();
 	
 		//load jPlayer Inspector
-	//	$("#jPlayerInspector").jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
+	//	$("#jPlayerInspector").show().jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
 	});
 
 	/**
@@ -979,10 +971,13 @@
 				$("#topBarContainer span.username").text("Logged in as: "+currentUserName+" | ");
 				$("#loginFormContainer").dialog("close");
 				
+				setupUserTrafficStatsUpdate();
+				
 				//load the nowPlaying from localStorage
 				loadNowPlaying();
 				
 				getMediaSources();
+				
 			},
 			error: function(jqhxr,textstatus,errorthrown){
 				console.debug(jqhxr,textstatus,errorthrown);
@@ -990,5 +985,93 @@
 			}
 		});
 		
+	}
+	
+	function setupUserTrafficStatsUpdate()
+	{
+		var timeout;
+
+		$("#showBandwidth").mouseenter(function(){
+			//In
+			$("#bandwidthInformation").fadeIn();
+			timeout = setImmediateInterval(function(){
+					$.ajax({
+						url:'backend/rest.php',
+						type: 'GET',
+						data: {
+							'action' : 'getUserTrafficStats',
+							'apikey' : apikey,
+							'apiver' : apiversion
+						},
+						success: function(data, textStatus, jqXHR){
+							if(data.enableTrafficLimit == "Y")
+							{
+							
+								var days = Math.floor(data.timeToReset/86400);
+								var hours = Math.floor(data.timeToReset/3600);
+								var minutes = Math.floor(data.timeToReset/60);
+								var secs = data.timeToReset%60;
+								var timeStr = (days>1?(days+"d "):"")+(hours>1?(hours+"h "):"")+(minutes>1?(minutes+"m "): "")+(secs+"s");
+							
+								var used = data.trafficUsed/data.trafficLimit;
+								var free = 1-used;
+								
+								$("#bandwidthInformation").empty().append(
+																		$("<p class='totallimit' />").text(chooseSensibleDataUnit(data.trafficLimit)+" Traffic Limit"),
+																		$("<div class='bandwidthBar'>").append(
+																			$("<div class='usedBandwidth'></div>").width((used*100)+"%"),
+																			$("<div class='remainingBandwidth'></div>").width((free*100)+"%")
+																			),
+																		$("<p />").text(chooseSensibleDataUnit(data.trafficUsed)+" used, "+chooseSensibleDataUnit(data.trafficLimit - data.trafficUsed)+" remaining"),
+																		$("<p />").text(timeStr + " until reset")
+																	);
+							}
+							else
+							{
+								$("#bandwidthInformation").empty().append($("<p/>")
+																				.text("No traffic Limit applied!")
+																			);
+							}					
+						},
+						error: function(jqhxr,textstatus,errorthrown){
+							console.debug(jqhxr,textstatus,errorthrown);						
+						}
+					});
+				},2000);
+		}).mouseout(function(){
+			if(! $("#bandwidthInformation").hasClass("lockedOn"))
+			{
+				$("#bandwidthInformation").fadeOut();
+				clearInterval(timeout);
+			}
+		});
+		
+		$("#showBandwidth").click(function(e){
+			e.preventDefault();
+		
+			$("#bandwidthInformation").toggleClass("lockedOn");
+		});
+	}
+	
+	function chooseSensibleDataUnit(limit)
+	{
+		limit = 1.0*limit; 
+		var limitUnits = ["K","M","G","T","P", "E", "Z","Y"];
+		var limitIndex = 0;
+		while(limit > 1024 && limitIndex<limitUnits.length)
+		{
+			limit = limit/1024;
+			++limitIndex;
+		}
+		
+		limit = limit.toFixed(1);
+		
+		return limit+limitUnits[limitIndex]+"B";
+	}
+	
+	function setImmediateInterval(callback, interval)
+	{
+		callback();
+		return setInterval(callback,interval);
 	}
 })();
