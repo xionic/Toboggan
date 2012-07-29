@@ -209,6 +209,7 @@ function passthroughStream($file){
 		
 		//sleep for 1 second minus the time taken to read the data - for bandwidth limiting
 		$sleeptime = (1 - (microtime(true) - $startTime))*1000000;
+		$sleeptime = ($sleeptime < 0 ? 0:$sleeptime);
 		usleep($sleeptime);
 	}
 

@@ -96,7 +96,7 @@ function getUserObject($userid)
 		SELECT idUser, username, email, 
 			CASE WHEN enabled = 1 THEN 'Y' ELSE 'N' END as enabled, 
 			maxAudioBitrate, maxVideoBitrate, maxBandwidth,				
-			CASE WHEN enableTrafficLimit = 1 THEN 'Y' ELSE 'N' END as enableTrafficLimit	,			
+			CASE WHEN enableTrafficLimit = 1 THEN 'Y' ELSE 'N' END as enableTrafficLimit,			
 			trafficLimit, trafficLimitPeriod
 			FROM User
 			WHERE idUser = :userid");

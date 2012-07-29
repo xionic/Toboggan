@@ -62,10 +62,13 @@ function getStreamerById($id){
 	
 }
 /**
-*
+* returns an object representing all streamers - must be admin to call
 */
 function getAllStreamers()
 {
+	//only admins can use this function
+	checkActionAllowed("administrator");
+
 	$conn = getDBConnection();
 	
 	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
@@ -84,7 +87,7 @@ function getAllStreamers()
 		$streamers = array();
 		foreach($rows as $row)
 		{
-			if(checkUserPermission("accessStreamer",$row["idextensionMap"]))//check user has permission to access the streamer
+			//if(checkUserPermission("accessStreamer",$row["idextensionMap"]))//check user has permission to access the streamer
 				$streamers[] =  new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
 		}
 		return $streamers;
@@ -99,7 +102,7 @@ function getAllStreamers()
 function getStreamerByExtensions($fromExt, $toExt)
 {
 	//only admins can use this function
-	checkActionAllowed("administrator",$row["idextensionMap"]);
+	checkActionAllowed("administrator");
 	
 	$conn = getDBConnection();
 	
@@ -254,7 +257,7 @@ function saveStreamerSettings($settings_JSON)
 		foreach($settings as $streamer2)
 		{
 			if( // if the extension is the same but the mediaType OR MimeType differ - will not cause DB problem but will produce unexpected results
-				$streamer1->toExt == $streamer2->toEx
+				$streamer1->toExt == $streamer2->toExt
 				&& ($streamer1->mime != $streamer2->mime || $streamer1->outputMediaType != $streamer2->outputMediaType)
 			)
 			{
