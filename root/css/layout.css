@@ -242,3 +242,12 @@ p label
 .trackMetadata ul li {
 	margin-left: 1em;
 }
+
+#bandwidthInformation {
+	position: fixed;
+	bottom: 5ex;
+	right: 0.5em;
+	width: auto;
+	height: auto;
+	display: none;
+}

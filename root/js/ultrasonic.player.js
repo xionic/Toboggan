@@ -983,6 +983,8 @@
 				loadNowPlaying();
 				
 				getMediaSources();
+				
+				setupUserTrafficStatsUpdate();
 			},
 			error: function(jqhxr,textstatus,errorthrown){
 				console.debug(jqhxr,textstatus,errorthrown);
@@ -990,5 +992,83 @@
 			}
 		});
 		
+	}
+	
+	function setupUserTrafficStatsUpdate()
+	{
+		var timeout;
+		$("#topBarContainer .username").hover(function(){
+			//In
+			$("#bandwidthInformation").fadeIn();
+				timeout = setImmediateInterval(function(){
+						$.ajax({
+							url:'backend/rest.php',
+							type: 'GET',
+							data: {
+								'action' : 'getUserTrafficStats',
+								'apikey' : apikey,
+								'apiver' : apiversion
+							},
+							success: function(data, textStatus, jqXHR){
+								if(data.enableTrafficLimit == "Y")
+								{
+								
+									var days = Math.floor(data.timeToReset/86400);
+									var hours = Math.floor(data.timeToReset/3600);
+									var minutes = Math.floor(data.timeToReset/60);
+									var secs = data.timeToReset%60;
+									var timeStr = (days>1?(days+"d "):"")+(hours>1?(hours+"h "):"")+(minutes>1?(minutes+"m "): "")+(secs+"s");
+								
+									var used = data.trafficUsed/data.trafficLimit;
+									var free = 1-used;
+									
+									$("#bandwidthInformation").empty().append(
+																			$("<p class='totallimit' />").text(chooseSensibleDataUnit(data.trafficLimit)+" Traffic Limit"),
+																			$("<div class='bandwidthBar'>").append(
+																				$("<div class='usedBandwidth'></div>").width((used*100)+"%"),
+																				$("<div class='remainingBandwidth'></div>").width((free*100)+"%")
+																				),
+																			$("<p />").text(chooseSensibleDataUnit(data.trafficUsed)+" used, "+chooseSensibleDataUnit(data.trafficLimit - data.trafficUsed)+" remaining"),
+																			$("<p />").text(timeStr + " until reset")
+																		);
+								}
+								else
+								{
+									$("#bandwidthInformation").empty().append($("<p/>")
+																					.text("No traffic Limit applied!")
+																				);
+								}					
+							},
+							error: function(jqhxr,textstatus,errorthrown){
+								console.debug(jqhxr,textstatus,errorthrown);						
+							}
+						});
+					},2000);
+			
+			},function(){
+			//Out
+			$("#bandwidthInformation").fadeOut();
+			
+			clearInterval(timeout);
+		});
+	}
+	
+	function chooseSensibleDataUnit(limit)
+	{
+		var limitUnits = ["K","M","G","T","P", "E", "Z","Y"];
+		var limitIndex = 0;
+		while(limit > 1024 && limitIndex<limitUnits.length)
+		{
+			limit = limit/1024;
+			++limitIndex;
+		}
+		
+		return (limit.toFixed(1)=="0.0"?0:limit.toFixed(1))+limitUnits[limitIndex]+"B";
+	}
+	
+	function setImmediateInterval(callback, interval)
+	{
+		callback();
+		return setInterval(callback,interval);
 	}
 })();
