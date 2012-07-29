@@ -20,11 +20,12 @@ function getFileTags($file)
 	$tags["album"] = getTag("album", $fileID3Data);
 	$tags["albumartist"] = getTag("albumartist", $fileID3Data);
 	$tags["tracknum"] = getTag("track", $fileID3Data);
-	$tags["artist"] = getTag("artist", $fileID3Data);
 	$tags["year"] = getTag("year", $fileID3Data);
 	$tags["title"] = getTag("title", $fileID3Data);
 	$tags["discnum"] = getTag("part_of_a_set", $fileID3Data);
 	$tags["genre"] = getTag("genre", $fileID3Data);
+	
+	$tags["albumart"] = getAlbumArt($fileID3Data);
 	
 	$returnTags = array();
 	foreach($tags as $tag => $value) // remove tags which do not exist
@@ -33,7 +34,7 @@ function getFileTags($file)
 			$returnTags[$tag] = $value;
 	}
 
-	//var_dump_pre($fileID3Data["comments_html"]);
+	//var_dump_pre($fileID3Data["id3v2"]["APIC"]);
 		
 
 
@@ -53,6 +54,20 @@ function getTag($tag, &$id3data)
 	}
 	else
 		return null;
+}
+
+/**
+* function to reteive album art from tags if exists and base64 encode it
+*/
+function getAlbumArt(&$id3data){
+	if(isset($id3data['id3v2'])&& isset($id3data['id3v2']["APIC"]) && isset($id3data['id3v2']["APIC"][0]) && isset($id3data['id3v2']["APIC"][0]["data"]))
+	{
+		return base64_encode($id3data['id3v2']["APIC"][0]["data"]);
+	}
+	else
+	{
+		return null;
+	}
 }
 
 /**

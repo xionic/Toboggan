@@ -117,7 +117,7 @@ function outputSearchResults_JSON($mediaSourceID, $dir, $query)
 		);
 		
 	}
-	restTools::sendResponse(json_encode($results), 200, "text/json");
+	restTools::sendResponse(json_encode($results), 200, JSON_MIME_TYPE);
 }
 
 /**
@@ -200,7 +200,7 @@ function outputApplicationLog_JSON($lastNBytes)
 	
 	$results = array("logFileText" => fread($fh, $lastNBytes));
 	
-	restTools::sendResponse(json_encode($results), 200, "text/json");
+	restTools::sendResponse(json_encode($results), 200, JSON_MIME_TYPE);
 	
 }
 
