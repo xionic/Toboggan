@@ -992,8 +992,8 @@
 		var timeout;
 
 		$("#showBandwidth").mouseenter(function(){
-			//In
 			$("#bandwidthInformation").fadeIn();
+			clearInterval($("#bandwidthInformation").attr("data-timeoutId"));
 			timeout = setImmediateInterval(function(){
 					$.ajax({
 						url:'backend/rest.php',
@@ -1038,11 +1038,12 @@
 						}
 					});
 				},2000);
+			$("#bandwidthInformation").attr("data-timeoutId", timeout);
 		}).mouseout(function(){
 			if(! $("#bandwidthInformation").hasClass("lockedOn"))
 			{
+				clearInterval($("#bandwidthInformation").attr("data-timeoutId"));
 				$("#bandwidthInformation").fadeOut();
-				clearInterval(timeout);
 			}
 		});
 		
