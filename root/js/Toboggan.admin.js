@@ -114,8 +114,8 @@
 				)*/
 				.append(
 					$("<div id='tab_welcome'></div>")
-						.append($("	<h1>Welcome to 'The administration page'</h1> \
-									<p>Please select from the tabs at the top of the page to chose which facet of the application to configure</p>"))
+						.append($("	<h1>Toboggan Maintenance Page</h1> \
+									<p>Please select from the tabs at the top of the page to chose which facet of Toboggan to configure</p>"))
 				)
 				.append(
 					$("<div id='tab_server_streamers'></div>")
