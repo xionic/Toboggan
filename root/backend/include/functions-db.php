@@ -324,7 +324,7 @@ function saveMediaSourceSettings($settings_JSON)
 function getDurationCommand($fromExt)
 {
 	$conn = getDBConnection();
-	$stmt = $conn->prepare("SELECT durationCmd FROM fromExt WHERE fromExt.Extension = :fromExt");
+	$stmt = $conn->prepare("SELECT durationCmd FROM fromExt WHERE fromExt.Extension = :fromExt AND durationCmd IS NOT NULL");
 	$stmt->bindValue(":fromExt",$fromExt, PDO::PARAM_STR);
 	$stmt->execute();
 
