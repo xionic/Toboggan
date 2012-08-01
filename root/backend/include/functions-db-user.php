@@ -117,11 +117,15 @@ function getUserObject($userid)
 				) as UP 
 				USING (idAction) 
 			WHERE User.idUser = :userid 
-				AND targetObjectID IS NULL;
+				AND targetObjectID IS NULL
+				AND NOT Action.idAction = :accessStreamerAction
+				AND NOT Action.idAction = :accessMediaSourceAction
 		;
 	");
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
+	$stmt->bindValue(":accessStreamerAction", PERMISSION_ACCESSSTREAMER, PDO::PARAM_INT);
+	$stmt->bindValue(":accessMediaSourceAction", PERMISSION_ACCESSMEDIASOURCE, PDO::PARAM_INT);
 	$stmt->execute();
 	$userStandardPerms = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	$userObj["permissions"]["general"] = $userStandardPerms;
