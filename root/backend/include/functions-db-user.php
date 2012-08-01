@@ -188,6 +188,10 @@ function updateUser($userid, $json_settings){
 
 	$av = new ArgValidator("handleArgValidationError");
 
+	$av->validateArgs(array("userid" => $userid),array(
+		"userid"	=> array("int", "lbound 0"),
+	));
+	
 	$av->validateArgs($userSettings, array(
 		"username"				=> array("string", "notblank"),
 		"email"					=> array("string"),
@@ -237,7 +241,10 @@ function updateUser($userid, $json_settings){
 	}
 	
 	//ensure that the username does not already exist
-	if(getUserInfo($userSettings["username"]) !== null)
+	//get user's existing username
+	$currUserObj = getUserInfoFromID($userid);
+	
+	if($currUserObj["username"] != $userSettings["username"] && getUserInfo($userSettings["username"]) !== null) // if the username is being changed and the new one already exists
 	{
 		reportError("Username already exists", 400);
 		exit();
