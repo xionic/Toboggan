@@ -9,7 +9,7 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 	//check file exist
 	if(!is_file($file) && !is_link($file))
 	{
-		appLog("File does not exist: ".$file, appLog_INFO);
+		appLog("Request for non-existant file: ".$file, appLog_INFO);
 		reportError("Requested file does not exist");
 		return false;
 	}
