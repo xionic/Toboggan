@@ -236,6 +236,13 @@ function updateUser($userid, $json_settings){
 		));
 	}
 	
+	//ensure that the username does not already exist
+	if(getUserInfo($userSettings["username"]) !== null)
+	{
+		reportError("Username already exists", 400);
+		exit();
+	}
+	
 	$conn = null;
 	
 	$conn = getDBConnection();
@@ -381,6 +388,12 @@ function addUser($json_settings)
 		));
 	}
 	
+	//ensure that the username does not already exist
+	if(getUserInfo($userSettings["username"]) !== null)
+	{
+		reportError("Username already exists", 400);
+		exit();
+	}
 	
 	$conn = null;
 	
