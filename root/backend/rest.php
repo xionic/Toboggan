@@ -88,10 +88,12 @@ try
 		
 		case "downloadFile": //download a file unmodified
 			checkActionAllowed("downloadFile");	
+			$isFileDownload=true;
 			$_GET["streamerID"] = 0; //hack through the switch and allow to follow through the getStream handler
 			
-		case "getStream": // INPUT VALIDITY CHECKING SHOULD BE BETTER HERE
-			checkActionAllowed("streamFile");	
+		case "getStream": 
+			if(!isset($isFileDownload) || !$isFileDownload) // don't check permission if it's a download - the download permission has already been checked above
+				checkActionAllowed("streamFile");	
 			//validate arguments
 			$args = $av->validateArgs($_GET, array(
 				"dir" 				=> array("string"),
