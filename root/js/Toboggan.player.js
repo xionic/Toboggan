@@ -437,6 +437,11 @@
 						console.log(data);
 						
 						var innerHTML = $("<div/>");
+						if(data.tags.albumart)
+						{
+							innerHTML.append($("<img />").attr("src","data:image/jpg;base64,"+data.tags.albumart));
+							data.tags.albumart="";
+						}
 						for (x in data)
 						{
 							innerHTML.append($("<div class='trackMetadata'/>")

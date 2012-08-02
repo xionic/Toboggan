@@ -86,7 +86,6 @@ html, #loginForm
 {
 	border-left: 1px solid black;
 	box-sizing: border-box;
-	overflow-x: hidden;
 }
 
 #folderbrowserContainer
@@ -129,7 +128,7 @@ html, #loginForm
 	left: 0px;
 	right: 0px;
 	bottom: 0px;
-	overflow: hidden;
+	overflow-x: hidden;
 }
 
 #topBarContainer, #trackListAddControls

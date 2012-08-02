@@ -75,8 +75,7 @@ a, a:link, a:visited
 
 	width: $Playlist_columnWidth;
 	height: auto;
-	overflow-x: auto;
-	overflow-y: scroll;
+	overflow-x: hidden;
 }
 
 #folderbrowserContainer
