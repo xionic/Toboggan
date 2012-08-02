@@ -10,6 +10,7 @@
 	<!-- internal stylesheets -->
 	<link href='./css/?layout.css' rel='stylesheet' type='text/css' />
 	<link href='./css/?theme.css' rel='stylesheet' type='text/css' />
+	<link href='./css/?webkit_hacks.css' rel='stylesheet' type='text/css' />
 
 	<script type="text/javascript" src="./js/jQuery/jQuery.1.7.1.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery-ui/jquery-ui-1.8.21.custom.min.js"></script>

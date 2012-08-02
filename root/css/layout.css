@@ -250,8 +250,3 @@ p label
 	height: auto;
 	display: none;
 }
-
-//hack for webkit's scrollbar fetish again
-.seek-time-holder {
-	overflow-y: hidden;
-}

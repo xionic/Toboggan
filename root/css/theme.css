@@ -336,11 +336,6 @@ select#mediaSourceSelector option
 	white-space: nowrap;
 }
 
-#folderlist *, #tracklist * 
-{
-	overflow-y: hidden; //hack to "fix" Webkit's obsession with scrollbars
-}
-
 #tracklistHeader
 {
 	font-weight: bold;

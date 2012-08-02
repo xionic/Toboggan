@@ -1,0 +1,21 @@
+//webkit doesn't support transparent backgrounds on select boxes, so hack to black
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	select {
+		background: black !important;
+	}
+	
+	input:active, input:focus {
+		outline: none !important; //fuck-right-off you irritating highlight
+	}
+	
+	#folderlist *, #tracklist * 
+	{
+		overflow-y: hidden; //hack to "fix" Webkit's obsession with scrollbars
+	}
+	
+	//hack for webkit's scrollbar fetish again
+	.seek-time-holder {
+		overflow-y: hidden;
+	}
+}
+	
