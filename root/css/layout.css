@@ -115,7 +115,7 @@ a, a:link, a:visited
 {
 	overflow-y: auto;
 	position: absolute;
-	top: 82px;
+	top: 12ex;
 	left: 0px;
 	right: 5px;
 	bottom: $playWindowHeight;
@@ -249,4 +249,9 @@ p label
 	width: auto;
 	height: auto;
 	display: none;
+}
+
+//hack for webkit's scrollbar fetish again
+.seek-time-holder {
+	overflow-y: hidden;
 }

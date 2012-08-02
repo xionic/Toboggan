@@ -52,6 +52,7 @@ body {
 {
 	background: $playerControlsColour1;
 	background: -o-linear-gradient($playerControlsColour1,$playerControlsColour2);
+	background: -webkit-linear-gradient($playerControlsColour1,$playerControlsColour2);	
 }
 
 div.containerPadding 
@@ -136,6 +137,7 @@ html, #loginForm
 	border-bottom: 1px solid grey;	
 	background: $PanelColour2;
 	background: -o-linear-gradient($PanelColour2,$PanelColour1);
+	background: -webkit-linear-gradient($PanelColour2,$PanelColour1);
 	color: inherit;
 	font-size: x-small;
 }
@@ -147,6 +149,7 @@ html, #loginForm
 	text-align: right;
 	background: $topBarColour1;
 	background: -o-linear-gradient($topBarColour1,$topBarColour2);
+	background: -webkit-linear-gradient($topBarColour1,$topBarColour2);
 	color: white;
 }
 
@@ -225,6 +228,7 @@ html, #loginForm
 {
 	background: $liOddColour1;
 	background: -o-linear-gradient($liOddColour1,$liOddColour2);
+	background: -webkit-linear-gradient($liOddColour1,$liOddColour2);
 }
 
 #playlistTracks
@@ -332,6 +336,11 @@ select#mediaSourceSelector option
 	white-space: nowrap;
 }
 
+#folderlist *, #tracklist * 
+{
+	overflow-y: hidden; //hack to "fix" Webkit's obsession with scrollbars
+}
+
 #tracklistHeader
 {
 	font-weight: bold;
@@ -376,6 +385,7 @@ select#mediaSourceSelector option
 	border-radius: 5px;
 	background: $ButtonColour1;
 	background: -o-linear-gradient($ButtonColour1,$ButtonColour2);
+	background: -webkit-linear-gradient($ButtonColour1,$ButtonColour2);
 	color: $ButtonFontColour;
 }
 #searchContainer select option {
