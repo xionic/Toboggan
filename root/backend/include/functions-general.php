@@ -51,7 +51,8 @@ function getFileMetaData($mediaSourceID, $dir, $filename)
 
 	if(!file_exists($filePath))
 	{
-		reportError("Non existant file:" . $filePath);
+		appLog("Request for non-existant file: ".$filePath, appLog_INFO);
+		reportError("Requested file does not exist");
 		exit();
 	}
 	
@@ -59,8 +60,12 @@ function getFileMetaData($mediaSourceID, $dir, $filename)
 	$fileMetaData = getFileObject($filePath);
 	$fileMetaData["filesize"] = filesize($filePath);
 	
+	//duration
+	$fileMetaData["duration"] = getMediaDuration($filePath);
+	
 	//tags
 	$fileMetaData["tags"] = getFileTags($filePath);
+	
 	
 	return $fileMetaData;
 }

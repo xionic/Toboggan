@@ -318,5 +318,20 @@ function saveMediaSourceSettings($settings_JSON)
 	closeDBConnection($conn);
 }
 
+/**
+* function to retrieve the durationCmd from the db for a fromExt
+*/
+function getDurationCommand($fromExt)
+{
+	$conn = getDBConnection();
+	$stmt = $conn->prepare("SELECT durationCmd FROM fromExt WHERE fromExt.Extension = :fromExt AND durationCmd IS NOT NULL");
+	$stmt->bindValue(":fromExt",$fromExt, PDO::PARAM_STR);
+	$stmt->execute();
+
+	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	closeDBConnection($conn);	
+	return (isset($row["durationCmd"])?$row["durationCmd"]:null);	
+}
+
 
 ?>

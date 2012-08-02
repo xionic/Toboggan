@@ -13,7 +13,7 @@ function getFileTags($file)
 	
 	if(!isset($fileID3Data["comments_html"]))//cannot get tags	
 	{
-		return false;
+		return null;
 	}
 
 	$tags["artist"] = getTag("artist", $fileID3Data);

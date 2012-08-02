@@ -23,7 +23,7 @@ $config["cache_permissions"] = true; // this option might be removed in future
 //db 
 define("DBPATH", "db/main.db");
 define("PDO_DSN", "sqlite:".DBPATH);
-define("DB_VERSION", 102); // indicates what version of the db the code uses - to be matched against the one in the db
+define("DB_VERSION", 103); // indicates what version of the db the code uses - to be matched against the one in the db
 
 //api version
 define("APIVERSION","0.58");

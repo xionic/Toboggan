@@ -204,6 +204,38 @@ function outputApplicationLog_JSON($lastNBytes)
 	
 }
 
+/**
+* Retrieve the duration of a mediaFile, returns null if the file's extension has no defined duration command
+*/
+
+function getMediaDuration($filepath)
+{
+	//get extension
+	$filepathInfo = pathinfo($filepath);
+	$ext = $filepathInfo["extension"];
+	
+	//get command to extract duration
+	$durationCmd = getDurationCommand($ext);
+	if($durationCmd == null)
+		return null;
+	
+	//get the bitrate command with variables expanded
+	$durationCmd = expandCmdString($durationCmd, 
+		array(
+			"path" 		=> $filepath,
+		)
+	);
+	appLog($durationCmd);
+	
+	$duration = exec($durationCmd);
+	
+	appLog("Output of duration command: '" . $duration . "'", appLog_DEBUG);
+	
+	return ((int)$duration);
+	
+	
+}
+
 
 
 

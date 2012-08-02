@@ -117,11 +117,15 @@ function getUserObject($userid)
 				) as UP 
 				USING (idAction) 
 			WHERE User.idUser = :userid 
-				AND targetObjectID IS NULL;
+				AND targetObjectID IS NULL
+				AND NOT Action.idAction = :accessStreamerAction
+				AND NOT Action.idAction = :accessMediaSourceAction
 		;
 	");
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
+	$stmt->bindValue(":accessStreamerAction", PERMISSION_ACCESSSTREAMER, PDO::PARAM_INT);
+	$stmt->bindValue(":accessMediaSourceAction", PERMISSION_ACCESSMEDIASOURCE, PDO::PARAM_INT);
 	$stmt->execute();
 	$userStandardPerms = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	$userObj["permissions"]["general"] = $userStandardPerms;
@@ -184,6 +188,10 @@ function updateUser($userid, $json_settings){
 
 	$av = new ArgValidator("handleArgValidationError");
 
+	$av->validateArgs(array("userid" => $userid),array(
+		"userid"	=> array("int", "lbound 0"),
+	));
+	
 	$av->validateArgs($userSettings, array(
 		"username"				=> array("string", "notblank"),
 		"email"					=> array("string"),
@@ -230,6 +238,16 @@ function updateUser($userid, $json_settings){
 			"id"				=> array("int"),
 			"granted"				=> array("string", "notblank", "regex /[YN]/"),
 		));
+	}
+	
+	//ensure that the username does not already exist
+	//get user's existing username
+	$currUserObj = getUserInfoFromID($userid);
+	
+	if($currUserObj["username"] != $userSettings["username"] && getUserInfo($userSettings["username"]) !== null) // if the username is being changed and the new one already exists
+	{
+		reportError("Username already exists", 400);
+		exit();
 	}
 	
 	$conn = null;
@@ -377,6 +395,12 @@ function addUser($json_settings)
 		));
 	}
 	
+	//ensure that the username does not already exist
+	if(getUserInfo($userSettings["username"]) !== null)
+	{
+		reportError("Username already exists", 400);
+		exit();
+	}
 	
 	$conn = null;
 	
