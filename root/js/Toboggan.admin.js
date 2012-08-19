@@ -127,7 +127,9 @@
 					$("<div id='tab_server_mediaSources'></div>")
 				)
 				.append(
-					$("<div id='tab_server_log_contents'><h1>The last 5KiB of the Server Log</h1><pre id='server_log_contents_target' ></pre></div>")
+					$("<div id='tab_server_log_contents'>\
+						<h1>The last <input type='number' name='serverLogSize' min='1' max='100' id='serverLogSize' value='5' class='inlineInput'/> KiB of the Server Log</h1>\
+						<pre id='server_log_contents_target' ></pre></div>")
 				)
 				.appendTo("body");
 		
@@ -358,19 +360,23 @@
 						});	
 					break;
 					case 'tab_server_log_contents':
-						//TODO: Loading placeholder
-						$.ajax({
-							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=getApplicationLog&apikey="+apikey+"&apiver="+apiversion,
-							type:'GET',
-							data: {lastNBytes: 5120},
-							success: function(data, textStatus, jqXHR){
-								$("#server_log_contents_target").text(data.logFileText.substring(data.logFileText.indexOf('\n')+1,data.logFileText.length));
-							},
-							error: function(jqHXR, textStatus, errorThrown){
-								alert("A mild loading catastrophe has occurred, please check the error log");
-								console.error(jqHXR, textStatus, errorThrown);
-							}	
+						$("#serverLogSize").change(function(){
+							$.ajax({
+								url: g_Toboggan_basePath+"/backend/rest.php"+"?action=getApplicationLog&apikey="+apikey+"&apiver="+apiversion,
+								type:'GET',
+								data: {lastNBytes: (1024*$("#serverLogSize").val())},
+								success: function(data, textStatus, jqXHR){
+									$("#serverLogSizeDisplay").text($("#serverLogSize").val());
+									$("#server_log_contents_target").text(data.logFileText.substring(data.logFileText.indexOf('\n')+1,data.logFileText.length));
+								},
+								error: function(jqHXR, textStatus, errorThrown){
+									alert("A mild loading catastrophe has occurred, please check the error log");
+									console.error(jqHXR, textStatus, errorThrown);
+								}	
+							});
 						});
+						
+						$("#serverLogSize").change();
 					break;
 					default:
 						
