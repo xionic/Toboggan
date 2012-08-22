@@ -26,7 +26,8 @@ table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, embed, 
 figure, figcaption, footer, header, hgroup, 
 menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
+time, mark, audio, video
+{
 	margin: 0;
 	padding: 0;
 	border: 0;
@@ -36,26 +37,33 @@ time, mark, audio, video {
 }
 /* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
+footer, header, hgroup, menu, nav, section
+{
 	display: block;
 }
-body {
+body
+{
 	line-height: 1;
 	overflow-x: hidden;
 	overflow-y: hidden;
 }
-ol, ul {
+ol, ul
+{
 	list-style: none;
 }
-blockquote, q {
+blockquote, q
+{
 	quotes: none;
 }
+
 blockquote:before, blockquote:after,
-q:before, q:after {
+q:before, q:after
+{
 	content: '';
 	content: none;
 }
-table {
+table
+{
 	border-collapse: collapse;
 	border-spacing: 0;
 }
@@ -166,7 +174,8 @@ ol#playlistTracks li
 
 }
 
-ol#playlistTracks .ui-state-highlight { 
+ol#playlistTracks .ui-state-highlight
+{ 
 	height: 2.2ex; 
 	line-height: 2.2ex; 
 }
@@ -177,7 +186,8 @@ ol#playlistTracks .ui-state-highlight {
 }
 
 /** helper classes **/
-.float-container {
+.float-container
+{
 	overflow: auto;
 }
 
@@ -197,7 +207,8 @@ p label
 
 .ui-dialog input[type='text'],
 .ui-dialog input[type='number'],
-.ui-dialog input[type='password'] {
+.ui-dialog input[type='password'] 
+{
 	margin: 0.25ex 0.5ex;
 }
 
@@ -238,11 +249,19 @@ p label
 	overflow-y: hidden;
 }
 
-.trackMetadata ul li {
+.trackMetadata ul li 
+{
 	margin-left: 1em;
 }
 
-#bandwidthInformation {
+.albumArt 
+{
+	max-height: 350px;
+	width: auto;
+}
+
+#bandwidthInformation 
+{
 	position: fixed;
 	bottom: 5ex;
 	right: 0.5em;
