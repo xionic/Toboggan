@@ -439,7 +439,10 @@
 						var innerHTML = $("<div/>");
 						if(data.tags.albumart)
 						{
-							innerHTML.append($("<img />").attr("src","data:image/jpg;base64,"+data.tags.albumart));
+							innerHTML.append($("<img />")
+												.attr("src","data:image/jpg;base64,"+data.tags.albumart)
+												.addClass("albumArt")
+											);
 							data.tags.albumart="";
 						}
 						for (x in data)

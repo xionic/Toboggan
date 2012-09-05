@@ -123,3 +123,13 @@ h2 {
 #permissionsTarget {
 	margin-bottom: 2ex;
 }
+
+.inlineInput {
+	background: none;
+	color: inherit;
+	border: 0px;
+	font: inherit;
+	font-size: smaller;
+	text-decoration: inherit;
+	width: 3em
+}

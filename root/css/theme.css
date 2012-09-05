@@ -196,7 +196,11 @@ html, #loginForm
 	text-overflow: ellipsis;
 	overflow-x: hidden;
 }
-
+/*
+#tracklist li input.trackCheckbox, #tracklist li a, #tracklist li span.trackName {
+	vertical-align: text-top;
+}
+*/
 #playlistTracks li a {
 	white-space: nowrap;
 	overflow-x: hidden;
