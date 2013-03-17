@@ -128,7 +128,7 @@
 				)
 				.append(
 					$("<div id='tab_server_log_contents'>\
-						<h1>The last <input type='number' name='serverLogSize' min='1' max='100' id='serverLogSize' value='5' class='inlineInput'/> KiB of the Server Log</h1>\
+						<h1>The last <input type='number' name='serverLogSize' min='1' max='100' id='serverLogSize' value='5' class='inlineInput'/> KiB of the Server Log <span class='refresh'>Update</span></h1>\
 						<pre id='server_log_contents_target' ></pre></div>")
 				)
 				.appendTo("body");
@@ -370,13 +370,18 @@
 									$("#server_log_contents_target").text(data.logFileText.substring(data.logFileText.indexOf('\n')+1,data.logFileText.length));
 								},
 								error: function(jqHXR, textStatus, errorThrown){
-									alert("A mild loading catastrophe has occurred, please check the error log");
+									alert("An error has occurred loading the server log: " + textStatus + "\n see the js error console for the full error object");
 									console.error(jqHXR, textStatus, errorThrown);
 								}	
 							});
 						});
 						
 						$("#serverLogSize").change();
+						
+						$(this).find("span.refresh").click(function(){
+							$("#serverLogSize").change();
+						});
+						
 					break;
 					default:
 						

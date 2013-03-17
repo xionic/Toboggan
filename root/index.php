@@ -14,10 +14,10 @@
 
 	<script type="text/javascript" src="./js/jQuery/jQuery.1.7.1.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery-ui/jquery-ui-1.8.21.custom.min.js"></script>
-	<script type="text/javascript" src="./js/jQuery.jPlayer.2.1.0/jquery.jplayer.min.js"></script>
+	<script type="text/javascript" src="./js/jQuery.jPlayer.2.2.0/jquery.jplayer.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery.dynatree/jquery.dynatree.min.js"></script>
 
-	<script type="text/javascript" src="./js/jQuery.jPlayer.2.1.0/add-on/jquery.jplayer.inspector.js"></script>
+	<script type="text/javascript" src="./js/jQuery.jPlayer.2.2.0/add-on/jquery.jplayer.inspector.js"></script>
 	<script type="text/javascript">
 <?php
 	// the ./ makes it work in all relevent situations - hack !

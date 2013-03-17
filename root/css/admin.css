@@ -94,6 +94,12 @@ h1,h2 {
 #tab_server_log_contents {
 }
 
+#tab_server_log_contents span.refresh {
+	cursor: pointer;
+	display: inline-block;
+	float: right;
+}
+
 //server log contents!
 #server_log_contents_target {
 	font-family: monospace;
