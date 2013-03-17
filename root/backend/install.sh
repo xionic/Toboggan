@@ -6,8 +6,8 @@
 echo -e "This script should be run by the apache user\n"
 
 DBFile="db/main.db"
-templateSQL="db/template.sql"
-initSQL="db/init.sql"
+templateSQL="db/1.template.sql"
+initSQL="db/2.init.sql"
 sqlitePath="/usr/bin/sqlite3"
 
 
