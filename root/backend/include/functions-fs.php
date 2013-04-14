@@ -133,12 +133,14 @@ function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 		reportError("path is not a directory: ".$path, 400);
 		return false;
 	}
-	$dirHandle = opendir($path);
+	
 	$fileResults = array();
 	$dirResults = array();
 	
+	$dirHandle = opendir($path);
+	
 	//loop through all "files" in the dir
-	while(($FSObj = readdir($dirHandle)) !== false)
+	while($dirHandle && ($FSObj = readdir($dirHandle)) !== false)
 	{
 		$filepath = $path.$FSObj;
 		
@@ -177,7 +179,7 @@ function getSearchResults($mediaSourcePath, $relPath, $query, $recurse)
 		}
 	}
 
-	closedir($dirHandle);	
+	$dirHandle && closedir($dirHandle);	
 	return array("dirs" => $dirResults, "files" => $fileResults);
 }
 
