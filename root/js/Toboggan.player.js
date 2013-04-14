@@ -380,6 +380,10 @@
 			{
 				$(rightClickedObject).find("a.addToPlaylistButton").click();
 			}
+			else if($(this).hasClass("add_selected_to_playlist"))
+			{
+				$("#addSelectedToPlaylist").click();
+			}
 			else if($(this).hasClass("del_from_playlist"))
 			{
 				$(rightClickedObject).find(".removeFromPlaylist").click();

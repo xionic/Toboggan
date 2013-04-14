@@ -66,6 +66,7 @@
 	
 	<div class="first_li show_containing_dir"><span>Show Containing Directory</span></div>
 	<div class="first_li add_to_playlist hideInPlaylist"><span>Add to Playlist</span></div>
+	<div class="first_li add_selected_to_playlist hideInPlaylist"><span>Add selected to Playlist</span></div>
 	<div class="first_li del_from_playlist hideInTracklist"><span>Remove From Playlist</span></div>
 	<div class="first_li play_now hideInPlaylist"><span>Play Now</span></div>
 	<div class="first_li download"><span>Download</span></div>
