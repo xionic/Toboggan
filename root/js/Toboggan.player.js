@@ -221,7 +221,7 @@
 		doLogin();
 	
 		//load jPlayer Inspector
-	//	$("#jPlayerInspector").show().jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
+		//$("#jPlayerInspector").show().jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
 	});
 
 	/**
