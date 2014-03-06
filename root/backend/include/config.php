@@ -37,6 +37,9 @@ $config["passwordSalt"] = "JbC^*(I4GJbgz7V)";
 //sesssion data
 $config["sessionName"] = "Toboggan";
 
+//max amount of data to read in one fread call
+$config["maxReadData"] = 1048576;
+
 
 
 ?>

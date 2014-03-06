@@ -201,7 +201,13 @@ function passthroughStream($file){
 		$startTime = microtime(true);
 		
 		//read the file and output the data
-		print(fread($fh, $bytesToRead));
+		//read a max of maxReadData at a time to prevent putting too much in memory - first read 0 - the required number of maxReadData, then read the remainder
+		$maxReads = intval($bytesToRead / getConfig("maxReadData"));
+		for($c = 0; $c < $maxReads; $c++){
+			print(fread($fh, getConfig("maxReadData")));
+		}
+		//read the remainder
+		print(fread($fh, $bytesToRead % getConfig("maxReadData")));
 		
 		//calc the number of bytes actually read
 		$bytesRead = ftell($fh) - $pointerStart;
