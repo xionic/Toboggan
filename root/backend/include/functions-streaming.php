@@ -160,8 +160,10 @@ function passthroughStream($file){
 		exit;
 	}
 
-	$fileSize = filesize($file);
-	header("Content-Length: " . $fileSize);
+	$fileSize = FileOps::filesize($file);
+//	header("Content-Length: " . $fileSize);
+//	appLog($fileSize);
+	header("Content-Length: $fileSize");
 
 	//limit bandwidth
 	$maxBandwidth = getCurrentMaxBandwidth();

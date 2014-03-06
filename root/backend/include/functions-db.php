@@ -319,18 +319,29 @@ function saveMediaSourceSettings($settings_JSON)
 }
 
 /**
-* function to retrieve the durationCmd from the db for a fromExt
+* function to retrieve the durationCmd from the db for a fromExt - if the user has permission
 */
 function getDurationCommand($fromExt)
 {
 	$conn = getDBConnection();
-	$stmt = $conn->prepare("SELECT durationCmd FROM fromExt WHERE fromExt.Extension = :fromExt AND durationCmd IS NOT NULL");
+	$stmt = $conn->prepare("SELECT durationCmd, idextensionMap as streamerID 
+		FROM fromExt 
+			INNER JOIN extensionMap USING (idfromExt)
+		WHERE fromExt.Extension = :fromExt AND durationCmd IS NOT NULL");
 	$stmt->bindValue(":fromExt",$fromExt, PDO::PARAM_STR);
 	$stmt->execute();
 
-	$row = $stmt->fetch(PDO::FETCH_ASSOC);
+	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 	closeDBConnection($conn);	
-	return (isset($row["durationCmd"])?$row["durationCmd"]:null);	
+	
+	//ensure the user has permission to user the streamer that the duration command is defined in
+	foreach($results as $row)
+	{
+		appLog($row);
+		if(checkUserPermission(PERMISSION_ACCESSSTREAMER, $row["streamerID"]))
+			return $row["durationCmd"];
+	}
+	return null;
 }
 
 

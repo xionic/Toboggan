@@ -564,11 +564,12 @@ function changeUserPassword($userid, $password)
 */
 function checkUserPermission($actionName, $targetObjectID = false)
 {
+	$userID = userLogin::getCurrentUserID();
+	
 	appLog(
-		"Checking userid '" . userLogin::getCurrentUserID() . "' has permission for action '" . 
+		"Checking userid '" . $userID . "' has permission for action '" . 
 		$actionName . "' with targetObjectID '" . $targetObjectID . "'", appLog_DEBUG
 	);
-	$userID = userLogin::getCurrentUserID();
 	
 	//cache permissions per session if set
 	if(getConfigItem("cache_permissions"))
