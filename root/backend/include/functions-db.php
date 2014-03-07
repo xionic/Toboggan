@@ -339,9 +339,9 @@ function getDurationCommand($fromExt)
 	//ensure the user has permission to user the streamer that the duration command is defined in
 	foreach($results as $row)
 	{
-		appLog($row);
-		if(checkUserPermission(PERMISSION_ACCESSSTREAMER, $row["streamerID"]))
+		if(checkUserPermission("accessStreamer", $row["streamerID"])){
 			return $row["durationCmd"];
+		}
 	}
 	return null;
 }
