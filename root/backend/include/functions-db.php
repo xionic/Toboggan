@@ -8,7 +8,9 @@ require_once("classes/userLogin.class.php");
 */
 function getDBConnection()
 {
-	
+	if(!is_readable(DBPATH)){
+		reportError("DB does not exist or is not readable. If this is a new installation did you run install.sh? (See README)", 200); //not returning error status as this is probably not an "Error"
+	}	
 	$db = new PDO(PDO_DSN);
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	return $db;	
