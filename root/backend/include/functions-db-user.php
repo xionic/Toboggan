@@ -97,9 +97,11 @@ function getUserObject($userid)
 			CASE WHEN enabled = 1 THEN 'Y' ELSE 'N' END as enabled, 
 			maxAudioBitrate, maxVideoBitrate, maxBandwidth,				
 			CASE WHEN enableTrafficLimit = 1 THEN 'Y' ELSE 'N' END as enableTrafficLimit,			
-			trafficLimit, trafficLimitPeriod
-			FROM User
-			WHERE idUser = :userid");
+			trafficLimit, trafficLimitPeriod,
+			trafficUsed,
+			(trafficLimitPeriod - (strftime('%s','now') - (trafficLimitStartTime))) as timeToReset	
+		FROM User
+		WHERE idUser = :userid");
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->execute();
 	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
