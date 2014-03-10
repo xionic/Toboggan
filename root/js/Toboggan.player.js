@@ -218,7 +218,19 @@
 	
 		configureContextMenuCallbacks();
 	
-		doLogin();
+		$.ajax({
+			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveClientSettings&apikey="+apikey+"&apiver="+apiversion,
+			success:  function(data, textStatus, xhr) {
+			    var initObject = {
+			    	username: xhr.getResponseHeader("X-AuthenticatedUsername"),
+			    	idUser: xhr.getResponseHeader("X-AuthenticatedUserID")
+			    };
+				initialisePage(initObject);
+			},
+			error: function() {
+				doLogin();
+			}
+		});
 	
 		//load jPlayer Inspector
 		//$("#jPlayerInspector").show().jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
@@ -980,20 +992,8 @@
 				'username': $("#username").val(),
 				'password': hash
 			},
-			success: function(data,textStatus, jqXHR){
-				addKeepAlives();
-				currentUserName	= data.username;
-				currentUserID 	= data.idUser;
-				$("#topBarContainer span.username").text("Logged in as: "+currentUserName+" | ");
-				$("#loginFormContainer").dialog("close");
-				
-				setupUserTrafficStatsUpdate();
-				
-				//load the nowPlaying from localStorage
-				loadNowPlaying();
-				
-				getMediaSources();
-				
+			success: function(data, textStatus, jqXHR) {
+				initialisePage(data);
 			},
 			error: function(jqhxr,textstatus,errorthrown){
 				console.debug(jqhxr,textstatus,errorthrown);
@@ -1001,6 +1001,22 @@
 			}
 		});
 		
+	}
+	
+	function initialisePage(data)
+	{
+		addKeepAlives();
+		currentUserName	= data.username;
+		currentUserID 	= data.idUser;
+		$("#topBarContainer span.username").text("Logged in as: " + currentUserName + " | ");
+		$("#loginFormContainer").dialog("close");
+				
+		setupUserTrafficStatsUpdate();
+		
+		//load the nowPlaying from localStorage
+		loadNowPlaying();
+				
+		getMediaSources();
 	}
 	
 	function setupUserTrafficStatsUpdate()
