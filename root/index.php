@@ -75,8 +75,10 @@
 			<span>Placeholder1</span>
 		</div>
 	</div>
+	<div class="first_li hr"><span></span></div>
 	<div class="first_li metadata"><span>Information</span></div>
-
+	<div class="first_li hr"><span></span></div>
+	<div class="first_li clear_all"><span>Clear Playlist</span></div>
 </div>
 </body>
 </html>

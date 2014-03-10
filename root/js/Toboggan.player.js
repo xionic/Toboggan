@@ -412,6 +412,10 @@
 											"&apiver="+apiversion;
 				window.location = url;
 			}
+			else if($(this).hasClass("clear_all"))
+			{
+				$("#playlistTracks").find(".removeFromPlaylist").click();
+			}
 			else if($(this).hasClass("metadata"))
 			{
 			

@@ -502,6 +502,14 @@ img.loading
 	background: #333;
 }
 
+.vmenu .hr {
+	border-bottom: 1px solid #aaa;
+}
+.vmenu .hr span {
+	padding: 0;
+	margin: 0;
+}
+
 #bandwidthInformation 
 {
 	border: 1px solid black;
