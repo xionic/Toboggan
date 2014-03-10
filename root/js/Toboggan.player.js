@@ -966,10 +966,11 @@
 	*/
 	function doLogin()
 	{
-		$("#loginForm").submit(function(){	//handle pressing enter
-			ajaxLogin();
+		$("#loginForm").keypress(function(e) {
+			e.which === 13 && ajaxLogin();
 			return false;
 		});
+		
 		//present the login form:
 		$("#loginFormContainer").dialog({
 			autoOpen: true,
