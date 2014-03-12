@@ -11,8 +11,7 @@
 			"statusCodes" => array(
 				"pass" => "^200$"
 			),	
-			"json"	=> array(
-				"logFileText" => array("string")
+			"json"	=> array( // bo constraints forces entire arg to be array
 			),
 		)
 	);

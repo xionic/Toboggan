@@ -26,7 +26,7 @@
 
 		$url = $_SERVER["SCRIPT_URI"] . "../rest.php?action=" . $action . 
 			"&apiver=" . $config["testAPIVer"] . "&apikey=" . $config["testAPIKey"] . $argStr;
-		testLog("hitting $url");
+		testLog("hitting '$url' with cookiefile $cookiefile");
 
 		curl_setopt($ch, CURLOPT_URL, $url);
 		//curl_setopt($ch, CURLOPT_HEADER, 1);
@@ -86,7 +86,7 @@
 		global $config;
 		
 		$cookiefile = null;
-		if($doLogin !==null){
+		if($doLogin){
 			$cookiefile = tempnam("/tmp/","toboggan-testing");
 			
 			//login first
@@ -149,10 +149,11 @@
 			} else{
 				$av->validateArgs($jsonArr,$checks["json"]);
 			}
+		
+			$results["checks"]["json"]["passed"] = $jsonCheckPassed;
+			$results["checks"]["json"]["result"] = $jsonFailReason;
+			$results["checks"]["json"]["checks"] = $checks["json"];
 		}
-		$results["checks"]["json"]["passed"] = $jsonCheckPassed;
-		$results["checks"]["json"]["result"] = $jsonFailReason;
-		$results["checks"]["json"]["checks"] = $checks["json"];
 
 		//End of JSON checks
 		
@@ -167,7 +168,11 @@
 	}
 
 	function testLog($text){
-	//	var_dump($text );
+		if(isset($_GET["debug"])){
+			echo "<pre>";
+			var_dump($text );
+			echo "</pre>";
+		}
 	}
 
 	function jsonValidationError($msg, $argName = "", $argVal = ""){
@@ -190,24 +195,26 @@
 		global $tests, $results;
 		foreach($tests as $test){
 			$results[] = performTest($test["action"], $test["getArgs"], $test["checks"], $test["login"]);
+			testLog($results[count($results)- 1]);
 		}
 	}
 
 	function displayResultsTable(){
 		global $results;
 		echo "<table>";
+		echo "<th>Test action</th><th>Results</th>";
 		foreach($results as $result){
 			echo "<tr>";
 			echo "<td style='width:150px'>";
 				echo $result["action"];
 			echo "</td>";
-			echo "<td>";
-			echo "<table>";	
+			echo "<td style='width100%'>";
+			echo "<table class='innerTable'>";	
+				echo "<th>Check</th><th>Passed?</th><th>Result</th>";
 				foreach($result["checks"] as $name => $res){
-					echo "<th>Check</th><th>Passed?</th><th>Result</th>";
-					echo "<tr>";
+					echo "<tr class='".($res["passed"]?"passed":"failed")."'>";
 					echo "<td>".$name."</td>";
-					echo "<td>".$res["passed"]."</td>";
+					echo "<td>".($res["passed"]?"Passed":"Failed")."</td>";
 					echo "<td>".$res["result"]."</td>";
 						
 					echo "</tr>";

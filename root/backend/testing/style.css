@@ -1,0 +1,23 @@
+table, tr, td{
+	border-collapse:collapse;
+}
+td, th{ 
+	border: solid 1px red;
+}
+tr{
+	background: #ababab;
+}
+tr.fullResponse{
+	background: #cacaca;
+}
+
+tr.passed{
+	background:green;
+}
+tr.failed{
+	background:red;
+}
+
+table.innerTable{
+	width:100%;
+}	

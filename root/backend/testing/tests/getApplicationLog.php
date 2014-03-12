@@ -17,4 +17,19 @@
 		)
 	);
 
+	registerTest(
+		//checks
+		"getApplicationLog",  
+
+		//get args
+		array(),	
+
+		//checks
+		array(
+			"statusCodes" => array(
+				"pass" => "^401$"
+			),	
+		),
+		false //no login
+	);
 ?>
