@@ -1,0 +1,33 @@
+To add tests, add files under the tests/ directory
+
+These files should register test using the registerTest function to be used as follows:
+
+registerTest($action, $getArgs, $checks, $login = true)
+
+Where:
+- $action is the action to be passed as part of the rest request (i.e. rest.php?action=$action)
+- $getArgs is an assoc array of arguments to be given in the rest request (along with action which does not need to be specified again here). Certain args are sent by default- see below
+- $checks - an array of checks to be performed on the response of the request. See below
+- $login - whether or not to perform a login request first to establish a session. Uses credetials currently defined in $config array in functions-testing.php
+
+Default GET args
+The following args are always sent and do not need to be specified:
+- apiver
+- apikey
+
+Checks:
+Checks which can currently be performed are:
+-"statusCodes" => (
+	"pass" => "regex for passing HTTP status codes",
+	"fail" => "regex for failing HTTP status codes"
+)
+fail takes precedence over pass
+-"json"  => an valid PHPArgValidator array - see https://github.com/xionic/PHPArgValidator/tree/master/Tests-Examples
+
+
+If you then go to https://.../root/backend/testing/ the tests will be performed and displayed.
+
+
+Other notes:
+If Toboggan is behind basic auth (e.g. apache) you can specify bauser and bapass in the url. These will be used in the request.
+
