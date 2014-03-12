@@ -102,7 +102,7 @@
 			"action" => $action,
 			"getArgs" => $getArgs,
 			"doLogin" => $doLogin,
-			"fullRespnse" => $res["body"]
+			"fullResponse" => $res["body"]
 		);
 
 
@@ -198,7 +198,7 @@
 		echo "<table>";
 		foreach($results as $result){
 			echo "<tr>";
-			echo "<td>";
+			echo "<td style='width:150px'>";
 				echo $result["action"];
 			echo "</td>";
 			echo "<td>";
@@ -213,8 +213,8 @@
 					echo "</tr>";
 				}
 			echo "</table>";
-			
 			echo "</td></tr>";
+			echo "<tr class='fullResponse' style='display:none'><td colspan='4'><pre>".htmlentities($result["fullResponse"])."</pre></td></tr>";
 		}
 		echo "</table>";
 	}

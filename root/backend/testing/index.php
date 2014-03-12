@@ -8,8 +8,12 @@
 			border: solid 1px red;
 		}
 	</style>
+	<script src="https://code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
 </head>
 <body>
+
+	<a onclick='$(".fullResponse").toggle();'>Show/Hide Full Responses</a>
+
 <?php
 
 	include("functions-testing.php");
@@ -18,6 +22,7 @@
 	foreach(glob("./tests/*.php") as $file){
 		include($file);
 	}
+
 
 	runTests();
 	displayResultsTable();
