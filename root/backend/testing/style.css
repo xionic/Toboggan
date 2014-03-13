@@ -2,7 +2,8 @@ table, tr, td{
 	border-collapse:collapse;
 }
 td, th{ 
-	border: solid 1px red;
+	border: solid 1px black;
+	padding: 2px 5px;
 }
 tr{
 	background: #ababab;
@@ -11,13 +12,21 @@ tr.fullResponse{
 	background: #cacaca;
 }
 
-tr.passed{
-	background:green;
+td{
+	min-width:50px;
 }
-tr.failed{
-	background:red;
+
+.passed{
+	background:#228822;
+}
+.failed{
+	background:#aa5555;
 }
 
 table.innerTable{
 	width:100%;
 }	
+
+table.innerTable td{
+	width:250px;
+}

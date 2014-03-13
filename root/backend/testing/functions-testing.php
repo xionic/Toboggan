@@ -31,6 +31,8 @@
 		curl_setopt($ch, CURLOPT_URL, $url);
 		//curl_setopt($ch, CURLOPT_HEADER, 1);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+	
 		if($cookiefile !==null){
 			curl_setopt($ch, CURLOPT_COOKIEFILE, $cookiefile);
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiefile);
@@ -201,6 +203,28 @@
 
 	function displayResultsTable(){
 		global $results;
+
+		//aggregates
+		$numPassed = 0;
+		$numFailed = 0;
+		$numChecks = 0;
+		foreach($results as $result){
+			foreach($result["checks"] as $name => $res){
+				$numChecks++;
+				if($res["passed"])
+					$numPassed++;
+				else
+					$numFailed++;
+			}
+		}
+		//print aggregates
+		echo "<table><tr><th colspan='2'>Aggregates</th></tr>";
+		echo "<tr><td>Total # of checks</td><td>$numChecks</td></tr>";
+		echo "<tr><td>Total passed</td><td class='".($numPassed == $numChecks?"passed":"failed")."'>$numPassed</td></tr>";
+		echo "<tr><td>Total failed</td><td class='".(!$numFailed?"passed":"failed")."'>$numFailed</td></tr>";
+		echo "</table><br /><br />"; //HACKES!
+
+		//main results table
 		echo "<table>";
 		echo "<th>Test action</th><th>Results</th>";
 		foreach($results as $result){
@@ -216,7 +240,8 @@
 					echo "<td>".$name."</td>";
 					echo "<td>".($res["passed"]?"Passed":"Failed")."</td>";
 					echo "<td>".$res["result"]."</td>";
-						
+					//testLog($res);	
+					echo "<td class='fullChecks' style='display:none' colspan='4'><pre>".htmlentities(var_export($res["checks"],true))."</pre></td>";
 					echo "</tr>";
 				}
 			echo "</table>";

@@ -6,6 +6,7 @@
 <body>
 
 	<button onclick='$(".fullResponse").toggle();'>Show/Hide Full Responses</button>
+	<button onclick='$(".fullChecks").toggle();'>Show/Hide Check Details</button>
 
 <?php
 
