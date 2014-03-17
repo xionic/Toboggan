@@ -13,6 +13,8 @@
 				"pass" => "^200$"
 			),	
 			"json"	=> array(
+				"/*/idUser" => array("notblank"),
+				"/*/username" => array("notblank"),
 			),
 		)
 	);

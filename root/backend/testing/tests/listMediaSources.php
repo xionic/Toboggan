@@ -12,6 +12,9 @@
 				"pass" => "^200$"
 			),	
 			"json"	=> array( // bo constraints forces entire arg to be array
+				"/*/" => array("array"),
+				"/*/mediaSourceID" => array("int"),
+				"/*/displayName" => array("notblank"),
 			),
 		)
 	);

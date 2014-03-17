@@ -104,7 +104,8 @@
 			"action" => $action,
 			"getArgs" => $getArgs,
 			"doLogin" => $doLogin,
-			"fullResponse" => $res["body"]
+			"fullResponse" => $res["body"],
+			"doLogin" => $doLogin,
 		);
 
 
@@ -204,7 +205,7 @@
 	function displayResultsTable(){
 		global $results;
 
-		//aggregates
+		//totals
 		$numPassed = 0;
 		$numFailed = 0;
 		$numChecks = 0;
@@ -217,8 +218,8 @@
 					$numFailed++;
 			}
 		}
-		//print aggregates
-		echo "<table><tr><th colspan='2'>Aggregates</th></tr>";
+		//print totals
+		echo "<table><tr><th colspan='2'>Totals</th></tr>";
 		echo "<tr><td>Total # of checks</td><td>$numChecks</td></tr>";
 		echo "<tr><td>Total passed</td><td class='".($numPassed == $numChecks?"passed":"failed")."'>$numPassed</td></tr>";
 		echo "<tr><td>Total failed</td><td class='".(!$numFailed?"passed":"failed")."'>$numFailed</td></tr>";
@@ -230,7 +231,7 @@
 		foreach($results as $result){
 			echo "<tr>";
 			echo "<td style='width:150px'>";
-				echo $result["action"];
+				echo $result["action"] . ($result["doLogin"]?" (+login)":"(no login)");
 			echo "</td>";
 			echo "<td style='width100%'>";
 			echo "<table class='innerTable'>";	

@@ -15,9 +15,15 @@
 				"pass" => "^200$"
 			),	
 			"json"	=> array(
-				"CurrentPath"	=> array("string"),
+				"CurrentPath"	=> array("notblank"),
 				"Directories"	=> array("array"),
+				"/Directories/*/" => array("notblank"),
 				"Files"		=> array("array"),
+				"/Files/*/filename" => array("notblank"),
+				"/Files/*/displayName" => array("notblank"),
+				"/Files/*/streamers/*/extension" => array("notblank"),
+				"/Files/*/streamers/*/streamerID" => array("int"),
+				"/Files/*/streamers/*/mediaType" => array("regex /[av]/"),
 			),
 		)
 	);
