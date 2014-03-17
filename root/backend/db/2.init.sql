@@ -37,6 +37,9 @@ INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBi
 	enableTrafficLimit, trafficLimit, trafficLimitStartTime, trafficLimitPeriod)
 	VALUES ("testuser2", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "test2@test.com", 1, 128, 300, 500,
 		1, 10000, strftime('%s', 'now'), 600);
+
+INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth)
+	VALUES ("autotest", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "autotest@test.com", 1, 320, 1000, 100);
 	
 INSERT INTO APIKey(apikey, displayName) VALUES("{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}", "Main frontend");
 INSERT INTO APIKey(apikey, displayName) VALUES("testkey1", "Testing apikey 1");
