@@ -149,17 +149,10 @@ try
 				"apikey"		=> array("string", "notblank")
 			));
 
-			$clientSettings = getClientSettings($args["apikey"], userLogin::getCurrentUserID());
-			if(!$clientSettings) // no settings to retrieve
-			{
-				appLog("No Client settings saved for apikey:'".$args['apikey']."' and userid:".userLogin::getCurrentUserID(), appLog_DEBUG);
-				restTools::sendResponse("No client settings to return", 204, "text/plain");
-			}
-			else
-			{
-				appLog("Returning Client settings for apikey:'".$args['apikey']."' and userid:".userLogin::getCurrentUserID(), appLog_DEBUG);
-				restTools::sendResponse($clientSettings,200, JSON_MIME_TYPE);
-			}
+			$clientSettings = array("settingsBlob" => getClientSettings($args["apikey"], userLogin::getCurrentUserID()));
+			appLog("Returning Client settings for apikey:'".$args['apikey']."' and userid:".userLogin::getCurrentUserID(), appLog_DEBUG);
+			restTools::sendResponse($clientSettings,200, JSON_MIME_TYPE);
+
 			break;
 		
 		case "search":
