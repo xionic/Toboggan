@@ -226,7 +226,7 @@
 			    	username: xhr.getResponseHeader("X-AuthenticatedUsername"),
 			    	idUser: xhr.getResponseHeader("X-AuthenticatedUserID")
 			    };
-			    clientSettings = data.settingsBlob;
+			    clientSettings = JSON.parse(data.settingsBlob);
 			   	clientSettings = clientSettings===false?{}:clientSettings;
 				initialisePage(initObject);
 			},
@@ -245,7 +245,7 @@
 			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=saveClientSettings&apikey="+apikey+"&apiver="+apiversion,
 			type: 'POST',
 			data: {
-				'settingsBlob': clientSettings
+				'settingsBlob': JSON.stringify(clientSettings)
 			},
 			success:  function(data, textStatus, xhr) {
 				console.debug("settings saved: " + textStatus,data);
