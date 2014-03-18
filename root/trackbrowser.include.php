@@ -10,11 +10,11 @@
 		</p>
 	</div>
 	<h1 id='tracklistHeader'></h1>
+</div>
+<div id='centerTrackContainer'>
 	<div id='trackListAddControls'>
 		<input type='checkbox' name='selectAll' id='selectAll_inputs' />| <a href='#' id='addSelectedToPlaylist'>Add Selected to Playlist</a>
 	</div>
-</div>
-<div id='centerTrackContainer'>
 	<ol id='tracklist' class='' >
 	</ol>
 </div>
