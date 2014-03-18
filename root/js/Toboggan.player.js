@@ -9,7 +9,8 @@
 		isFullscreen = {},
 		rightClickedObject = {},
 		currentUserName = "",
-		currentUserID = "";
+		currentUserID = "",
+		clientSettings = {};
 	/**
 		jQuery Entry Point
 	*/
@@ -225,6 +226,8 @@
 			    	username: xhr.getResponseHeader("X-AuthenticatedUsername"),
 			    	idUser: xhr.getResponseHeader("X-AuthenticatedUserID")
 			    };
+			    clientSettings = data.settingsBlob;
+			   	clientSettings = clientSettings===false?{}:clientSettings;
 				initialisePage(initObject);
 			},
 			error: function() {
@@ -236,6 +239,25 @@
 		//$("#jPlayerInspector").show().jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
 	});
 
+	function saveClientSettings()
+	{
+		$.ajax({
+			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=saveClientSettings&apikey="+apikey+"&apiver="+apiversion,
+			type: 'POST',
+			data: {
+				'settingsBlob': clientSettings
+			},
+			success:  function(data, textStatus, xhr) {
+				console.debug("settings saved: " + textStatus,data);
+			},
+			error: function(jq, textStatus, errorThrown) {
+				//TODO: handle this
+				console.error("SaveClientSettings Error " + textStatus);
+				console.log(jq, errorThrown);
+			}
+		});
+	}
+
 	/**
 		Load the now playing list from HTML5 LocalStorage
 	*/
@@ -243,6 +265,9 @@
 	{
 		var nowPlayingKey = "nowPlaying-" + currentUserID + "-" + window.location.host + window.location.pathname,
 			nowPlaying = localStorage.getItem(nowPlayingKey);
+		
+		if(clientSettings.nowPlaying)
+			nowPlaying = clientSettings.nowPlaying;
 		
 		if(typeof nowPlaying === "undefined" || !nowPlaying)
 			return;
@@ -277,6 +302,8 @@
 		}
 		
 		localStorage.setItem(nowPlayingKey, JSON.stringify(nowPlaying));
+		clientSettings.nowPlaying = nowPlaying;
+		saveClientSettings();
 	}
 	
 	/**
