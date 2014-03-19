@@ -136,11 +136,13 @@ try
 		case "saveClientSettings": 
 			//args validation
 			$args = $av->validateArgs($_GET, array(
-				"settingsBlob" 	=> array("string"),
 				"apikey"		=> array("string", "notblank")
 			));
+			$postArgs = $av->validateArgs($_POST, array(
+				"settingsBlob" => array("string")
+			));
 			//save the settings
-			saveClientSettings($args["settingsBlob"], $args["apikey"], userLogin::getCurrentUserID());
+			saveClientSettings($postArgs["settingsBlob"], $args["apikey"], userLogin::getCurrentUserID());
 			
 			break;
 			
