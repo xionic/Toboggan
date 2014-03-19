@@ -134,7 +134,8 @@ html, #loginForm
 
 #topBarContainer, #trackListAddControls
 {
-	border-bottom: 1px solid grey;	
+	border-bottom: 1px solid grey;
+	border-top: 1px solid grey;
 	background: $PanelColour2;
 	background: -o-linear-gradient($PanelColour2,$PanelColour1);
 	background: -webkit-linear-gradient($PanelColour2,$PanelColour1);
@@ -195,6 +196,12 @@ html, #loginForm
 	padding-bottom: 0.125ex;
 	text-overflow: ellipsis;
 	overflow-x: hidden;
+}
+
+#tracklist li>* 
+{
+	line-height: normal;
+	vertical-align: middle;
 }
 /*
 #tracklist li input.trackCheckbox, #tracklist li a, #tracklist li span.trackName {
@@ -344,7 +351,7 @@ select#mediaSourceSelector option
 {
 	font-weight: bold;
 	font-size: larger;
-	border-bottom: 1px solid grey;
+	
 	min-height: 20px;
 	line-height: 20px;
 	padding: 0px 5px;
