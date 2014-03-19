@@ -226,8 +226,11 @@
 			    	username: xhr.getResponseHeader("X-AuthenticatedUsername"),
 			    	idUser: xhr.getResponseHeader("X-AuthenticatedUserID")
 			    };
-			    clientSettings = JSON.parse(data.settingsBlob);
-			   	clientSettings = clientSettings===false?{}:clientSettings;
+			    if(data && data.settingsBlob) {
+			    	clientSettings = JSON.parse(data.settingsBlob);
+			    	if(!clientSettings)
+			    		clientSettings = {};
+			    }
 				initialisePage(initObject);
 			},
 			error: function() {
