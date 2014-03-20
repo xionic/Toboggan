@@ -269,13 +269,14 @@
 		var nowPlayingKey = "nowPlaying-" + currentUserID + "-" + window.location.host + window.location.pathname,
 			nowPlaying = localStorage.getItem(nowPlayingKey);
 		
+		var trackList = [];
+		
+		if(typeof nowPlaying != "undefined" && !nowPlaying)
+			trackList = $.parseJSON(nowPlaying);
+		
 		if(clientSettings.nowPlaying)
-			nowPlaying = clientSettings.nowPlaying;
-		
-		if(typeof nowPlaying === "undefined" || !nowPlaying)
-			return;
-		
-		var trackList = $.parseJSON(nowPlaying);
+			trackList = clientSettings.nowPlaying;
+				
 		for(var x=0; x<trackList.length; ++x)
 		{
 			addToNowPlaying(trackList[x]);
