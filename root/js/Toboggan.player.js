@@ -276,7 +276,10 @@
 		
 		if(clientSettings.nowPlaying)
 			trackList = clientSettings.nowPlaying;
-				
+		
+		if(!trackList)
+			return;
+			
 		for(var x=0; x<trackList.length; ++x)
 		{
 			addToNowPlaying(trackList[x]);
