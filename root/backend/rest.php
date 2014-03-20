@@ -152,6 +152,8 @@ try
 			));
 
 			$clientSettings = array("settingsBlob" => getClientSettings($args["apikey"], userLogin::getCurrentUserID()));
+			if($clientSettings["settingsBlob"] == false)
+				$clientSettings["settingsBlob"] = "";
 			appLog("Returning Client settings for apikey:'".$args['apikey']."' and userid:".userLogin::getCurrentUserID(), appLog_DEBUG);
 			restTools::sendResponse($clientSettings,200, JSON_MIME_TYPE);
 
