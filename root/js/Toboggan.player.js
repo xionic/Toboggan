@@ -1079,7 +1079,10 @@
 		var timeout;
 
 		$("#showBandwidth").mouseenter(function(){
-			$("#bandwidthInformation").fadeIn();
+			$("#bandwidthInformation")
+				.html("<div class='loading'><p><img src='img/ajax.gif' class='throbber' /></p><p>Loading...</p></div>")
+				.fadeIn();
+			
 			clearInterval($("#bandwidthInformation").attr("data-timeoutId"));
 			timeout = setImmediateInterval(function(){
 					$.ajax({

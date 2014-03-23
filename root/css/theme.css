@@ -423,6 +423,11 @@ img.loading
 	margin-left: 0em;
 }
 
+div.loading {
+	text-align: center;
+	padding: 3ex 5em;
+}
+
 /**
 	Logged out dialog tweaks
 */	
