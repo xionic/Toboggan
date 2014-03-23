@@ -469,11 +469,20 @@
 			}
 			else if($(this).hasClass("metadata"))
 			{
-			
 				var trackObject = $(rightClickedObject).find(".trackObject");
 				var		remote_filename = $(trackObject).attr("data-filename"),
 						remote_directory = $(trackObject).attr("data-dir"),
 						remote_mediaSource = $(trackObject).attr("data-media_source");
+				var modalDialog = $("<div></div>")
+						.html("<div class='loading'><p><img src='img/ajax.gif' class='throbber' /></p><p>Loading...</p></div>")
+						.dialog({
+							autoOpen: true,
+							title: "File Information",
+							modal: true,
+							draggable: false,
+							width: '75%',
+							position: ["center", 50]
+						});
 			
 				$.ajax({
 					cache: false,
@@ -496,7 +505,7 @@
 						console.log(data);
 						
 						var innerHTML = $("<div/>");
-						if(data.tags.albumart)
+						if (data.tags.albumart)
 						{
 							innerHTML.append($("<img />")
 												.attr("src","data:image/jpg;base64,"+data.tags.albumart)
@@ -506,24 +515,32 @@
 						}
 						for (x in data)
 						{
-							innerHTML.append($("<div class='trackMetadata'/>")
-												.append($("<p/>").text(x))
-												.append($("<ul/>")
-													.append($("<li/>")
-															.text(JSON.stringify(data[x])))
-												)
-											);
+							if (x === "tags")
+							{
+								for (tag in data[x])
+								{
+									if (!data[x][tag])
+										continue;
+									innerHTML.append($("<div class='trackMetadata'/>")
+													.append($("<p/>").text(tag))
+													.append($("<ul/>")
+														.append($("<li/>")
+																.text(data[x][tag]))
+													)
+												);
+								}
+							}
+							else
+								innerHTML.append($("<div class='trackMetadata'/>")
+													.append($("<p/>").text(x))
+													.append($("<ul/>")
+														.append($("<li/>")
+																.text(JSON.stringify(data[x])))
+													)
+												);
 						}
 						
-						var $d = $("<div></div>")
-									.html(innerHTML)
-									.dialog({
-										autoOpen: true,
-										title: "File Information",
-										modal: true,
-										draggable: false,
-										width: '75%'
-									});
+						modalDialog.html(innerHTML);
 					},
 				});	
 			}
