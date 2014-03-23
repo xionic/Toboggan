@@ -828,6 +828,21 @@
 		});
 	}
 	
+	/** 
+		Used to download content by hackery
+	*/
+	function downloadURL(url) {
+		var hiddenIFrameID = 'hiddenDownloader',
+			iframe = document.getElementById(hiddenIFrameID);
+		if (iframe === null) {
+			iframe = document.createElement('iframe');
+			iframe.id = hiddenIFrameID;
+			iframe.style.display = 'none';
+			document.body.appendChild(iframe);
+		}
+		iframe.src = url;
+	};
+	
 	/**
 		Refactored out of the click handler into a separate function :)
 	*/
@@ -848,7 +863,7 @@
 				"&apikey="+apikey+
 				"&apiver="+apiversion;
 				
-		window.location = url;
+		downloadURL(url);
 	}
 	
 	/**
