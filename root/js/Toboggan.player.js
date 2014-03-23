@@ -218,7 +218,8 @@
 		});
 	
 		configureContextMenuCallbacks();
-	
+		
+		//TODO: Flip this to the ping method, pretty I/O heavy for no good reason currently
 		$.ajax({
 			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveClientSettings&apikey="+apikey+"&apiver="+apiversion,
 			success:  function(data, textStatus, xhr) {
@@ -226,11 +227,6 @@
 			    	username: xhr.getResponseHeader("X-AuthenticatedUsername"),
 			    	idUser: xhr.getResponseHeader("X-AuthenticatedUserID")
 			    };
-			    if(data && data.settingsBlob) {
-			    	clientSettings = JSON.parse(data.settingsBlob);
-			    	if(!clientSettings)
-			    		clientSettings = {};
-			    }
 				initialisePage(initObject);
 			},
 			error: function() {
@@ -242,6 +238,26 @@
 		//$("#jPlayerInspector").show().jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
 	});
 
+	function loadClientSettings(successCallback)
+	{
+		$.ajax({
+			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveClientSettings&apikey="+apikey+"&apiver="+apiversion,
+			success:  function(data, textStatus, xhr) {
+			    if(data && data.settingsBlob) {
+			    	clientSettings = JSON.parse(data.settingsBlob);
+			    	if(!clientSettings)
+			    		clientSettings = {};
+					
+					if(successCallback)
+						successCallback();
+			    }
+			},
+			error: function() {
+				doLogin();
+			}
+		});
+	}
+	
 	function saveClientSettings()
 	{
 		$.ajax({
@@ -262,20 +278,11 @@
 	}
 
 	/**
-		Load the now playing list from HTML5 LocalStorage
+		Load the now-playing list
 	*/
 	function loadNowPlaying()
 	{
-		var nowPlayingKey = "nowPlaying-" + currentUserID + "-" + window.location.host + window.location.pathname,
-			nowPlaying = localStorage.getItem(nowPlayingKey);
-		
-		var trackList = [];
-		
-		if(typeof nowPlaying != "undefined" && !nowPlaying)
-			trackList = $.parseJSON(nowPlaying);
-		
-		if(clientSettings.nowPlaying)
-			trackList = clientSettings.nowPlaying;
+		var trackList = clientSettings.nowPlaying ? clientSettings.nowPlaying : [];
 		
 		if(!trackList)
 			return;
@@ -294,8 +301,7 @@
 	function saveNowPlaying()
 	{
 		var trackList = $("#playlistTracks li a.playNow"),
-			nowPlaying = [],
-			nowPlayingKey = nowPlayingKey = "nowPlaying-" + currentUserID + "-" + window.location.host + window.location.pathname;
+			nowPlaying = [];
 		
 		for(var x=0; x<trackList.length; ++x)
 		{
@@ -308,7 +314,6 @@
 			});
 		}
 		
-		localStorage.setItem(nowPlayingKey, JSON.stringify(nowPlaying));
 		clientSettings.nowPlaying = nowPlaying;
 		saveClientSettings();
 	}
@@ -1035,7 +1040,6 @@
 				alert("Login Failed");							
 			}
 		});
-		
 	}
 	
 	function initialisePage(data)
@@ -1047,11 +1051,10 @@
 		$("#loginFormContainer").dialog("close");
 				
 		setupUserTrafficStatsUpdate();
-		
-		//load the nowPlaying from localStorage
-		loadNowPlaying();
-				
 		getMediaSources();
+		loadClientSettings(function(){
+			loadNowPlaying();
+		});
 	}
 	
 	function setupUserTrafficStatsUpdate()
