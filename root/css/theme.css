@@ -37,10 +37,12 @@ $playerControlsColour2 = rgba(40,40,40,1);
 
 $textShadowHighlight = #111 1px -1px 1px;
 
+$bodyBackground = url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
+
 */
 
 body {
-	background: url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
+	background: $bodyBackground;
 }
 
 #centreContainer
@@ -271,7 +273,7 @@ html, #loginForm
 #trackListHeaderContainer 
 {
 	//background: $PanelColour2;
-	background: url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
+	background: $bodyBackground;
 }
 
 a.jPlaying {
@@ -526,7 +528,7 @@ div.loading {
 {
 	border: 1px solid black;
 	box-shadow: 0px 0px 4px rgba(255,255,255,0.5);
-	background: url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
+	background: $bodyBackground;
 	padding: 1ex;
 	border-radius: 3px;
 }
