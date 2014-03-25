@@ -41,6 +41,15 @@ $textShadowHighlight = #111 1px -1px 1px;
 
 $bodyBackground = url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
 $containerBorder = 1px solid black;
+
+$trimBorderColour = 1px solid grey;
+
+$usedBarColour = #D00004;
+$remainingBarColour = #404040;
+
+$contextMenuBorder = 1px solid #aaa;
+$contextMenuBackground = black;
+$contextMenuHighlight = #333;
 */
 
 body {
@@ -128,8 +137,7 @@ html, #loginForm
 #playlistTracks
 {
 	min-height: 2.2ex;
-	border: 0px solid grey;
-//	padding	: 1ex;
+	border: 0px;
 	position: absolute;
 	top: 0px;
 	left: 0px;
@@ -140,8 +148,8 @@ html, #loginForm
 
 #topBarContainer, #trackListAddControls
 {
-	border-bottom: 1px solid grey;
-	border-top: 1px solid grey;
+	border-bottom: $trimBorderColour;
+	border-top: $trimBorderColour;
 	background: $PanelColour2;
 	background: -o-linear-gradient($PanelColour2,$PanelColour1);
 	background: -webkit-linear-gradient($PanelColour2,$PanelColour1);
@@ -329,15 +337,15 @@ select#mediaSourceSelector
 	display: block;
 	width: 100%;
 	border: 0px;
-	background: rgba(0,0,0,0);
+	background: $ButtonColour1;
 	color: inherit;
-	padding: 0ex 0ex 0ex 0ex;
+	padding: 0px;
 	font-weight: bold;
 }
 
 select#mediaSourceSelector option 
 {
-	background: black;
+	background: $ButtonColour1;
 	color: inherit;
 }
 
@@ -398,7 +406,7 @@ select#mediaSourceSelector option
 #searchContainer select,  
 #searchContainer span.selectWrapper
 {
-	border: 1px solid grey;
+	border: $trimBorderColour;
 	border-radius: 5px;
 	background: $ButtonColour1;
 	background: -o-linear-gradient($ButtonColour1,$ButtonColour2);
@@ -516,31 +524,31 @@ div.loading
 /** Context Menu Stuff*/
 .vmenu
 {
-	border:1px solid #aaa;
+	border: $contextMenuBorder;
 	position:absolute;
 	display:none;
 	font-size:0.75em;
 }
 .vmenu .first_li span
 {
-	width:100px;
-	display:block;
-	padding:5px 10px;
-	cursor:pointer
+	width: 100px;
+	display: block;
+	padding: 5px 10px;
+	cursor: pointer
 }
 .vmenu .inner_li
 {
 	display:none;
 	margin-left:120px;
 	position:absolute;
-	border:1px solid #aaa;
+	border: $contextMenuBorder;
 	border-left:1px solid #ccc;
 	margin-top:-28px;
 }
 .vmenu .sep_li
 {
-	border-top: 1px ridge #aaa;
-	margin:5px 0
+	border-top: $contextMenuBorder;
+	margin:5px 0;
 }
 .vmenu .fill_title
 {
@@ -551,12 +559,12 @@ div.loading
 
 .vmenu, .vmenu .inner_li
 {
-	background: black;
+	background: $contextMenuBackground;
 }
 
 .vmenu .first_li:hover, .vmenu .inner_li span:hover
 {
-	background: #333;
+	background: $contextMenuHighlight;
 }
 
 .vmenu .hr
@@ -582,10 +590,10 @@ div.loading
 {
 	text-align: center;
 	margin-top: 0px;
-	color: #D00004;
+	color: $usedBarColour;
 	font-weight: bold;
 	text-shadow: none;
-	border-bottom: 1px solid grey;
+	border-bottom: $trimBorderColour;
 }
 
 .bandwidthBar 
@@ -598,13 +606,13 @@ div.loading
 .usedBandwidth 
 {
 	display: inline-block;
-	background: #D00004;
+	background: $usedBarColour;
 	height: 100%;
 }
 
 .remainingBandwidth 
 {
 	display: inline-block;
-	background: #404040;
+	background: $remainingBarColour;
 	height: 100%;
 }
