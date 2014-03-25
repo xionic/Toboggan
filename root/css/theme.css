@@ -38,7 +38,7 @@ $playerControlsColour2 = rgba(40,40,40,1);
 $textShadowHighlight = #111 1px -1px 1px;
 
 $bodyBackground = url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
-
+$containerBorder = 1px solid black;
 */
 
 body {
@@ -89,19 +89,19 @@ html, #loginForm
 
 #playlistContainer
 {
-	border-left: 1px solid black;
+	border-left: $containerBorder;
 	box-sizing: border-box;
 }
 
 #folderbrowserContainer
 {
-	border-right: 1px solid black;
+	border-right: $containerBorder;
 	box-sizing: border-box;
 }
 
 #playlistContainer, #folderbrowserContainer
 {
-	background: none ;
+	background: none;
 }
 
 .playlistDropZoneActive 
@@ -143,6 +143,8 @@ html, #loginForm
 	background: $PanelColour2;
 	background: -o-linear-gradient($PanelColour2,$PanelColour1);
 	background: -webkit-linear-gradient($PanelColour2,$PanelColour1);
+	background: -moz-linear-gradient($PanelColour2,$PanelColour1);
+	background: linear-gradient($PanelColour2,$PanelColour1);
 	color: inherit;
 	font-size: x-small;
 }
@@ -155,6 +157,8 @@ html, #loginForm
 	background: $topBarColour1;
 	background: -o-linear-gradient($topBarColour1,$topBarColour2);
 	background: -webkit-linear-gradient($topBarColour1,$topBarColour2);
+	background: -moz-linear-gradient($topBarColour1,$topBarColour2);
+	background: linear-gradient($topBarColour1,$topBarColour2);
 	color: white;
 }
 
@@ -207,25 +211,24 @@ html, #loginForm
 	line-height: normal;
 	vertical-align: middle;
 }
-/*
-#tracklist li input.trackCheckbox, #tracklist li a, #tracklist li span.trackName {
-	vertical-align: text-top;
-}
-*/
-#playlistTracks li a {
+
+#playlistTracks li a
+{
 	white-space: nowrap;
 	overflow-x: hidden;
 	text-overflow: ellipsis;
 	overflow: visible;
 }
 
-#playlistTracks li a.removeFromPlaylist {
+#playlistTracks li a.removeFromPlaylist
+{
 	position: absolute;
 	left: 0.25em;
 	top: 0.5ex;
 }
 
-#playlistTracks li a.trackObject {
+#playlistTracks li a.trackObject
+{
 	display: inline;
 	text-overflow: ellipsis;
 	overflow-x: visible;
@@ -244,6 +247,8 @@ html, #loginForm
 	background: $liOddColour1;
 	background: -o-linear-gradient($liOddColour1,$liOddColour2);
 	background: -webkit-linear-gradient($liOddColour1,$liOddColour2);
+	background: -moz-linear-gradient($liOddColour1,$liOddColour2);
+	background: linear-gradient($liOddColour1,$liOddColour2);
 }
 
 #playlistTracks
@@ -274,18 +279,18 @@ html, #loginForm
 
 #trackListHeaderContainer 
 {
-	//background: $PanelColour2;
 	background: $bodyBackground;
 }
 
-a.jPlaying {
+a.jPlaying 
+{
 	font-weight: bold;
 	color: $PlayingTrackColour !important;
 	text-shadow: $textShadowHighlight;
 }
 
-#jquery_jplayer_1, #centerPlayerContainer {
-//	border: 1px solid grey;
+#jquery_jplayer_1, #centerPlayerContainer 
+{
 	background: black;
 }
 
@@ -427,7 +432,8 @@ img.loading
 	margin-left: 0em;
 }
 
-div.loading {
+div.loading 
+{
 	text-align: center;
 	padding: 3ex 5em;
 }
@@ -481,11 +487,13 @@ div.loading {
 /**
 	Trick for "zebra"ing the tables
 **/
-.dynatree-container {
+.dynatree-container 
+{
 	background-image: url("../img/tree-zebra.png");
 	background-repeat: repeat;
 }
-.dynatree-title {	//shift the text down a smidge
+.dynatree-title 
+{	//shift the text down a smidge
 	padding-top: 3px;
 	font-size: smaller;
 	cursor: pointer;
@@ -510,18 +518,22 @@ div.loading {
 .vmenu .sep_li{border-top: 1px ridge #aaa;margin:5px 0}
 .vmenu .fill_title{font-size:11px;font-weight:bold;/height:15px;/overflow:hidden;word-wrap:break-word;}
 
-.vmenu, .vmenu .inner_li {
+.vmenu, .vmenu .inner_li
+{
 	background: black;
 }
 
-.vmenu .first_li:hover, .vmenu .inner_li span:hover {
+.vmenu .first_li:hover, .vmenu .inner_li span:hover
+{
 	background: #333;
 }
 
-.vmenu .hr {
+.vmenu .hr
+{
 	border-bottom: 1px solid #aaa;
 }
-.vmenu .hr span {
+.vmenu .hr span
+{
 	padding: 0;
 	margin: 0;
 }
@@ -535,7 +547,8 @@ div.loading {
 	border-radius: 3px;
 }
 
-.totallimit {
+.totallimit 
+{
 	text-align: center;
 	margin-top: 0px;
 	color: #D00004;
@@ -544,19 +557,22 @@ div.loading {
 	border-bottom: 1px solid grey;
 }
 
-.bandwidthBar {
+.bandwidthBar 
+{
 	width: 100%;
 	height: 1ex;
 	margin-bottom: 2ex;
 }
 
-.usedBandwidth {
+.usedBandwidth 
+{
 	display: inline-block;
 	background: #D00004;
 	height: 100%;
 }
 
-.remainingBandwidth {
+.remainingBandwidth 
+{
 	display: inline-block;
 	background: #404040;
 	height: 100%;
