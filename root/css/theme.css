@@ -55,6 +55,8 @@ body {
 	background: $playerControlsColour1;
 	background: -o-linear-gradient($playerControlsColour1,$playerControlsColour2);
 	background: -webkit-linear-gradient($playerControlsColour1,$playerControlsColour2);	
+	background: -moz-linear-gradient($playerControlsColour1,$playerControlsColour2);	
+	background: linear-gradient($playerControlsColour1,$playerControlsColour2);	
 }
 
 div.containerPadding 
