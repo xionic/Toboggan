@@ -1,5 +1,4 @@
 /**
-
 $PanelColour1 = rgba(7,7,7,1);
 $PanelColour2 = rgba(25,25,25,1);
 $BasePanelColour = #fafafa;
@@ -50,6 +49,12 @@ $remainingBarColour = #404040;
 $contextMenuBorder = 1px solid #aaa;
 $contextMenuBackground = black;
 $contextMenuHighlight = #333;
+
+$playlistDropZoneActiveOutline = 1px solid rgba(208,0,4,0.5);
+$playlistDropZoneActiveBackground = rgba(208,0,4,0.05);
+$playlistDropZoneHoverOutline = 1px solid rgba(208,0,4,0.8);
+$playlistDropZoneHoverBackground = rgba(208,0,4,0.1);
+
 */
 
 body {
@@ -118,15 +123,15 @@ html, #loginForm
 .playlistDropZoneActive 
 {
 	overflow-x: hidden;
-	outline: 1px solid rgba(208,0,4,0.5);
-	background: rgba(208,0,4,0.05);
+	outline: $playlistDropZoneActiveOutline;
+	background: $playlistDropZoneActiveBackground;
 }
 
 .playlistDropZoneHover
 {
 	overflow-x: hidden;
-	outline: 1px solid rgba(208,0,4,0.8);
-	background: rgba(208,0,4,0.1);
+	outline: $playlistDropZoneHoverOutline;
+	background: $playlistDropZoneHoverBackground;
 }
 
 #centreContainer 
