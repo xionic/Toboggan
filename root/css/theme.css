@@ -41,6 +41,8 @@ $textShadowHighlight = #111 1px -1px 1px;
 $bodyBackground = url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
 $containerBorder = 1px solid black;
 
+$boxShadowStyle = 0px 0px 4px rgba(255,255,255,0.5);
+
 $trimBorderColour = 1px solid grey;
 
 $usedBarColour = #D00004;
@@ -548,7 +550,7 @@ div.loading
 	position:absolute;
 	border: $contextMenuBorder;
 	border-left: $contextMenuBorder;
-	margin-top:-28px;
+	margin-top:-2em;
 }
 .vmenu .sep_li
 {
@@ -585,7 +587,7 @@ div.loading
 #bandwidthInformation 
 {
 	border: 1px solid black;
-	box-shadow: 0px 0px 4px rgba(255,255,255,0.5);
+	box-shadow: $boxShadowStyle; 
 	background: $bodyBackground;
 	padding: 1ex;
 	border-radius: 3px;
