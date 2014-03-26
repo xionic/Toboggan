@@ -547,7 +547,7 @@ div.loading
 	margin-left:120px;
 	position:absolute;
 	border: $contextMenuBorder;
-	border-left:1px solid #ccc;
+	border-left: $contextMenuBorder;
 	margin-top:-28px;
 }
 .vmenu .sep_li
