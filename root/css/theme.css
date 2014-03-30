@@ -31,50 +31,46 @@ $liSubSirEvenColour2 = rgba(245,245,245,0.2);
 $liSubSirOddColour1 = rgba(30,30,30,0.2);
 $liSubSirOddColour2 = rgba(15,15,15,0.2);
 
-$topBarColour1 = rgba(40,40,40,1);
-$topBarColour2 = rgba(30,30,30,1);
-$playerControlsColour1 = rgba(0,0,0,1);
-$playerControlsColour2 = rgba(40,40,40,1);
+$TopBarColour1 = rgba(40,40,40,1);
+$TopBarColour2 = rgba(30,30,30,1);
+$PlayerControlsColour1 = rgba(0,0,0,1);
+$PlayerControlsColour2 = rgba(40,40,40,1);
 
-$textShadowHighlight = #111 1px -1px 1px;
+$TextShadowHighlight = #111 1px -1px 1px;
 
-$bodyBackground = url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
-$containerBorder = 1px solid black;
+$BodyBackground = url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
+$ContainerBorder = 1px solid black;
+$LeftRightContainerBorderBottom = 3px solid black;
 
-$boxShadowStyle = 0px 0px 4px rgba(255,255,255,0.5);
+$BoxShadowStyle = 0px 0px 4px rgba(255,255,255,0.5);
 
-$trimBorderColour = 1px solid grey;
+$TrimBorderColour = 1px solid grey;
+$BandwidthInfoBorder = 1px solid black;
+$UsedBarColour = #D00004;
+$RemainingBarColour = #404040;
 
-$usedBarColour = #D00004;
-$remainingBarColour = #404040;
+$ContextMenuBorder = 1px solid #aaa;
+$ContextMenuBackground = black;
+$ContextMenuHighlight = #333;
 
-$contextMenuBorder = 1px solid #aaa;
-$contextMenuBackground = black;
-$contextMenuHighlight = #333;
-
-$playlistDropZoneActiveOutline = 1px solid rgba(208,0,4,0.5);
-$playlistDropZoneActiveBackground = rgba(208,0,4,0.05);
-$playlistDropZoneHoverOutline = 1px solid rgba(208,0,4,0.8);
-$playlistDropZoneHoverBackground = rgba(208,0,4,0.1);
+$PlaylistDropZoneActiveOutline = 1px solid rgba(208,0,4,0.5);
+$PlaylistDropZoneActiveBackground = rgba(208,0,4,0.05);
+$PlaylistDropZoneHoverOutline = 1px solid rgba(208,0,4,0.8);
+$PlaylistDropZoneHoverBackground = rgba(208,0,4,0.1);
 
 */
 
 body {
-	background: $bodyBackground;
-}
-
-#centreContainer
-{
-
+	background: $BodyBackground;
 }
 
 #playerControlsContainer
 {
-	background: $playerControlsColour1;
-	background: -o-linear-gradient($playerControlsColour1,$playerControlsColour2);
-	background: -webkit-linear-gradient($playerControlsColour1,$playerControlsColour2);	
-	background: -moz-linear-gradient($playerControlsColour1,$playerControlsColour2);	
-	background: linear-gradient($playerControlsColour1,$playerControlsColour2);	
+	background: $PlayerControlsColour1;
+	background: -o-linear-gradient($PlayerControlsColour1,$PlayerControlsColour2);
+	background: -webkit-linear-gradient($PlayerControlsColour1,$PlayerControlsColour2);	
+	background: -moz-linear-gradient($PlayerControlsColour1,$PlayerControlsColour2);	
+	background: linear-gradient($PlayerControlsColour1,$PlayerControlsColour2);	
 }
 
 div.containerPadding 
@@ -102,18 +98,18 @@ html, #loginForm
 
 #folderbrowserContainer, #playlistContainer 
 {
-	border-bottom: 3px solid black;
+	border-bottom: $LeftRightContainerBorderBottom;
 }
 
 #playlistContainer
 {
-	border-left: $containerBorder;
+	border-left: $ContainerBorder;
 	box-sizing: border-box;
 }
 
 #folderbrowserContainer
 {
-	border-right: $containerBorder;
+	border-right: $ContainerBorder;
 	box-sizing: border-box;
 }
 
@@ -125,15 +121,15 @@ html, #loginForm
 .playlistDropZoneActive 
 {
 	overflow-x: hidden;
-	outline: $playlistDropZoneActiveOutline;
-	background: $playlistDropZoneActiveBackground;
+	outline: $PlaylistDropZoneActiveOutline;
+	background: $PlaylistDropZoneActiveBackground;
 }
 
 .playlistDropZoneHover
 {
 	overflow-x: hidden;
-	outline: $playlistDropZoneHoverOutline;
-	background: $playlistDropZoneHoverBackground;
+	outline: $PlaylistDropZoneHoverOutline;
+	background: $PlaylistDropZoneHoverBackground;
 }
 
 #centreContainer 
@@ -155,8 +151,8 @@ html, #loginForm
 
 #topBarContainer, #trackListAddControls
 {
-	border-bottom: $trimBorderColour;
-	border-top: $trimBorderColour;
+	border-bottom: $TrimBorderColour;
+	border-top: $TrimBorderColour;
 	background: $PanelColour2;
 	background: -o-linear-gradient($PanelColour2,$PanelColour1);
 	background: -webkit-linear-gradient($PanelColour2,$PanelColour1);
@@ -171,11 +167,11 @@ html, #loginForm
 	border-bottom: 0px;
 	padding: 0ex 1ex;
 	text-align: right;
-	background: $topBarColour1;
-	background: -o-linear-gradient($topBarColour1,$topBarColour2);
-	background: -webkit-linear-gradient($topBarColour1,$topBarColour2);
-	background: -moz-linear-gradient($topBarColour1,$topBarColour2);
-	background: linear-gradient($topBarColour1,$topBarColour2);
+	background: $TopBarColour1;
+	background: -o-linear-gradient($TopBarColour1,$TopBarColour2);
+	background: -webkit-linear-gradient($TopBarColour1,$TopBarColour2);
+	background: -moz-linear-gradient($TopBarColour1,$TopBarColour2);
+	background: linear-gradient($TopBarColour1,$TopBarColour2);
 	color: $HeaderFontColour;
 }
 
@@ -278,7 +274,7 @@ html, #loginForm
 {
 	font-weight: bold;
 	color: $CurrentlySelectedColour;
-	text-shadow: $textShadowHighlight;
+	text-shadow: $TextShadowHighlight;
 }
 #folderlist .currentlySelected ul
 {
@@ -296,14 +292,14 @@ html, #loginForm
 
 #trackListHeaderContainer 
 {
-	background: $bodyBackground;
+	background: $BodyBackground;
 }
 
 a.jPlaying 
 {
 	font-weight: bold;
 	color: $PlayingTrackColour !important;
-	text-shadow: $textShadowHighlight;
+	text-shadow: $TextShadowHighlight;
 }
 
 #jquery_jplayer_1, #centerPlayerContainer 
@@ -413,7 +409,7 @@ select#mediaSourceSelector option
 #searchContainer select,  
 #searchContainer span.selectWrapper
 {
-	border: $trimBorderColour;
+	border: $TrimBorderColour;
 	border-radius: 5px;
 	background: $ButtonColour1;
 	background: -o-linear-gradient($ButtonColour1,$ButtonColour2);
@@ -531,7 +527,7 @@ div.loading
 /** Context Menu Stuff*/
 .vmenu
 {
-	border: $contextMenuBorder;
+	border: $ContextMenuBorder;
 	position:absolute;
 	display:none;
 	font-size:0.75em;
@@ -548,13 +544,13 @@ div.loading
 	display:none;
 	margin-left:120px;
 	position:absolute;
-	border: $contextMenuBorder;
-	border-left: $contextMenuBorder;
+	border: $ContextMenuBorder;
+	border-left: $ContextMenuBorder;
 	margin-top:-2em;
 }
 .vmenu .sep_li
 {
-	border-top: $contextMenuBorder;
+	border-top: $ContextMenuBorder;
 	margin:5px 0;
 }
 .vmenu .fill_title
@@ -566,17 +562,17 @@ div.loading
 
 .vmenu, .vmenu .inner_li
 {
-	background: $contextMenuBackground;
+	background: $ContextMenuBackground;
 }
 
 .vmenu .first_li:hover, .vmenu .inner_li span:hover
 {
-	background: $contextMenuHighlight;
+	background: $ContextMenuHighlight;
 }
 
 .vmenu .hr
 {
-	border-bottom: 1px solid #aaa;
+	border-bottom: $ContextMenuBorder;
 }
 .vmenu .hr span
 {
@@ -586,9 +582,9 @@ div.loading
 
 #bandwidthInformation 
 {
-	border: 1px solid black;
-	box-shadow: $boxShadowStyle; 
-	background: $bodyBackground;
+	border: $BandwidthInfoBorder;
+	box-shadow: $BoxShadowStyle; 
+	background: $BodyBackground;
 	padding: 1ex;
 	border-radius: 3px;
 }
@@ -597,10 +593,10 @@ div.loading
 {
 	text-align: center;
 	margin-top: 0px;
-	color: $usedBarColour;
+	color: $UsedBarColour;
 	font-weight: bold;
 	text-shadow: none;
-	border-bottom: $trimBorderColour;
+	border-bottom: $TrimBorderColour;
 }
 
 .bandwidthBar 
@@ -613,13 +609,13 @@ div.loading
 .usedBandwidth 
 {
 	display: inline-block;
-	background: $usedBarColour;
+	background: $UsedBarColour;
 	height: 100%;
 }
 
 .remainingBandwidth 
 {
 	display: inline-block;
-	background: $remainingBarColour;
+	background: $RemainingBarColour;
 	height: 100%;
 }
