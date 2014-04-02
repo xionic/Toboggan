@@ -11,21 +11,21 @@ $ButtonFontColour = black;
 $FontColour = #111;
 $HeaderFontColour = black;
 
-$PlayingTrackColour = #d00004;
-$CurrentlySelectedColour = #d00004;
-$CurrentFolderTitleColour = #d00004;
-$ControlLinkColour = #d00004;
+$PlayingTrackColour = #fa3701;
+$CurrentlySelectedColour = #fa3701;
+$CurrentFolderTitleColour = #fa3701;
+$ControlLinkColour = #fa3701;
 
-$InlineButtonColour = #d00004 !important;
+$InlineButtonColour = #fa3701 !important;
 $InlineButtonBGColour = #efefef;
-$InlineButtonGradientBGColour = linear-gradient(rgba(251,251,251,0.9), rgba(234,234,234,0.9));
+$InlineButtonGradientBGColour = linear-gradient(rgba(234,234,234,0.9), rgba(234,234,234,0.9));
 $InlineButtonBorderColour = #606060;
 $InlineButtonTextShadowHighlight = #ccc 1px -1px 1px;
 
 $liEvenColour1 	= rgba(225,225,225,0.4);
-$liEvenColour2 	= rgba(221,221,221,0.4);
-$liOddColour1 	= rgba(251,251,251,0.9);
-$liOddColour2 	= rgba(234,234,234,0.9);
+$liEvenColour2 	= rgba(225,225,225,0.4);
+$liOddColour1 	= rgba(225,225,225,0.9);
+$liOddColour2 	= rgba(225,225,225,0.9);
 
 $liSubSirEvenColour1 = rgba(255,255,255,0.2); 
 $liSubSirEvenColour2 = rgba(245,245,245,0.2);
@@ -47,8 +47,8 @@ $BoxShadowStyle = 0px 0px 4px rgba(0,0,0,0.5);
 
 $TrimBorderColour = 1px solid grey;
 $BandwidthInfoBorder = 1px solid black;
-$BandwidthBorderRadius = 3px;
-$UsedBarColour = #D00004;
+$BandwidthBorderRadius = 0px;
+$UsedBarColour = #fa3701;
 $RemainingBarColour = #404040;
 
 $ContextMenuBorder = 1px solid black;
@@ -419,7 +419,7 @@ select#mediaSourceSelector option
 #searchContainer span.selectWrapper
 {
 	border: $TrimBorderColour;
-	border-radius: 5px;
+	border-radius: 0px;
 	background: $ButtonColour1;
 	background: -o-linear-gradient($ButtonColour1,$ButtonColour2);
 	background: -webkit-linear-gradient($ButtonColour1,$ButtonColour2);

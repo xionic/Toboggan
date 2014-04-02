@@ -4,7 +4,7 @@
 
 	<!-- jPlayer theme -->
 	<link href='./css/jQuery.jPlayer.Theme/jplayer.Toboggan.css' rel='stylesheet' type='text/css' />
-	<link href='./css/jQuery-ui/custom-theme/jquery-ui-1.8.21.custom.css' rel='stylesheet' type='text/css' />
+	<link href='./css/jQuery-ui/mango/jquery-ui.css' rel='stylesheet' type='text/css' />
 	<link href='./css/jQuery.dynatree/default.css' rel='stylesheet' type='text/css' />
 
 	<!-- internal stylesheets -->
