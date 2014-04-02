@@ -700,8 +700,8 @@
 		}
 		else
 		{
-			$("#centerPlayerContainer").height(3);
-			$("#centerTrackContainer").css({ 'bottom':"3px"});
+			$("#centerPlayerContainer").height(0);
+			$("#centerTrackContainer").css({ 'bottom':"0px"});
 		}
 
 	}

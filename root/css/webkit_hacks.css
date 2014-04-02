@@ -1,7 +1,7 @@
 //webkit doesn't support transparent backgrounds on select boxes, so hack to black
 @media screen and (-webkit-min-device-pixel-ratio:0) {
 	select {
-		background: black !important;
+//		background: black !important;
 	}
 	
 	input:active, input:focus {

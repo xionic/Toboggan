@@ -1,57 +1,60 @@
 /**
-$PanelColour1 = rgba(7,7,7,1);
-$PanelColour2 = rgba(25,25,25,1);
+$PanelColour1 = rgba(227,227,227,1);
+$PanelColour2 = rgba(225,225,225,1);
 $BasePanelColour = #fafafa;
 
-$ButtonColour1 = rgba(30,30,30,1);
-$ButtonColour2 = rgba(17,17,17,1);
+$ButtonColour1 = rgba(230,230,230,1);
+$ButtonColour2 = rgba(217,217,217,1);
 
-$ButtonFontColour = white;
+$ButtonFontColour = black;
 
-$FontColour = #eee;
-$HeaderFontColour = white;
+$FontColour = #111;
+$HeaderFontColour = black;
 
 $PlayingTrackColour = #d00004;
 $CurrentlySelectedColour = #d00004;
 $CurrentFolderTitleColour = #d00004;
+$ControlLinkColour = #d00004;
 
 $InlineButtonColour = #d00004 !important;
-$InlineButtonBGColour = #eee;
-$InlineButtonOperaBGColour = -o-linear-gradient(#efefef, #9f9f9f);
+$InlineButtonBGColour = #efefef;
+$InlineButtonGradientBGColour = linear-gradient(rgba(251,251,251,0.9), rgba(234,234,234,0.9));
 $InlineButtonBorderColour = #606060;
-$InlineButtonTextShadowHighlight = #666 1px -1px 1px;
+$InlineButtonTextShadowHighlight = #ccc 1px -1px 1px;
 
-$liEvenColour1 	= rgba(5,5,5,0.4);
-$liEvenColour2 	= rgba(21,21,21,0.4);
-$liOddColour1 	= rgba(51,51,51,0.9);
-$liOddColour2 	= rgba(34,34,34,0.9);
+$liEvenColour1 	= rgba(225,225,225,0.4);
+$liEvenColour2 	= rgba(221,221,221,0.4);
+$liOddColour1 	= rgba(251,251,251,0.9);
+$liOddColour2 	= rgba(234,234,234,0.9);
 
 $liSubSirEvenColour1 = rgba(255,255,255,0.2); 
 $liSubSirEvenColour2 = rgba(245,245,245,0.2);
-$liSubSirOddColour1 = rgba(30,30,30,0.2);
-$liSubSirOddColour2 = rgba(15,15,15,0.2);
+$liSubSirOddColour1 = rgba(230,230,230,0.2);
+$liSubSirOddColour2 = rgba(215,215,215,0.2);
 
-$TopBarColour1 = rgba(40,40,40,1);
-$TopBarColour2 = rgba(30,30,30,1);
-$PlayerControlsColour1 = rgba(0,0,0,1);
-$PlayerControlsColour2 = rgba(40,40,40,1);
+$TopBarColour1 = rgba(240,240,240,1);
+$TopBarColour2 = rgba(230,230,230,1);
+$PlayerControlsColour1 = rgba(220,220,220,1);
+$PlayerControlsColour2 = rgba(240,240,240,1);
 
-$TextShadowHighlight = #111 1px -1px 1px;
+$TextShadowHighlight = #ccc 1px -1px 1px;
 
 $BodyBackground = url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
 $ContainerBorder = 1px solid black;
-$LeftRightContainerBorderBottom = 3px solid black;
+$LeftRightContainerBorderBottom = 0px solid black;
 
-$BoxShadowStyle = 0px 0px 4px rgba(255,255,255,0.5);
+$BoxShadowStyle = 0px 0px 4px rgba(0,0,0,0.5);
 
 $TrimBorderColour = 1px solid grey;
 $BandwidthInfoBorder = 1px solid black;
+$BandwidthBorderRadius = 3px;
 $UsedBarColour = #D00004;
 $RemainingBarColour = #404040;
 
-$ContextMenuBorder = 1px solid #aaa;
-$ContextMenuBackground = black;
-$ContextMenuHighlight = #333;
+$ContextMenuBorder = 1px solid black;
+$ContextMenuBackground = url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
+$ContextMenuHighlight = #fff;
+$ContextMenuColour = black;
 
 $PlaylistDropZoneActiveOutline = 1px solid rgba(208,0,4,0.5);
 $PlaylistDropZoneActiveBackground = rgba(208,0,4,0.05);
@@ -88,7 +91,7 @@ html, #loginForm
 #playerControlsContainer, #topBarContainer
 {
 	color: $FontColour;
-	text-shadow: grey 1px -1px 1px;
+//	text-shadow: rgba(224,224,224,0.5) 1px -1px 1px;
 }
 
 #playlistContainer, #folderbrowserContainer, #centreContainer
@@ -175,10 +178,16 @@ html, #loginForm
 	color: $HeaderFontColour;
 }
 
+.ui-widget-content
+{
+	color: $HeaderFontColour;
+	background: white;
+}
+
 #topBarContainer a, #trackListAddControls a
 {
 	font-weight: bold;
-	color: inherit;
+	color: $ControlLinkColour;
 }
 
 #trackListAddControls
@@ -478,7 +487,10 @@ div.loading
 	border:	1px solid $InlineButtonBorderColour;
 	color: 	$InlineButtonColour;
 	background-color: $InlineButtonBGColour;
-	background: $InlineButtonOperaBGColour;
+	background: -o-$InlineButtonGradientBGColour;
+	background: -moz-$InlineButtonGradientBGColour;
+	background: -ie-$InlineButtonGradientBGColour;
+	background: $InlineButtonGradientBGColour;
 	
 	text-shadow: $InlineButtonTextShadowHighlight;
 	
@@ -528,9 +540,12 @@ div.loading
 .vmenu
 {
 	border: $ContextMenuBorder;
+	border-radius: $BandwidthBorderRadius;
+	box-shadow: $BoxShadowStyle;
 	position:absolute;
 	display:none;
 	font-size:0.75em;
+	color: $ContextMenuColour;
 }
 .vmenu .first_li span
 {
@@ -586,7 +601,7 @@ div.loading
 	box-shadow: $BoxShadowStyle; 
 	background: $BodyBackground;
 	padding: 1ex;
-	border-radius: 3px;
+	border-radius: $BandwidthBorderRadius;
 }
 
 .totallimit 
