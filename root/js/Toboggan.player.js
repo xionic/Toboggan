@@ -218,7 +218,8 @@
 		});
 	
 		configureContextMenuCallbacks();
-	
+		
+		//TODO: Flip this to the ping method, pretty I/O heavy for no good reason currently
 		$.ajax({
 			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveClientSettings&apikey="+apikey+"&apiver="+apiversion,
 			success:  function(data, textStatus, xhr) {
@@ -226,11 +227,6 @@
 			    	username: xhr.getResponseHeader("X-AuthenticatedUsername"),
 			    	idUser: xhr.getResponseHeader("X-AuthenticatedUserID")
 			    };
-			    if(data && data.settingsBlob) {
-			    	clientSettings = JSON.parse(data.settingsBlob);
-			    	if(!clientSettings)
-			    		clientSettings = {};
-			    }
 				initialisePage(initObject);
 			},
 			error: function() {
@@ -242,6 +238,26 @@
 		//$("#jPlayerInspector").show().jPlayerInspector({jPlayer:$("#jquery_jplayer_1")});
 	});
 
+	function loadClientSettings(successCallback)
+	{
+		$.ajax({
+			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveClientSettings&apikey="+apikey+"&apiver="+apiversion,
+			success:  function(data, textStatus, xhr) {
+			    if(data && data.settingsBlob) {
+			    	clientSettings = JSON.parse(data.settingsBlob);
+			    	if(!clientSettings)
+			    		clientSettings = {};
+					
+					if(successCallback)
+						successCallback();
+			    }
+			},
+			error: function() {
+				doLogin();
+			}
+		});
+	}
+	
 	function saveClientSettings()
 	{
 		$.ajax({
@@ -262,20 +278,11 @@
 	}
 
 	/**
-		Load the now playing list from HTML5 LocalStorage
+		Load the now-playing list
 	*/
 	function loadNowPlaying()
 	{
-		var nowPlayingKey = "nowPlaying-" + currentUserID + "-" + window.location.host + window.location.pathname,
-			nowPlaying = localStorage.getItem(nowPlayingKey);
-		
-		var trackList = [];
-		
-		if(typeof nowPlaying != "undefined" && !nowPlaying)
-			trackList = $.parseJSON(nowPlaying);
-		
-		if(clientSettings.nowPlaying)
-			trackList = clientSettings.nowPlaying;
+		var trackList = clientSettings.nowPlaying ? clientSettings.nowPlaying : [];
 		
 		if(!trackList)
 			return;
@@ -294,8 +301,7 @@
 	function saveNowPlaying()
 	{
 		var trackList = $("#playlistTracks li a.playNow"),
-			nowPlaying = [],
-			nowPlayingKey = nowPlayingKey = "nowPlaying-" + currentUserID + "-" + window.location.host + window.location.pathname;
+			nowPlaying = [];
 		
 		for(var x=0; x<trackList.length; ++x)
 		{
@@ -308,7 +314,6 @@
 			});
 		}
 		
-		localStorage.setItem(nowPlayingKey, JSON.stringify(nowPlaying));
 		clientSettings.nowPlaying = nowPlaying;
 		saveClientSettings();
 	}
@@ -464,11 +469,20 @@
 			}
 			else if($(this).hasClass("metadata"))
 			{
-			
 				var trackObject = $(rightClickedObject).find(".trackObject");
 				var		remote_filename = $(trackObject).attr("data-filename"),
 						remote_directory = $(trackObject).attr("data-dir"),
 						remote_mediaSource = $(trackObject).attr("data-media_source");
+				var modalDialog = $("<div></div>")
+						.html("<div class='loading'><p><img src='img/ajax.gif' class='throbber' /></p><p>Loading...</p></div>")
+						.dialog({
+							autoOpen: true,
+							title: "File Information",
+							modal: true,
+							draggable: false,
+							width: '75%',
+							position: ["center", 50]
+						});
 			
 				$.ajax({
 					cache: false,
@@ -491,34 +505,45 @@
 						console.log(data);
 						
 						var innerHTML = $("<div/>");
-						if(data.tags.albumart)
+						if (data.tags.albumart)
 						{
-							innerHTML.append($("<img />")
-												.attr("src","data:image/jpg;base64,"+data.tags.albumart)
-												.addClass("albumArt")
-											);
+							innerHTML.append(
+								$("<div class='albumArtWrapper'></div>").append(
+									$("<img />")
+									.attr("src","data:image/jpg;base64,"+data.tags.albumart)
+									.addClass("albumArt")
+								)
+							);
 							data.tags.albumart="";
 						}
 						for (x in data)
 						{
-							innerHTML.append($("<div class='trackMetadata'/>")
-												.append($("<p/>").text(x))
-												.append($("<ul/>")
-													.append($("<li/>")
-															.text(JSON.stringify(data[x])))
-												)
-											);
+							if (x === "tags")
+							{
+								for (tag in data[x])
+								{
+									if (!data[x][tag])
+										continue;
+									innerHTML.append($("<div class='trackMetadata'/>")
+													.append($("<p/>").text(tag))
+													.append($("<ul/>")
+														.append($("<li/>")
+																.text(data[x][tag]))
+													)
+												);
+								}
+							}
+							else
+								innerHTML.append($("<div class='trackMetadata'/>")
+													.append($("<p/>").text(x))
+													.append($("<ul/>")
+														.append($("<li/>")
+																.text(JSON.stringify(data[x])))
+													)
+												);
 						}
 						
-						var $d = $("<div></div>")
-									.html(innerHTML)
-									.dialog({
-										autoOpen: true,
-										title: "File Information",
-										modal: true,
-										draggable: false,
-										width: '75%'
-									});
+						modalDialog.html(innerHTML);
 					},
 				});	
 			}
@@ -803,6 +828,21 @@
 		});
 	}
 	
+	/** 
+		Used to download content by hackery
+	*/
+	function downloadURL(url) {
+		var hiddenIFrameID = 'hiddenDownloader',
+			iframe = document.getElementById(hiddenIFrameID);
+		if (iframe === null) {
+			iframe = document.createElement('iframe');
+			iframe.id = hiddenIFrameID;
+			iframe.style.display = 'none';
+			document.body.appendChild(iframe);
+		}
+		iframe.src = url;
+	};
+	
 	/**
 		Refactored out of the click handler into a separate function :)
 	*/
@@ -823,7 +863,7 @@
 				"&apikey="+apikey+
 				"&apiver="+apiversion;
 				
-		window.location = url;
+		downloadURL(url);
 	}
 	
 	/**
@@ -1035,7 +1075,6 @@
 				alert("Login Failed");							
 			}
 		});
-		
 	}
 	
 	function initialisePage(data)
@@ -1047,11 +1086,10 @@
 		$("#loginFormContainer").dialog("close");
 				
 		setupUserTrafficStatsUpdate();
-		
-		//load the nowPlaying from localStorage
-		loadNowPlaying();
-				
 		getMediaSources();
+		loadClientSettings(function(){
+			loadNowPlaying();
+		});
 	}
 	
 	function setupUserTrafficStatsUpdate()
@@ -1059,7 +1097,10 @@
 		var timeout;
 
 		$("#showBandwidth").mouseenter(function(){
-			$("#bandwidthInformation").fadeIn();
+			$("#bandwidthInformation")
+				.html("<div class='loading'><p><img src='img/ajax.gif' class='throbber' /></p><p>Loading...</p></div>")
+				.fadeIn();
+			
 			clearInterval($("#bandwidthInformation").attr("data-timeoutId"));
 			timeout = setImmediateInterval(function(){
 					$.ajax({

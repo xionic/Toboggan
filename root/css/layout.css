@@ -261,6 +261,11 @@ p label
 	width: auto;
 }
 
+.albumArtWrapper
+{
+	text-align: center;
+}
+
 #bandwidthInformation 
 {
 	position: fixed;
