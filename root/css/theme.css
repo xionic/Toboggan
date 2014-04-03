@@ -56,10 +56,10 @@ $ContextMenuBackground = url("jQuery-ui/custom-theme/images/ui-bg_diagonals-smal
 $ContextMenuHighlight = #fff;
 $ContextMenuColour = black;
 
-$PlaylistDropZoneActiveOutline = 1px solid rgba(208,0,4,0.5);
-$PlaylistDropZoneActiveBackground = rgba(208,0,4,0.05);
-$PlaylistDropZoneHoverOutline = 1px solid rgba(208,0,4,0.8);
-$PlaylistDropZoneHoverBackground = rgba(208,0,4,0.1);
+$PlaylistDropZoneActiveOutline = 1px solid rgba(250,55,1,0.5);
+$PlaylistDropZoneActiveBackground = rgba(250,55,1,0.05);
+$PlaylistDropZoneHoverOutline = 1px solid rgba(250,55,1,0.8);
+$PlaylistDropZoneHoverBackground = rgba(250,55,1,0.1);
 
 */
 
