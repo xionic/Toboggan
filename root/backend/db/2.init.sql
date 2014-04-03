@@ -1,29 +1,23 @@
-INSERT INTO schema_information(version) VALUES("103");
+INSERT INTO schema_information(version) VALUES("104");
 
-INSERT INTO fromExt(Extension, bitrateCmd, durationCmd) 
-	VALUES("mp3", "/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'",
-		"ffmpeg -i %path 2>&1 | sed -n -e 's/.*Duration: \([0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}\).*/\1/p' | awk -F ':' '{print ($1*3600)+($2*60)+$3}'");
-INSERT INTO toExt(Extension, MimeType, MediaType) VALUES("mp3", "audio/mp3", "a");
-INSERT INTO transcode_cmd(command) VALUES("ffmpeg -i %path -ab %bitrate -v 0 -f mp3 -");
-INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(1,1,1);
+--commands
+INSERT INTO Command(command, displayName) VALUES("ffmpeg -i %path -ab %bitrate -v 0 -f mp3 -", "Anything to mp3");
+INSERT INTO Command(command, displayName) VALUES("/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'", "Generic bitrate getter");
+INSERT INTO Command(command, displayName) VALUES("ffmpeg -i %path 2>&1 | sed -n -e 's/.*Duration: \([0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}\).*/\1/p' | awk -F ':' '{print ($1*3600)+($2*60)+$3}'", "Generic duration getter");
 
-INSERT INTO fromExt(Extension, bitrateCmd, durationCmd) 
-	VALUES("avi", "/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'",
-		"ffmpeg -i %path 2>&1 | sed -n -e 's/.*Duration: \([0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}\).*/\1/p' | awk -F ':' '{print ($1*3600)+($2*60)+$3}'");
-INSERT INTO toExt(Extension, MimeType, MediaType) VALUES("flv", "video/flv", "v");
-INSERT INTO transcode_cmd(command) VALUES("/usr/bin/ffmpeg -ss %skipToTime -i %path -async 1 -b %bitrate -vf 'scale=320:trunc((320/a)/2)*2' -ar 44100 -ac 2 -v 0 -f flv -vcodec libx264 -preset superfast -");
-INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(2,2,2);
+--file types
+INSERT INTO FileType(extension, mimeType, mediaType, idbitrateCmd, iddurationCmd) 
+	VALUES("mp3", "audio/mp3", "a", 2 , 3);
+	
+INSERT INTO FileType(extension, mimeType, mediaType, idbitrateCmd, iddurationCmd) 
+	VALUES("flv", "video/flv", "v", NULL , NULL);
 
-INSERT INTO fromExt(Extension, bitrateCmd, durationCmd) 
-	VALUES("wma", "/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'",
-		"ffmpeg -i %path 2>&1 | sed -n -e 's/.*Duration: \([0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}\).*/\1/p' | awk -F ':' '{print ($1*3600)+($2*60)+$3}'");
-INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(3,1,1);
-
-INSERT INTO fromExt(Extension, bitrateCmd, durationCmd) 
-	VALUES("mkv", "/usr/bin/ffmpeg -i %path 2>&1 | sed -n -e 's/.*bitrate: \([0-9]\+\).*/\1/p'",
-		"ffmpeg -i %path 2>&1 | sed -n -e 's/.*Duration: \([0-9]\{2\}:[0-9]\{2\}:[0-9]\{2\}\).*/\1/p' | awk -F ':' '{print ($1*3600)+($2*60)+$3}'");
-INSERT INTO extensionMap(idfromExt, idToExt, idtranscode_cmd) VALUES(4,2,2);
-
+INSERT INTO FileType(extension, mimeType, mediaType, idbitrateCmd, iddurationCmd) 
+	VALUES("avi", "video/avi", "v", 2, 3);
+	
+--file convertors
+INSERT INTO FileConverter(fromFileType, ToFileType, idcommand) VALUES("mp3","mp3",1);
+INSERT INTO FileConverter(fromFileType, ToFileType, idcommand) VALUES("avi","flv",1);
 
 
 INSERT INTO mediaSource(path, displayName) VALUES("/mnt/storage/music", "Music");
@@ -51,6 +45,7 @@ INSERT INTO Action(idAction, actionName, displayName) VALUES(3, "administrator",
 INSERT INTO Action(idAction, actionName, displayName) VALUES(4, "accessMediaSource", "Access a Media Source");
 INSERT INTO Action(idAction, actionName, displayName) VALUES(5, "accessStreamer", "Access a Streamer");
 
+--testuser
 INSERT INTO UserPermission(idUser, idAction) VALUES(1,1);
 INSERT INTO UserPermission(idUser, idAction) VALUES(1,2);
 INSERT INTO UserPermission(idUser, idAction) VALUES(1,3);
@@ -61,9 +56,13 @@ INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,5,2);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,5,3);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(1,5,4);
 
+--testuser2
 INSERT INTO UserPermission(idUser, idAction) VALUES(2,1);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,5,1);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,4,1);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,4,2);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,5,2);
 INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,4,3);
+
+--autotest
+INSERT INTO UserPermission(idUser, idAction) VALUES(3,3);

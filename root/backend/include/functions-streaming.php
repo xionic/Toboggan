@@ -64,7 +64,7 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 		if($maxBitrate != NO_MAX_BITRATE)//if there is a max bitrate
 		{ 
 			//get the bitrate command with variables expanded
-			$bitrateCommand = expandCmdString($streamerObj->bitrateCmd, 
+			$bitrateCommand = expandCmdString($streamerObj->fromFileType->bitrateCmd, 
 				array(
 					"path" 		=> $file,
 				)

@@ -99,7 +99,7 @@ try
 				"dir" 				=> array("string"),
 				"mediaSourceID"		=> array("int", "notzero"),
 				"filename"			=> array("string", "notblank"),
-				"streamerID" 		=> array("int"),
+				"fileConverterID" 		=> array("int"),
 				"skipToTime" 		=> array("int", "optional", "lbound 1")
 			));
 					

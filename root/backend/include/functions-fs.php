@@ -238,6 +238,29 @@ function getMediaDuration($filepath)
 	
 }
 
+/**
+* get an object which represents data about a media file
+*/
+function getFileObject($path)
+{
+	$pathinfo = pathinfo($path);
+	$filename = $pathinfo["basename"];
+	$displayName = $filename; //to be updated in the future
+	
+	$streamers = array();
+	
+	foreach(getAvailableConverters($path) as $s)
+	{
+		$streamers[] = array("extension" => $s->toFileType->extension, "fileConverterID" => $s->id, "mediaType" => $s->toFileType->mediaType);
+	}
+	return array(
+		"filename" 		=> $filename,
+		"displayName"	=> $displayName,
+		"converters"		=> $streamers,
+		
+	);
+}
+
 
 
 

@@ -154,18 +154,21 @@ function getUserObject($userid)
 	
 	//get  permissions for accessStreamer action - special case for accessing certain streamers
 	$stmt = $conn->prepare("
-		SELECT idextensionMap as id, (fromExt.Extension || ' -> '  || toExt.Extension) as displayName, 
-		CASE WHEN PermissionAction.idAction IS NOT NULL THEN 'Y' ELSE 'N' END as granted
-			FROM extensionMap
-				INNER JOIN fromExt USING(idfromExt)
-				INNER JOIN toExt USING(idtoExt)
+		SELECT 
+			idfileConverter as id, 
+			(fromFileType || ' -> '  || toFileType) as displayName, 
+			CASE WHEN PermissionAction.idAction IS NOT NULL THEN 'Y' ELSE 'N' END as granted
+		FROM FileConverter
 				CROSS JOIN User 
 				LEFT JOIN (
 					SELECT * FROM UserPermission 
 							INNER JOIN Action USING(idAction) 
-						WHERE Action.actionName='accessStreamer') AS PermissionAction 
-				ON (PermissionAction.targetObjectID = extensionMap.idextensionMap 
-					AND PermissionAction.idUser=User.idUser) 
+						WHERE Action.actionName='accessStreamer'
+				) AS PermissionAction 
+					ON (
+						PermissionAction.targetObjectID = FileConverter.idfileConverter 
+						AND PermissionAction.idUser=User.idUser
+					) 
 			WHERE User.idUser= :userid;
 		
 	");

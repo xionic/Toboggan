@@ -25,7 +25,7 @@
 				"trafficLimit" => array("int", "lbound 0"),
 				"trafficLimitPeriod" => array("int", "lbound 0"),
 				"trafficUsed" => array("int", "lbound 0"),
-				"timeToReset" => array("int"),
+				"timeToReset" => array("int", "optional"), //optional as it may never have been set for new users
 
 				"/permissions/general/*/id"	=> array("int"),
 				"/permissions/general/*/displayName"	=> array("notblank"),

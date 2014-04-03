@@ -4,61 +4,35 @@
 /**
 * returns streamer profiles which are suitable to produce streams for the given file
 */
-function getAvailableStreamers($file){
+function getAvailableConverters($file){
 	//get file extension
 	$pathinfo = pathinfo($file);
 	$extension = strtolower($pathinfo["extension"]);
 	
-	$conn = getDBConnection();
-	
-	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
-				INNER JOIN fromExt USING (idfromExt)
-				INNER JOIN toExt USING(idtoExt)
-				INNER JOIN transcode_cmd USING(idtranscode_cmd)
-				WHERE `fromExt`.Extension = :fromExt");
-	$stmt->bindValue(":fromExt",$extension, PDO::PARAM_STR);
-	$stmt->execute();
-	
-	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	closeDBConnection($conn);	
-	
-	$suitableStreamers = array();
-	foreach($results as $row){
-		//check that the user has permission
-		if(checkUserPermission("accessStreamer", $row["idextensionMap"]))
-			$suitableStreamers[] = new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
-	}	
-	
-		
-	
-	return $suitableStreamers;
+	//we may not have an extension entry for this. If not, just return an empty array
+	try
+	{
+		$fromFT = new FileType($extension);
+	} catch (NoSuchFileTypeException $e) {
+		return array();
+	}
+	return $fromFT->getAvailableConverters();
 }
 
 /**
 * get a streamer profile from its id
 */
-function getStreamerById($id){
+function getConverterById($id){
+	//we may not have an extension entry for this. If not, just return an empty array
+	try
+	{
+		if(checkUserPermission("accessStreamer", $id)) //check user has permission to use the streamer too
+			return new FileConverter($id);
+	} catch (NoSuchFileConveterException $e) {
+		//don't need to do anything, just fail through
+	}	
+	return false; // no permission, or non existent FileConverter
 	
-	$conn = getDBConnection();
-	
-	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd
-				FROM extensionMap 
-				INNER JOIN fromExt USING (idfromExt)
-				INNER JOIN toExt USING(idtoExt)
-				INNER JOIN transcode_cmd USING(idtranscode_cmd)
-				WHERE idextensionMap = :idextensionMap");
-	$stmt->bindValue(":idextensionMap",$id, PDO::PARAM_INT);
-	$stmt->execute();
-
-	$row = $stmt->fetch(PDO::FETCH_ASSOC);
-	$stmt->closeCursor();
-	closeDBConnection($conn);
-		
-		
-	if($row && checkUserPermission("accessStreamer", $row["idextensionMap"])) //check user has permission to use the streamer too
-		return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
-	else
-		return false;
 	
 }
 /**
@@ -71,11 +45,19 @@ function getAllStreamers()
 
 	$conn = getDBConnection();
 	
-	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
-				INNER JOIN fromExt USING (idfromExt)
-				INNER JOIN toExt USING(idtoExt)
-				INNER JOIN transcode_cmd USING(idtranscode_cmd)
-				");
+	$stmt = $conn->prepare(
+		"SELECT 
+			idextensionMap, 
+			`fromExt`.Extension as fromExt, 
+			`toExt`.Extension as toExt, 
+			command, MimeType , 
+			MediaType, 
+			bitrateCmd 
+		FROM extensionMap 
+			INNER JOIN fromExt USING (idfromExt)
+			INNER JOIN toExt USING(idtoExt)
+			INNER JOIN transcode_cmd USING(idtranscode_cmd)
+	");
 	$stmt->execute();
 
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
