@@ -89,7 +89,7 @@ try
 		case "downloadFile": //download a file unmodified
 			checkActionAllowed("downloadFile");	
 			$isFileDownload=true;
-			$_GET["streamerID"] = 0; //hack through the switch and allow to follow through the getStream handler
+			$_GET["fileConverterID"] = 0; //hack through the switch and allow to follow through the getStream handler
 			
 		case "getStream": 
 			if(!isset($isFileDownload) || !$isFileDownload) // don't check permission if it's a download - the download permission has already been checked above
@@ -115,7 +115,7 @@ try
 			$args["skipToTime"] = (isset($args["skipToTime"])?$args["skipToTime"]:0); //default to 0
 			
 			//output the media stream via a streamer
-			outputStream($args["streamerID"], $fullfilepath, $args["skipToTime"]);			
+			outputStream($args["fileConverterID"], $fullfilepath, $args["skipToTime"]);			
 			break;
 			
 		case "login":	
@@ -169,19 +169,47 @@ try
 			outputSearchResults_JSON($args["mediaSourceID"], $args["dir"], $args["query"]);
 			break;
 			
-		case "retrieveStreamerSettings":
+		case "retrieveFileTypeSettings":
 			checkActionAllowed("administrator");
-			outputStreamerSettings_JSON();
+			outputFileTypeSettings_JSON();
 			break;
 			
-		case "saveStreamerSettings":
+		case "saveFileTypeSettings":			
 			checkActionAllowed("administrator");
-			$args = $av->validateArgs($_POST, array(			
+			$args = $av->validateArgs($_POST, array(
 				"settings"		=> array("string", "notblank"),
 			));
 			
-			saveStreamerSettings($args["settings"]);
+			saveFileTypeSettings($args["settings"]);
 			break;
+		
+		case "retrieveCommandSettings":
+			checkActionAllowed("administrator");
+			outputCommandSettings_JSON();
+			break;	
+		
+		case "saveCommandSettings":
+			checkActionAllowed("administrator");
+			$args = $av->validateArgs($_POST, array(
+				"settings"		=> array("string", "notblank"),
+			));
+			
+			saveCommandSettings($args["settings"]);
+			break;		
+			
+		case "retrieveFileConverterSettings":
+			checkActionAllowed("administrator");
+			outputFileConverterSettings_JSON();
+			break;	
+			
+		case "saveFileConverterSettings":
+			checkActionAllowed("administrator");
+			$args = $av->validateArgs($_POST, array(
+				"settings"		=> array("string", "notblank"),
+			));
+			
+			saveFileConverterSettings($args["settings"]);
+			break;	
 			
 		case "listUsers":
 			checkActionAllowed("administrator");

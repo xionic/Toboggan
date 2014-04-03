@@ -7,11 +7,15 @@
 function getDBConnection()
 {
 	if(!is_readable(DBPATH)){
-		reportError("DB does not exist or is not readable. If this is a new installation did you run install.sh? (See README)", 200); //not returning error status as this is probably not an "Error"
+		reportError("DB does not exist or is not readable. If this is a new installation did you run install.sh? (See README)", 500); 
 	}	
 	$db = new PDO(PDO_DSN);
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	return $db;	
+	
+	//enable foreign key enforcement - not enabled by default in sqlite and must be done per connection
+	$db->exec("PRAGMA foreign_keys = ON");	
+	
+	return $db;		
 }
 /**
 * checks that the code and the DB are using the same DB schema version - returns boolean

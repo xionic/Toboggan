@@ -3,16 +3,9 @@ CREATE TABLE `FileConverter` (
 	`fromFileType` CHAR(8) NOT NULL ,
 	`toFileType` CHAR(8) NOT NULL ,
 	`idcommand` INT NOT NULL ,
-	CONSTRAINT `fromFileType`
-		FOREIGN KEY (`fromFileType` )
-		REFERENCES `FileType` (`extension` )
-		ON DELETE NO ACTION
-		ON UPDATE NO ACTION,
-	CONSTRAINT `toFileType`
-		FOREIGN KEY (`toFileType` )
-		REFERENCES `FileType` (`extension` )
-		ON DELETE NO ACTION
-		ON UPDATE NO ACTION,
+	FOREIGN KEY (`fromFileType` ) REFERENCES `FileType` (`extension` )
+	FOREIGN KEY (`toFileType` ) REFERENCES `FileType` (`extension` )
+	
 	CONSTRAINT `command`
 		FOREIGN KEY (`idcommand` )
 		REFERENCES `Command` (`idcommand` )

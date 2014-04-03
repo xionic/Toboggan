@@ -26,7 +26,7 @@ define("PDO_DSN", "sqlite:".DBPATH);
 define("DB_VERSION", 104); // indicates what version of the db the code uses - to be matched against the one in the db
 
 //api version
-define("APIVERSION","0.58");
+define("APIVERSION","0.6");
 
 //app settings
 define("APPNAME", "Toboggan");
