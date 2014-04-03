@@ -5,7 +5,7 @@
 	require_once("../lib/PHPArgValidator/PHPArgValidator.class.php");
 
 	$config["testAPIKey"] = "{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}";
-	$config["testAPIVer"] = "0.58";
+	$config["testAPIVer"] = "0.6";
 	$config["testUser"] = "autotest";
 	$config["testPass"] =  base64_encode(hash("sha256","password", true));
 	$config["basicAuth"] = isset($_GET["bauser"]);

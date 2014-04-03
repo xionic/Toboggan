@@ -281,19 +281,47 @@ function saveFileTypeSettings($settings_JSON)
 	try	{	
 		$conn->beginTransaction();
 		
-		//clear out the existing - we can do this since the IDs are the extensions XD
-		$stmt = $conn->prepare("DELETE FROM FileType");
-		$stmt->execute();	
+		//get a list of ids we've been passed
+		$FTToKeep = array();
+		foreach($settings as $FT)
+		{
+			$FTToKeep[] = $FT["extension"];
+		}
+		appLog("Not deleting extensions: ". implode(',',$FTToKeep), appLog_DEBUG);
+		
+		//now build the delete - so like (?,?,?,? ...
+		$query = "DELETE FROM FileType WHERE extension NOT IN (" . implode(',', array_fill(0,count($FTToKeep),'?')) . ")";
+		$stmt = $conn->prepare($query);
+
+		foreach($FTToKeep as $key => $c)
+		{			
+			$stmt->bindValue($key+1, $c, PDO::PARAM_STR);
+		}
+		$stmt->execute(); //delete the omitted ones	
 		
 		//Whack in the new ones
 		foreach($settings as $ft)
 		{
-			$stmt = $conn->prepare("
-				INSERT INTO 
-					FileType (extension, mimeType, mediaType, idbitrateCmd, iddurationCmd)
-				VALUES
-					(:extension, :mimeType, :mediaType, :idbitrateCmd, :iddurationCmd)
-			");
+			if(checkFileTypeExists($ft["extension"])){ // need to update
+				$stmt = $conn->prepare("
+					UPDATE 
+						FileType 
+					SET
+						mimeType		= :mimeType,
+						mediaType		= :mediaType,
+						idbitrateCmd	= :idbitrateCmd,
+						iddurationCmd	= :iddurationCmd
+					WHERE
+						extension = :extension
+				");			
+			} else { //new - need to insert			
+				$stmt = $conn->prepare("
+					INSERT INTO 
+						FileType (extension, mimeType, mediaType, idbitrateCmd, iddurationCmd)
+					VALUES
+						(:extension, :mimeType, :mediaType, :idbitrateCmd, :iddurationCmd)
+				");
+			}
 			$stmt->bindValue(":extension",$ft["extension"], PDO::PARAM_STR);
 			$stmt->bindValue(":mimeType",$ft["mimeType"], PDO::PARAM_STR);
 			$stmt->bindValue(":mediaType",$ft["mediaType"], PDO::PARAM_STR);
@@ -304,6 +332,7 @@ function saveFileTypeSettings($settings_JSON)
 		
 		$conn->commit();		
 	} catch (PDOException $pe) { // watch for constraint violations since we don't check elsewhere. Should change this
+		appLog($pe, appLog_DEBUG);
 		$conn->rollback();
 		if($pe->errorInfo[0] == "23000"){ // constraint violation
 				reportError("Constraint violation while removing FileType",409);
@@ -389,6 +418,7 @@ function saveCommandSettings($settings_JSON)
 		
 	} catch (PDOException $pe) { // watch for constraint violations since we don't check elsewhere. Should change this
 			$conn->rollback();
+			appLog($pe, appLog_DEBUG);
 			if($pe->errorInfo[0] == "23000"){ // constraint violation
 					reportError("Constraint violation while removing Command",409);
 			}
@@ -739,7 +769,17 @@ function updateOrInsertTranscodeCmd($conn, $command)
 	return $transcode_cmdID;
 }
 
-
+/**
+* checks if a FileType (extension) is in the DB
+*/
+function checkFileTypeExists($ext){
+	try{
+		new FileType($ext);
+	} catch(NoSuchFileTypeException $e) {
+		return false;
+	}
+	return true;
+}
 
 
 ?>

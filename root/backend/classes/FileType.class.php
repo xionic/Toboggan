@@ -7,7 +7,6 @@ class FileType
 	//construct a FileType object from an extension by pulling the details from the DB
 	function __construct($extension)
 	{
-	
 		$conn = getDBConnection();
 	
 		$stmt = $conn->prepare("
@@ -19,8 +18,8 @@ class FileType
 				c2.command AS durationCmd
 			FROM 
 				FileType 
-				INNER JOIN Command c1 ON (c1.idcommand = idbitrateCmd)
-				INNER JOIN Command c2 On (c2.idcommand = iddurationCmd)
+				LEFT JOIN Command c1 ON (c1.idcommand = idbitrateCmd)
+				LEFT JOIN Command c2 On (c2.idcommand = iddurationCmd)
 			WHERE 
 				extension = :extension"
 		);
@@ -29,7 +28,7 @@ class FileType
 		
 		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		closeDBConnection($conn);	
-	
+
 		if(count($results) == 0)
 		{
 				throw new NoSuchFileTypeException("No such extension: " . $extension);

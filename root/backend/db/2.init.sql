@@ -66,3 +66,12 @@ INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(2,4,3);
 
 --autotest
 INSERT INTO UserPermission(idUser, idAction) VALUES(3,3);
+INSERT INTO UserPermission(idUser, idAction) VALUES(3,1);
+INSERT INTO UserPermission(idUser, idAction) VALUES(3,2);
+INSERT INTO UserPermission(idUser, idAction) VALUES(3,3);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(3,4,1);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(3,4,2);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(3,5,1);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(3,5,2);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(3,5,3);
+INSERT INTO UserPermission(idUser, idAction, targetObjectID) VALUES(3,5,4);
