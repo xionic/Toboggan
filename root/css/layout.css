@@ -125,7 +125,7 @@ a, a:link, a:visited
 	position: absolute;
 	top: 10ex;
 	left: 0px;
-	right: 5px;
+	right: 0px;
 	bottom: $playWindowHeight;
 	padding-top: 0px;
 }
@@ -238,7 +238,7 @@ p label
 	position: absolute;
 	top: 0px;
 	left: 0px;
-	right: 5px;
+	right: 0px;
 	height: 10ex;
 		
 	padding: 0px;
