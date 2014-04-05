@@ -63,6 +63,8 @@ try
 	//main selector between actions
 	switch($action)
 	{
+		case "ping": //just allows us to return either 401 or 200. Allows client to check if it's logged in
+			break;
 		case "listMediaSources":		
 			outputMediaSourcesList_JSON();
 			break;
