@@ -8,6 +8,8 @@ INSERT INTO Command(command, displayName) VALUES("ffmpeg -i %path 2>&1 | sed -n 
 --file types
 INSERT INTO FileType(extension, mimeType, mediaType, idbitrateCmd, iddurationCmd) 
 	VALUES("mp3", "audio/mp3", "a", 2 , 3);
+	INSERT INTO FileType(extension, mimeType, mediaType, idbitrateCmd, iddurationCmd) 
+	VALUES("wma", "audio/wma", "a", 2 , 3);
 	
 INSERT INTO FileType(extension, mimeType, mediaType, idbitrateCmd, iddurationCmd) 
 	VALUES("flv", "video/flv", "v", NULL , NULL);
@@ -17,6 +19,7 @@ INSERT INTO FileType(extension, mimeType, mediaType, idbitrateCmd, iddurationCmd
 	
 --file convertors
 INSERT INTO FileConverter(fromFileType, ToFileType, idcommand) VALUES("mp3","mp3",1);
+INSERT INTO FileConverter(fromFileType, ToFileType, idcommand) VALUES("wma","mp3",1);
 INSERT INTO FileConverter(fromFileType, ToFileType, idcommand) VALUES("avi","flv",1);
 
 

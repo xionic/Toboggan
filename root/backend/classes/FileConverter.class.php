@@ -20,7 +20,7 @@ class FileConverter
 									command
 								FROM 
 									FileConverter 
-									INNER JOIN transcode_cmd USING(idtranscode_cmd)
+									INNER JOIN command USING(idcommand)
 								WHERE 
 									idfileConverter = :idfileConverter");
 		$stmt->bindValue(":idfileConverter",$id, PDO::PARAM_INT);
@@ -31,8 +31,8 @@ class FileConverter
 		closeDBConnection($conn);
 		
 		$this->id 				= $row["idfileConverter"];
-		$this->fromFileType 	= $row["fromFileType"];
-		$this->toFileType 		= $row["toFileType"];
+		$this->fromFileType 	= new FileType($row["fromFileType"]);
+		$this->toFileType 		= new FileType($row["toFileType"]);
 		$this->cmd				= $row["command"];
 		
 	}
