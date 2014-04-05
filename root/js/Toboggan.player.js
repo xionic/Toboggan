@@ -3,7 +3,7 @@
 */
 (function(){
 	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}',
-		apiversion='0.58',
+		apiversion='0.6',
 		initialProgressEvent=false,	//used to ensure that the initial progress event is the only one handled
 		playerCSSProperties = {},
 		isFullscreen = {},
@@ -309,7 +309,7 @@
 				'text': $(trackList[x]).text(),
 				'filename': $(trackList[x]).attr("data-filename"),
 				'dir': $(trackList[x]).attr("data-dir"),
-				'streamers':$(trackList[x]).attr("data-streamers"),
+				'converters':$(trackList[x]).attr("data-converters"),
 				'media_source':$(trackList[x]).attr("data-media_source"),
 			});
 		}
@@ -359,7 +359,7 @@
 					.text( trackObject.text )
 					.attr( "data-filename", trackObject.filename )
 					.attr( "data-dir", trackObject.dir )
-					.attr( "data-streamers", trackObject.streamers )
+					.attr( "data-converters", trackObject.converters )
 					.attr( "data-media_source", trackObject.media_source )
 			).bind('contextmenu', function(e){
 
@@ -368,7 +368,7 @@
 				$("#trackMenu .hideInPlaylist").hide();
 
 				return setupContextMenu(e,{
-					streamers: JSON.parse(trackObject.streamers)
+					converters: JSON.parse(trackObject.converters)
 				})
 			})
 		);
@@ -447,7 +447,7 @@
 			{
 				doDownloadOfTrack(rightClickedObject);
 			}
-			else if($(this).hasClass("downcode_streamer"))
+			else if($(this).hasClass("downcode_converter"))
 			{
 				var trackObject = $(rightClickedObject).find(".trackObject");
 				var		remote_filename = $(trackObject).attr("data-filename"),
@@ -458,7 +458,7 @@
 											"&filename="+encodeURIComponent(remote_filename)+
 											"&dir="+encodeURIComponent(remote_directory)+
 											"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
-											"&streamerID="+$(this).attr("data-streamerid")+
+											"&fileConverterID="+$(this).attr("data-converterID")+
 											"&apikey="+apikey+
 											"&apiver="+apiversion;
 				window.location = url;
@@ -575,15 +575,15 @@
 	{
 		e.preventDefault();
 		//dynamically update submenu
-		$("#trackMenu_downcodestreamers").empty();
+		$("#trackMenu_downcode_converters").empty();
 		
-		for ( x in file.streamers)
+		for ( x in file.converters)
 		{
-			$("#trackMenu_downcodestreamers").append(
+			$("#trackMenu_downcode_converters").append(
 				$("<span/>")
-					.addClass("downcode_streamer")
-					.text(file.streamers[x].extension)
-					.attr("data-streamerID",file.streamers[x].streamerID)
+					.addClass("downcode_converter")
+					.text(file.converters[x].extension)
+					.attr("data-converterID",file.converters[x].fileConverterID)
 			);
 		}
 		
@@ -613,7 +613,7 @@
 	*/
 	function addTrackToFileList(file, folderName, mediaSourceID, appendTarget)
 	{
-		var className = (file.streamers.length == 0)?"unplayable":"playable";
+		var className = (file.converters.length == 0)?"unplayable":"playable";
 				
 		$("<li></li>").append(
 				$("<input type='checkbox' name='trackCheckbox'/>")
@@ -630,7 +630,7 @@
 					.addClass("trackObject")
 					.attr("data-dir", folderName+"/")
 					.attr("data-filename", file.filename)					
-					.attr("data-streamers", JSON.stringify(file.streamers))
+					.attr("data-converters", JSON.stringify(file.converters))
 					.attr("data-media_source", mediaSourceID)
 			)
 			.addClass(className)
@@ -651,24 +651,24 @@
 		
 		var		remote_filename = $(trackObject).attr("data-filename"),
 				remote_directory = $(trackObject).attr("data-dir"),
-				remote_streamers = $(trackObject).attr("data-streamers"),
+				remote_converters = $(trackObject).attr("data-converters"),
 				remote_mediaSource = $(trackObject).attr("data-media_source");
 		
 		$("#playlistTracks .jPlaying").removeClass("jPlaying");
 		
 		$(trackObject).addClass("jPlaying");
 		
-		var streamerObject = $.parseJSON(remote_streamers), mediaObject = {}, mediaType="a";
-		for(var x=0; x<streamerObject.length; ++x)
+		var converterObject = $.parseJSON(remote_converters), mediaObject = {}, mediaType="a";
+		for(var x=0; x<converterObject.length; ++x)
 		{
-			mediaObject[streamerObject[x].extension] = g_Toboggan_basePath+"/backend/rest.php"+"?action=getStream"+
+			mediaObject[converterObject[x].extension] = g_Toboggan_basePath+"/backend/rest.php"+"?action=getStream"+
 														"&filename="+encodeURIComponent(remote_filename)+
 														"&dir="+encodeURIComponent(remote_directory)+
 														"&mediaSourceID="+encodeURIComponent(remote_mediaSource)+
-														"&streamerID="+streamerObject[x].streamerID+
+														"&fileConverterID="+converterObject[x].fileConverterID+
 														"&apikey="+apikey+
 														"&apiver="+apiversion;
-			mediaType = streamerObject[x].mediaType=="v"?"v":"a";
+			mediaType = converterObject[x].mediaType=="v"?"v":"a";
 		}
 		
 		showHideVideoPane(mediaType);
@@ -728,7 +728,7 @@
 				'text': $(trackTagObject).text(),
 				'filename': $(trackTagObject).attr("data-filename"),
 				'dir': $(trackTagObject).attr("data-dir"),
-				'streamers': $(trackTagObject).attr("data-streamers"),
+				'converters': $(trackTagObject).attr("data-converters"),
 				'media_source': $(trackTagObject).attr("data-media_source")
 			}
 			
@@ -748,7 +748,7 @@
 				'text': $(trackTagObject).text(),
 				'filename': $(trackTagObject).attr("data-filename"),
 				'dir': $(trackTagObject).attr("data-dir"),
-				'streamers': $(trackTagObject).attr("data-streamers"),
+				'converters': $(trackTagObject).attr("data-converters"),
 				'media_source': $(trackTagObject).attr("data-media_source")
 			}
 			
@@ -790,7 +790,7 @@
 					'text': $(trackTagObject).text(),
 					'filename': $(trackTagObject).attr("data-filename"),
 					'dir': $(trackTagObject).attr("data-dir"),
-					'streamers': $(trackTagObject).attr("data-streamers"),
+					'converters': $(trackTagObject).attr("data-converters"),
 					'media_source': $(trackTagObject).attr("data-media_source")
 				}
 				
@@ -848,13 +848,11 @@
 	*/
 	function doDownloadOfTrack(trackSrc)
 	{
-		
 		var trackObject = $(trackSrc).find(".trackObject");
 		var     remote_filename = $(trackObject).attr("data-filename"),
 				remote_directory = $(trackObject).attr("data-dir"),
-				remote_streamers = $(trackObject).attr("data-streamers"),
+				remote_converters = $(trackObject).attr("data-converters"),
 				remote_mediaSource = $(trackObject).attr("data-media_source");
-														 
 
 		var url = g_Toboggan_basePath+"/backend/rest.php"+"?action=downloadFile"+
 				"&filename="+encodeURIComponent(remote_filename)+
