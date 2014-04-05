@@ -1,3 +1,7 @@
+--some general setup
+PRAGMA journal_mode=WAL;
+
+--create the tables
 CREATE TABLE `FileConverter` (
 	`idfileConverter` INTEGER PRIMARY KEY AUTOINCREMENT,
 	`fromFileType` CHAR(8) NOT NULL ,
