@@ -13,10 +13,11 @@
 				"pass" => "^200$"
 			),
 			"json" => array(
-				"/*/fileConverterID" => array("int"),
-				"/*/fromFileType" => array("notblank"),
-				"/*/toFileType" => array("notblank"),
-				"/*/commandID" => array("int"),
+				"schema" => array("array"),
+				"/data/*/fileConverterID" => array("int"),
+				"/data/*/fromFileType" => array("notblank"),
+				"/data/*/toFileType" => array("notblank"),
+				"/data/*/commandID" => array("int"),
 			)
 		)
 	);

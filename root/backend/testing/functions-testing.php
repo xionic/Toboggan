@@ -97,15 +97,15 @@
 		
 		$res = hitAPI($action, $getArgs, null, $cookiefile);
 		
-		//testLog($res["info"]);
+		testLog($res["info"]);
 
 		//do tests
 		$results = array(
 			"action" => $action,
+			"url" => $res["info"]["url"],
 			"getArgs" => $getArgs,
 			"doLogin" => $doLogin,
 			"fullResponse" => $res["body"],
-			"doLogin" => $doLogin,
 		);
 
 
@@ -194,11 +194,15 @@
 		$tests[] = array("action" => $action, "getArgs" => $getArgs, "checks" =>  $checks, "login" => $login);
 	}
 
-	function runTests(){
-		global $tests, $results;
-		foreach($tests as $test){
-			$results[] = performTest($test["action"], $test["getArgs"], $test["checks"], $test["login"]);
-			testLog($results[count($results)- 1]);
+	//testsToRun is an array of names of tests to run, if null all are run
+	function runTests($actionsToTest = null){
+		global $tests, $results;		
+		
+		foreach($tests as $test){			
+			if($actionsToTest === null || in_array($test["action"], $actionsToTest)){ // only run tests we asked for
+				$results[] = performTest($test["action"], $test["getArgs"], $test["checks"], $test["login"]);
+				testLog($results[count($results)- 1]);
+			}
 		}
 	}
 
@@ -232,6 +236,8 @@
 			echo "<tr>";
 			echo "<td style='width:150px'>";
 				echo $result["action"] . ($result["doLogin"]?" (+login)":"(no login)");
+				echo "<br /><span  onclick='$(this).children().show();return false;'>Show URL ";
+				echo "<a href='".$result["url"]."' style='display:none'>".$result["url"]."</a></span>";
 			echo "</td>";
 			echo "<td style='width100%'>";
 			echo "<table class='innerTable'>";	
