@@ -1,58 +1,56 @@
-CREATE TABLE `extensionMap` (
-	`idextensionMap` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`idfromExt` INT NOT NULL ,
-	`idtoExt` INT NOT NULL ,
-	`idtranscode_cmd` INT NOT NULL ,
-	CONSTRAINT `fromExt`
-		FOREIGN KEY (`idtoExt` )
-		REFERENCES `fromExt` (`idfromExt` )
-		ON DELETE NO ACTION
-		ON UPDATE NO ACTION,
-	CONSTRAINT `toExt`
-		FOREIGN KEY (`idtoExt` )
-		REFERENCES `toExt` (`idtoExt` )
-		ON DELETE NO ACTION
-		ON UPDATE NO ACTION,
-	CONSTRAINT `transcode_cmd`
-		FOREIGN KEY (`idtranscode_cmd` )
-		REFERENCES `transcode_cmd` (`idtranscode_cmd` )
+--some general setup
+PRAGMA journal_mode=WAL;
+
+--create the tables
+CREATE TABLE `FileConverter` (
+	`idfileConverter` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`fromFileType` CHAR(8) NOT NULL ,
+	`toFileType` CHAR(8) NOT NULL ,
+	`idcommand` INT NOT NULL ,
+	FOREIGN KEY (`fromFileType` ) REFERENCES `FileType` (`extension` )
+	FOREIGN KEY (`toFileType` ) REFERENCES `FileType` (`extension` )
+	
+	CONSTRAINT `command`
+		FOREIGN KEY (`idcommand` )
+		REFERENCES `Command` (`idcommand` )
 		ON DELETE NO ACTION
 		ON UPDATE NO ACTION
 	CONSTRAINT `extMap`
-		UNIQUE (`idfromExt`, idtoExt)
+		UNIQUE (`fromFileType`, toFileType)
 		ON CONFLICT ROLLBACK
 );
 
-CREATE TABLE `fromExt` (
-	`idfromExt` INTEGER PRIMARY KEY AUTOINCREMENT ,
-	`Extension` VARCHAR(8) NOT NULL ,
-	`bitrateCmd` MEDIUMTEXT NOT NULL ,
-	`durationCmd` MEDIUMTEXT NULL ,
-	CONSTRAINT `Ext`
-		UNIQUE (`Extension`)
+CREATE TABLE `FileType` (
+	`extension` CHAR(8) PRIMARY KEY,
+	`mimeType` VARCHAR(32) NOT NULL ,
+	`mediaType` VARCHAR(1) NOT NULL ,
+	`idbitrateCmd` INT NULL ,
+	`iddurationCmd` INT NULL ,
+	CONSTRAINT `idbitrateCmd`
+		FOREIGN KEY (`idbitrateCmd` )
+		REFERENCES `Command` (`idcommand` )
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION,
+	CONSTRAINT `iddurationCmd`
+		FOREIGN KEY (`iddurationCmd` )
+		REFERENCES `Command` (`idcommand` )
+		ON DELETE NO ACTION
+		ON UPDATE NO ACTION,
+	CONSTRAINT `ext`
+		UNIQUE (`extension`)
 		ON CONFLICT ROLLBACK
 );
 
-CREATE TABLE `toExt` (
-	`idtoExt` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`Extension` VARCHAR(8) NOT NULL ,
-	`MimeType` VARCHAR(32) NOT NULL ,
-	`MediaType` VARCHAR(1) NOT NULL ,
-	CONSTRAINT `Ext`
-		UNIQUE (`Extension`)
-		UNIQUE (`Extension`, `MimeType`, `MediaType`)
-		ON CONFLICT ROLLBACK
+CREATE TABLE `Command` (
+	`idcommand` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`displayName` VARCHAR(45),
+	`command` MEDIUMTEXT NOT NULL
 );
 
 CREATE TABLE `mediaSource` (
 	`idmediaSource` INTEGER PRIMARY KEY AUTOINCREMENT,
 	`path` VARCHAR(64) NOT NULL,
 	`displayName` VARCHAR(32) NOT NULL
-);
-  
-CREATE TABLE `transcode_cmd` (
-	`idtranscode_cmd` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`command` MEDIUMTEXT NOT NULL
 );
 
 CREATE TABLE `User` (

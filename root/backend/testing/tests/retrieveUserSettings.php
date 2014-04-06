@@ -25,7 +25,7 @@
 				"trafficLimit" => array("int", "lbound 0"),
 				"trafficLimitPeriod" => array("int", "lbound 0"),
 				"trafficUsed" => array("int", "lbound 0"),
-				"timeToReset" => array("int"),
+				"timeToReset" => array(function($a){return (is_int($a+0) || is_null($a));}), //can be null as it may never have been set for new users
 
 				"/permissions/general/*/id"	=> array("int"),
 				"/permissions/general/*/displayName"	=> array("notblank"),

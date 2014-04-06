@@ -1,6 +1,4 @@
 <?php
-require_once("classes/Streamer.class.php");
-require_once("classes/userLogin.class.php");
 
 
 /**
@@ -9,11 +7,15 @@ require_once("classes/userLogin.class.php");
 function getDBConnection()
 {
 	if(!is_readable(DBPATH)){
-		reportError("DB does not exist or is not readable. If this is a new installation did you run install.sh? (See README)", 200); //not returning error status as this is probably not an "Error"
+		reportError("DB does not exist or is not readable. If this is a new installation did you run install.sh? (See README)", 500); 
 	}	
 	$db = new PDO(PDO_DSN);
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-	return $db;	
+	
+	//enable foreign key enforcement - not enabled by default in sqlite and must be done per connection
+	$db->exec("PRAGMA foreign_keys = ON");	
+	
+	return $db;		
 }
 /**
 * checks that the code and the DB are using the same DB schema version - returns boolean
@@ -321,15 +323,18 @@ function saveMediaSourceSettings($settings_JSON)
 }
 
 /**
-* function to retrieve the durationCmd from the db for a fromExt - if the user has permission
+* function to retrieve the durationCmd from the db for a fromExt
 */
 function getDurationCommand($fromExt)
 {
 	$conn = getDBConnection();
-	$stmt = $conn->prepare("SELECT durationCmd, idextensionMap as streamerID 
-		FROM fromExt 
-			INNER JOIN extensionMap USING (idfromExt)
-		WHERE fromExt.Extension = :fromExt AND durationCmd IS NOT NULL");
+	$stmt = $conn->prepare("
+		SELECT 
+			command			
+		FROM 
+			FileType 
+			INNER JOIN Command ON (idcommand = iddurationCmd)
+		WHERE Extension = :fromExt AND command IS NOT NULL");
 	$stmt->bindValue(":fromExt",$fromExt, PDO::PARAM_STR);
 	$stmt->execute();
 
@@ -337,11 +342,9 @@ function getDurationCommand($fromExt)
 	closeDBConnection($conn);	
 	
 	//ensure the user has permission to user the streamer that the duration command is defined in
-	foreach($results as $row)
-	{
-		if(checkUserPermission("accessStreamer", $row["streamerID"])){
-			return $row["durationCmd"];
-		}
+	if(count($results))
+	{		
+		return $results[0]["command"];
 	}
 	return null;
 }

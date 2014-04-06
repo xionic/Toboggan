@@ -21,9 +21,9 @@
 				"Files"		=> array("array"),
 				"/Files/*/filename" => array("notblank"),
 				"/Files/*/displayName" => array("notblank"),
-				"/Files/*/streamers/*/extension" => array("notblank"),
-				"/Files/*/streamers/*/streamerID" => array("int"),
-				"/Files/*/streamers/*/mediaType" => array("regex /[av]/"),
+				"/Files/*/converters/*/extension" => array("notblank"),
+				"/Files/*/converters/*/fileConverterID" => array("int"),
+				"/Files/*/converters/*/mediaType" => array("regex /[av]/"),
 			),
 		)
 	);

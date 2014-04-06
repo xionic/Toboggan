@@ -2,14 +2,23 @@
 	Holds the JS used for the administration system
 */
 (function(){
-	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}',
-		apiversion='0.58',
-		initialProgressEvent=false,	//used to ensure that the initial progress event is the only one handled
+	var apikey = '{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}',
+		apiversion = '0.6',
+		initialProgressEvent = false,	//used to ensure that the initial progress event is the only one handled
 		playerCSSProperties = {},
-		isFullscreen = {},
 		rightClickedObject = {},
 		currentUserName = "",
-		currentUserID = "";
+		currentUserID = "",
+		ajaxCache = {
+			fileTypeSettings : false,
+			commandSettings : false,
+			fileConverterSettings : false
+		},
+		converterSettings = {
+			commands: {},
+			fileTypes: {},
+			converters : {}
+			};
 	/**
 		jQuery Entry Point
 	*/
@@ -36,11 +45,9 @@
 			}
 		});
 	}
-	
-	
+
 	function ajaxLogin()
 	{
-	
 		var hash = new jsSHA($("#passwordInput").val()).getHash("SHA-256","B64");
 		$.ajax({
 			url:'backend/rest.php?action=login&apikey='+apikey+"&apiver="+apiversion,
@@ -95,23 +102,6 @@
 						.append($("<li><a href='#tab_server_mediaSources'>Media Sources</a></li>"))
 						.append($("<li><a href='#tab_server_log_contents'>View Server Log</a></li>"))
 				)
-				/*.append(
-					$("<div id='tab_client'></div>")
-						.append($("<fieldset><legend>OptionGroup</legend>\
-								<p><label>Option Label</label><input type='text' /></p>\
-								<p><label>Option Label</label><input type='text' /></p>\
-								</fieldset>"))
-						.append($("<fieldset><legend>OptionGroup</legend>\
-								<p><label>Option Label</label><input type='text' /></p>\
-								<p><label>Option Label</label><input type='text' /></p>\
-								<p><label>Option Label</label><input type='text' /></p>\
-								<p><label>Option Label</label><input type='text' /></p>\
-								</fieldset>"))
-						.append($("<fieldset><legend>OptionGroup</legend>\
-								<p><label>Option Label</label><input type='text' /></p>\
-								<p><label>Option Label</label><input type='text' /></p>\
-								</fieldset>"))
-				)*/
 				.append(
 					$("<div id='tab_welcome'></div>")
 						.append($("	<h1>Toboggan Maintenance Page</h1> \
@@ -143,116 +133,46 @@
 					case 'tab_server_streamers':
 						$(ui.panel).empty();
 						$(ui.panel).append("<h1>Add/Remove Streamers</h1>");
+						
+						//pull down retrieveFileTypeSettings
 						$.ajax({
-							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
-							success: function(data, textStatus, jqXHR){
-								
-								var outputUL = $("<ul/>");
-								
-								for (var x=0; x<data.length; ++x)
-								{
-									outputUL.append(
-										$("<li/>").addClass('streamer').append(
-											$("<input type='text' name='fromExt' />").val(data[x].fromExtensions),
-											$("<input type='text' name='bitrateCmd' />").val(data[x].bitrateCmd),
-											$("<input type='text' name='command' />").val(data[x].command),
-											$("<input type='text' name='toExt' maxlength='8' />").val(data[x].toExtension),
-										//	$("<input type='text' name='outputMediaType' />").val(data[x].MediaType),
-											$("<select name='outputMediaType'/>")
-												.append(
-													$("<option value='a'>Audio</option>").attr('selected',(data[x].MediaType=='a')?'selected':false),
-													$("<option value='v'>Video</option>").attr('selected',(data[x].MediaType=='v')?'selected':false)
-												),
-											$("<input type='text' name='outputMimeType' maxlength='32' />").val(data[x].MimeType),
-											$("<a href='#'>Del</a>")
-												.button({
-													icons: {primary: "ui-icon-circle-minus"},
-													text: false
-												}).click(function(){
-													$(this).parent().remove();
-													return false;
-												})
-											
-										)
-									);
-								}
-								
-								$(ui.panel)
-									.append(outputUL)
-									.append($("<a href='#' class='add' >New Streamer</a>")
-										.button({
-											icons: {primary: "ui-icon-circle-plus"},
-											text: true
-										})
-										.click(function(){
-											$("#tab_server_streamers ul").append(
-												$("<li/>").addClass('streamer').append(
-													$("<input type='text' name='fromExt' />"),
-													$("<input type='text' name='bitrateCmd' />"),
-													$("<input type='text' name='command' />"),
-													$("<input type='text' name='toExt' maxlength='8' />"),
-													$("<select name='outputMediaType'/>")
-														.append(
-															$("<option value='a'>Audio</option>"),
-															$("<option value='v'>Video</option>")
-														),
-													$("<input type='text' name='outputMimeType' maxlength='32' />"),
-													$("<a href='#'>Del</a>")
-														.button({
-															icons: {primary: "ui-icon-circle-minus"},
-															text: false
-														})
-														.click(function(){
-															$(this).parent().remove();
-															return false;
-														})
-												)
-											);
-											
-											return false;
-										})
-									)
-									.append($("<p class='saveBar'/>").append($("<a href='#' class='save'>Save Streamer Settings</a>")
-										.button({
-											icons: {primary: "ui-icon-circle-check"},
-											text: true
-										})
-										.click(function(event){
-											event.preventDefault();
-											//build an array of streamers
-											var streamersArray = [];
-											
-											$("#tab_server_streamers ul li").each(function(){
-												streamersArray.push({
-													'fromExtensions' : $(this).children('input[name=fromExt]').val(),
-													'bitrateCmd' : $(this).children('input[name=bitrateCmd]').val(),
-													'toExtension' : $(this).children('input[name=toExt]').val(),
-													'MimeType' : $(this).children('input[name=outputMimeType]').val(),
-													'MediaType' : $(this).children('select[name=outputMediaType]').children('option:selected').val(),
-													'command' : $(this).children('input[name=command]').val(),
-												})
-											});
-											
-											$.ajax({
-												url: g_Toboggan_basePath+"/backend/rest.php"+"?action=saveStreamerSettings&apikey="+apikey+"&apiver="+apiversion,
-												type: 'POST',
-												data: {settings: JSON.stringify(streamersArray)},
-												success: function(data, textStatus, jqXHR){
-													$( "#configDialog" ).dialog( "close" );
-												},
-												error: function(jqHXR, textStatus, errorThrown){
-													alert("A mild saving catastrophe has occurred, please check the error log");
-													console.error(jqHXR, textStatus, errorThrown);
-												}
-											})
-										})
-									));
+							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveFileTypeSettings&apikey="+apikey+"&apiver="+apiversion,
+							success: function(data, textStatus, jqHXR) {
+								ajaxCache.fileTypeSettings = data;
+								prepareConverters();
 							},
-							error: function(jqHXR, textStatus, errorThrown){
-								alert("An error occurred while retrieving the streamer settings");
-								console.error(jqXHR, textStatus, errorThrown);
+							error: function(jqHXR, textStatus, errorThrown) {
+								alert("An error occurred while retrieveFileTypeSettings");
+								console.error(jqHXR, textStatus, errorThrown);
 							}
 						});
+
+						//pull down retrieveCommandSettings
+						$.ajax({
+							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveCommandSettings&apikey="+apikey+"&apiver="+apiversion,
+							success: function(data, textStatus, jqHXR) {
+								ajaxCache.commandSettings = data;
+								prepareConverters();
+							},
+							error: function(jqHXR, textStatus, errorThrown) {
+								alert("An error occurred while retrieveCommandSettings");
+								console.error(jqHXR, textStatus, errorThrown);
+							}
+						});
+
+						//pull down retrieveFileConverterSettings
+						$.ajax({
+							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveFileConverterSettings&apikey="+apikey+"&apiver="+apiversion,
+							success: function(data, textStatus, jqHXR) {
+								ajaxCache.fileConverterSettings = data;
+								prepareConverters();
+							},
+							error: function(jqHXR, textStatus, errorThrown) {
+								alert("An error occurred while retrieveFileConverterSettings");
+								console.error(jqHXR, textStatus, errorThrown);
+							}
+						});
+
 					break;
 					case 'tab_server_users':
 						updateUserList(ui);
@@ -390,6 +310,51 @@
 		}).select(0);
 			
 		return false;
+	}
+
+	function jsonObjectToTable(jsonObject, classToAssign) {
+		var outputTable = $("<table></table>").addClass("configTable");
+		outputTable.addClass(classToAssign);
+		for (var objectProperty in jsonObject) {
+			objectProperty = jsonObject[objectProperty];
+			var rowContent = $("<tr></tr>");
+			for (var c in objectProperty)
+				rowContent.append($("<td></td>").text(objectProperty[c]));
+
+			outputTable.append(rowContent);
+		}
+		return outputTable;
+	}
+
+	function prepareConverters()
+	{
+		if(!ajaxCache.fileTypeSettings || !ajaxCache.commandSettings || !ajaxCache.fileConverterSettings)
+			return;
+
+		var content = $("<div></div>");
+
+		for (var y in ajaxCache.commandSettings)
+			converterSettings.commands[ajaxCache.commandSettings[y].commandID] = ajaxCache.commandSettings[y];
+
+		for (var z in ajaxCache.fileTypeSettings)
+			converterSettings.fileTypes[ajaxCache.fileTypeSettings[z].extension] = ajaxCache.fileTypeSettings[z];
+
+		for (var x in ajaxCache.fileConverterSettings)
+			converterSettings.converters[ajaxCache.fileConverterSettings[x].fileConverterId] = ajaxCache.fileConverterSettings[x];
+
+		var converterTable = jsonObjectToTable(converterSettings.converters, "converters");
+		var commandTable = jsonObjectToTable(converterSettings.commands, "commands");
+		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, "filetypes");
+		content.append($("<h2>File Converters</h2>"));
+		content.append(converterTable);
+
+		content.append($("<h2>Commands</h2>"));
+		content.append(commandTable);
+
+		content.append($("<h2>File Types</h2>"));
+		content.append(fileTypeTable);
+
+		$("#tab_server_streamers").empty().append(content);
 	}
 	
 	function updateUserList(ui)
