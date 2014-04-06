@@ -97,15 +97,15 @@
 		
 		$res = hitAPI($action, $getArgs, null, $cookiefile);
 		
-		//testLog($res["info"]);
+		testLog($res["info"]);
 
 		//do tests
 		$results = array(
 			"action" => $action,
+			"url" => $res["info"]["url"],
 			"getArgs" => $getArgs,
 			"doLogin" => $doLogin,
 			"fullResponse" => $res["body"],
-			"doLogin" => $doLogin,
 		);
 
 
@@ -232,6 +232,8 @@
 			echo "<tr>";
 			echo "<td style='width:150px'>";
 				echo $result["action"] . ($result["doLogin"]?" (+login)":"(no login)");
+				echo "<br /><a href='' onclick='$(this).children().show();return false;'>Show URL ";
+				echo "<span style='display:none'>".$result["url"]."</span></a>";
 			echo "</td>";
 			echo "<td style='width100%'>";
 			echo "<table class='innerTable'>";	
