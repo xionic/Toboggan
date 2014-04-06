@@ -63,12 +63,12 @@
 
 //make fieldsets appear like jQuery UI stuff
 fieldset {
-	border-radius: 6px;
+	border-radius: 0px;
 	border: 1px solid #555555;
 }
 .ui-tabs-panel {
 	border: 0px solid #fa3701 !important;
-	border-radius: 6px;
+	border-radius: 0px;
 }
 
 li.streamer, #tab_server_mediaSources li {
