@@ -1,7 +1,7 @@
 <?php
 	registerTest(
 		//checks
-		"retrieveCommandSettings",  
+		"retrieveFileTypeSettings",  
 
 		//get args
 		array(
@@ -13,9 +13,12 @@
 				"pass" => "^200$"
 			),
 			"json" => array(
-				"/*/commandID" => array("int"),
-				"/*/command" => array("notblank"),
-				"/*/displayName" => array("notblank"),
+				"schema" => array("array"), //cba validating schema
+				"/data/*/extension" => array("notblank"),
+				"/data/*/mimeType" => array("notblank"),
+				"/data/*/mediaType" => array("regex /[av]/"),
+				"/data/*/bitrateCmdID" => array(function($a){return (is_int($a+0) || is_null($a));}),
+				"/data/*/durationCmdID" => array(function($a){return (is_int($a+0) || is_null($a));}),
 			)
 		)
 	);

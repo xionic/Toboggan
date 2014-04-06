@@ -2,6 +2,7 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="style.css" />
 	<script src="https://code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
+	<title>Toboggan test harness</title>
 </head>
 <body>
 
@@ -17,8 +18,11 @@
 		include($file);
 	}
 
-
-	runTests();
+	$actionsToTest = null;	
+	if(isset($_GET["testAction"]))
+		$actionsToTest[] = $_GET["testAction"];
+	
+	runTests($actionsToTest);
 	displayResultsTable();
 
 
