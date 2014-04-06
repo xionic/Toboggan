@@ -333,14 +333,14 @@
 
 		var content = $("<div></div>");
 
-		for (var y in ajaxCache.commandSettings)
-			converterSettings.commands[ajaxCache.commandSettings[y].commandID] = ajaxCache.commandSettings[y];
+		for (var y in ajaxCache.commandSettings.data)
+			converterSettings.commands[ajaxCache.commandSettings.data[y].commandID] = ajaxCache.commandSettings.data[y];
 
-		for (var z in ajaxCache.fileTypeSettings)
-			converterSettings.fileTypes[ajaxCache.fileTypeSettings[z].extension] = ajaxCache.fileTypeSettings[z];
+		for (var z in ajaxCache.fileTypeSettings.data)
+			converterSettings.fileTypes[ajaxCache.fileTypeSettings.data[z].extension] = ajaxCache.fileTypeSettings.data[z];
 
-		for (var x in ajaxCache.fileConverterSettings)
-			converterSettings.converters[ajaxCache.fileConverterSettings[x].fileConverterId] = ajaxCache.fileConverterSettings[x];
+		for (var x in ajaxCache.fileConverterSettings.data)
+			converterSettings.converters[ajaxCache.fileConverterSettings.data[x].fileConverterId] = ajaxCache.fileConverterSettings.data[x];
 
 		var converterTable = jsonObjectToTable(converterSettings.converters, "converters");
 		var commandTable = jsonObjectToTable(converterSettings.commands, "commands");
