@@ -13,9 +13,10 @@
 				"pass" => "^200$"
 			),
 			"json" => array(
-				"/*/commandID" => array("int"),
-				"/*/command" => array("notblank"),
-				"/*/displayName" => array("notblank"),
+				"schema" => array("array"),
+				"/data/*/commandID" => array("int"),
+				"/data/*/command" => array("notblank"),
+				"/data/*/displayName" => array("notblank"),
 			)
 		)
 	);

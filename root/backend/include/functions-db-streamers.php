@@ -160,11 +160,14 @@ function getFileTypeSettings()
 	");
 	$stmt->execute();	
 	
-	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$returnSettings = array();
+	$settings = new SettingGroup();
+	$settings->setSchema(getSchema("retrieveFileTypeSettings"));
+	$settingsData = array();
+	
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);		
 	foreach($rows as $ft)
-	{		
-		$returnSettings[] = array(		
+	{	
+		$settingsData[] = array(
 			"extension" => $ft["extension"],
 			"mimeType" => $ft["mimeType"],
 			"mediaType" => $ft["mediaType"],
@@ -175,7 +178,9 @@ function getFileTypeSettings()
 	}		
 	closeDBConnection($conn);
 	
-	return $returnSettings;
+	$settings->setData($settingsData);
+	
+	return $settings->getSettingsObject();
 }
 
 /**
@@ -199,11 +204,14 @@ function getCommandSettings()
 	");
 	$stmt->execute();	
 	
+	$settings = new SettingGroup();
+	$settings->setSchema(getSchema("retrieveCommandSettings"));
+	$settingsData = array();
+	
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$returnSettings = array();
 	foreach($rows as $ft)
 	{		
-		$returnSettings[] = array(		
+		$settingsData[] = array(		
 			"commandID" => $ft["idcommand"],
 			"command" => $ft["command"],
 			"displayName" => $ft["displayName"],
@@ -212,7 +220,9 @@ function getCommandSettings()
 	}		
 	closeDBConnection($conn);
 	
-	return $returnSettings;
+	$settings->setData($settingsData);
+	
+	return $settings->getSettingsObject();
 }
 
 /**
@@ -237,11 +247,14 @@ function getFileConverterSettings()
 	");
 	$stmt->execute();	
 	
+		$settings = new SettingGroup();
+	$settings->setSchema(getSchema("retrieveFileConverterSettings"));
+	$settingsData = array();
+	
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$returnSettings = array();
 	foreach($rows as $ft)
 	{		
-		$returnSettings[] = array(		
+		$settingsData[] = array(		
 			"fileConverterID" => $ft["idfileConverter"],
 			"fromFileType" => $ft["fromFileType"],
 			"toFileType" => $ft["toFileType"],
@@ -251,7 +264,9 @@ function getFileConverterSettings()
 	}		
 	closeDBConnection($conn);
 	
-	return $returnSettings;
+	$settings->setData($settingsData);
+	
+	return $settings->getSettingsObject();
 }
 
 function saveFileTypeSettings($settings_JSON)

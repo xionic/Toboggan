@@ -11,6 +11,14 @@ function getConfig($name){
 }
 
 /**
+* returns a schema
+*/
+function getSchema($name){
+	global $schema;
+	return $schema[$name];}
+
+
+/**
 * Outputs metadata about a file
 */
 function outputFileMetaData_JSON($mediaSourceID, $dir, $filename)
