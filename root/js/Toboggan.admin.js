@@ -312,15 +312,19 @@
 		return false;
 	}
 
-	function jsonObjectToTable(jsonObject, classToAssign) {
+	function jsonObjectToTable(jsonObject, jsonObjectSchema, classToAssign) {
 		var outputTable = $("<table></table>").addClass("configTable");
 		outputTable.addClass(classToAssign);
 		for (var objectProperty in jsonObject) {
 			objectProperty = jsonObject[objectProperty];
 			var rowContent = $("<tr></tr>");
 			for (var c in objectProperty)
-				rowContent.append($("<td></td>").text(objectProperty[c]));
-
+			{
+				var tableCell = $("<td></td>");
+				tableCell.text(objectProperty[c]);
+				
+				rowContent.append(tableCell);
+			}
 			outputTable.append(rowContent);
 		}
 		return outputTable;
@@ -333,18 +337,19 @@
 
 		var content = $("<div></div>");
 
+		for (var x in ajaxCache.fileConverterSettings.data)
+			converterSettings.converters[ajaxCache.fileConverterSettings.data[x].fileConverterId] = ajaxCache.fileConverterSettings.data[x];
+
 		for (var y in ajaxCache.commandSettings.data)
 			converterSettings.commands[ajaxCache.commandSettings.data[y].commandID] = ajaxCache.commandSettings.data[y];
 
 		for (var z in ajaxCache.fileTypeSettings.data)
 			converterSettings.fileTypes[ajaxCache.fileTypeSettings.data[z].extension] = ajaxCache.fileTypeSettings.data[z];
 
-		for (var x in ajaxCache.fileConverterSettings.data)
-			converterSettings.converters[ajaxCache.fileConverterSettings.data[x].fileConverterId] = ajaxCache.fileConverterSettings.data[x];
+		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters");
+		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands");
+		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes");
 
-		var converterTable = jsonObjectToTable(converterSettings.converters, "converters");
-		var commandTable = jsonObjectToTable(converterSettings.commands, "commands");
-		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, "filetypes");
 		content.append($("<h2>File Converters</h2>"));
 		content.append(converterTable);
 
