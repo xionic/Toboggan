@@ -32,10 +32,12 @@ $liSubSirEvenColour2 = rgba(245,245,245,0.2);
 $liSubSirOddColour1 = rgba(230,230,230,0.2);
 $liSubSirOddColour2 = rgba(215,215,215,0.2);
 
-$TopBarColour1 = rgba(240,240,240,1);
-$TopBarColour2 = rgba(230,230,230,1);
-$PlayerControlsColour1 = rgba(220,220,220,1);
-$PlayerControlsColour2 = rgba(240,240,240,1);
+$TopBarColour1 = rgba(240,240,240,0);
+$TopBarColour2 = rgba(230,230,230,0);
+$PlayerControlsColour1 = #fa3701;
+$PlayerControlsColour2 = #fa3701;
+
+$TopBarFontColour = white;
 
 $TextShadowHighlight = #ccc 1px -1px 1px;
 
@@ -168,7 +170,7 @@ html, #loginForm
 
 #topBarContainer 
 {
-	border-bottom: 0px;
+	border: 0px;
 	padding: 0ex 1ex;
 	text-align: right;
 	background: $TopBarColour1;
@@ -176,7 +178,7 @@ html, #loginForm
 	background: -webkit-linear-gradient($TopBarColour1,$TopBarColour2);
 	background: -moz-linear-gradient($TopBarColour1,$TopBarColour2);
 	background: linear-gradient($TopBarColour1,$TopBarColour2);
-	color: $HeaderFontColour;
+	color: $TopBarFontColour;
 }
 
 .ui-widget-content
@@ -185,7 +187,13 @@ html, #loginForm
 	background: white;
 }
 
-#topBarContainer a, #trackListAddControls a
+#topBarContainer a
+{
+	font-weight: bold;
+	color: #404040;
+}
+
+#trackListAddControls a
 {
 	font-weight: bold;
 	color: $ControlLinkColour;
@@ -281,7 +289,7 @@ html, #loginForm
 {
 	font-weight: bold;
 	color: $CurrentlySelectedColour;
-	text-shadow: $TextShadowHighlight;
+//	text-shadow: $TextShadowHighlight;
 }
 #folderlist .currentlySelected ul
 {
@@ -306,12 +314,17 @@ a.jPlaying
 {
 	font-weight: bold;
 	color: $PlayingTrackColour !important;
-	text-shadow: $TextShadowHighlight;
+//	text-shadow: $TextShadowHighlight;
 }
 
 #jquery_jplayer_1, #centerPlayerContainer 
 {
 	background: black;
+}
+
+.jp-progress 
+{
+	background: white;
 }
 
 //unplayable tracks
