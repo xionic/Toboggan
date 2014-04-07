@@ -4,61 +4,35 @@
 /**
 * returns streamer profiles which are suitable to produce streams for the given file
 */
-function getAvailableStreamers($file){
+function getAvailableConverters($file){
 	//get file extension
 	$pathinfo = pathinfo($file);
 	$extension = strtolower($pathinfo["extension"]);
 	
-	$conn = getDBConnection();
-	
-	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
-				INNER JOIN fromExt USING (idfromExt)
-				INNER JOIN toExt USING(idtoExt)
-				INNER JOIN transcode_cmd USING(idtranscode_cmd)
-				WHERE `fromExt`.Extension = :fromExt");
-	$stmt->bindValue(":fromExt",$extension, PDO::PARAM_STR);
-	$stmt->execute();
-	
-	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	closeDBConnection($conn);	
-	
-	$suitableStreamers = array();
-	foreach($results as $row){
-		//check that the user has permission
-		if(checkUserPermission("accessStreamer", $row["idextensionMap"]))
-			$suitableStreamers[] = new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
-	}	
-	
-		
-	
-	return $suitableStreamers;
+	//we may not have an extension entry for this. If not, just return an empty array
+	try
+	{
+		$fromFT = new FileType($extension);
+	} catch (NoSuchFileTypeException $e) {
+		return array();
+	}
+	return $fromFT->getAvailableConverters();
 }
 
 /**
 * get a streamer profile from its id
 */
-function getStreamerById($id){
+function getConverterById($id){
+	//we may not have an extension entry for this. If not, just return an empty array
+	try
+	{
+		if(checkUserPermission("accessStreamer", $id)) //check user has permission to use the streamer too
+			return new FileConverter($id);
+	} catch (NoSuchFileConveterException $e) {
+		//don't need to do anything, just fail through
+	}	
+	return false; // no permission, or non existent FileConverter
 	
-	$conn = getDBConnection();
-	
-	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd
-				FROM extensionMap 
-				INNER JOIN fromExt USING (idfromExt)
-				INNER JOIN toExt USING(idtoExt)
-				INNER JOIN transcode_cmd USING(idtranscode_cmd)
-				WHERE idextensionMap = :idextensionMap");
-	$stmt->bindValue(":idextensionMap",$id, PDO::PARAM_INT);
-	$stmt->execute();
-
-	$row = $stmt->fetch(PDO::FETCH_ASSOC);
-	$stmt->closeCursor();
-	closeDBConnection($conn);
-		
-		
-	if($row && checkUserPermission("accessStreamer", $row["idextensionMap"])) //check user has permission to use the streamer too
-		return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
-	else
-		return false;
 	
 }
 /**
@@ -71,11 +45,19 @@ function getAllStreamers()
 
 	$conn = getDBConnection();
 	
-	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
-				INNER JOIN fromExt USING (idfromExt)
-				INNER JOIN toExt USING(idtoExt)
-				INNER JOIN transcode_cmd USING(idtranscode_cmd)
-				");
+	$stmt = $conn->prepare(
+		"SELECT 
+			idextensionMap, 
+			`fromExt`.Extension as fromExt, 
+			`toExt`.Extension as toExt, 
+			command, MimeType , 
+			MediaType, 
+			bitrateCmd 
+		FROM extensionMap 
+			INNER JOIN fromExt USING (idfromExt)
+			INNER JOIN toExt USING(idtoExt)
+			INNER JOIN transcode_cmd USING(idtranscode_cmd)
+	");
 	$stmt->execute();
 
 	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -129,17 +111,36 @@ function getStreamerByExtensions($fromExt, $toExt)
 }
 
 /**
-* output a JSON object representing all changable server settings
+* output a JSON object representing the server FileType settings
 */
-function outputStreamerSettings_JSON()
+function outputFileTypeSettings_JSON()
 {
-	$settings = getStreamerSettings();
+	$settings = getFileTypeSettings();
 	restTools::sendResponse(json_encode($settings), 200, JSON_MIME_TYPE);
 }
+
+/**
+* output a JSON object representing the server Command settings
+*/
+function outputCommandSettings_JSON()
+{
+	$settings = getCommandSettings();
+	restTools::sendResponse(json_encode($settings), 200, JSON_MIME_TYPE);
+}
+
+/**
+* output a JSON object representing the server Command settings
+*/
+function outputFileConverterSettings_JSON()
+{
+	$settings = getFileConverterSettings();
+	restTools::sendResponse(json_encode($settings), 200, JSON_MIME_TYPE);
+}
+
 /**
 * get an object representing the server settings
 */
-function getStreamerSettings()
+function getFileTypeSettings()
 {
 	//results structure
 	$results = array();
@@ -148,61 +149,130 @@ function getStreamerSettings()
 	$conn = getDBConnection();
 		
 	//get all settings for each streamer apart from fromExt.Extension and aggregate rows which are identical (DISTINCT)
-	$stmt = $conn->prepare("SELECT DISTINCT toExt.idtoExt, transcode_cmd.idtranscode_cmd, fromExt.bitrateCmd,
-		toExt.Extension AS toExtension, toExt.MimeType, toExt.MediaType, transcode_cmd.command
-		FROM fromExt
-		INNER JOIN extensionMap USING(idfromExt)
-		INNER JOIN toExt USING(idtoExt)
-		INNER JOIN transcode_cmd USING(idtranscode_cmd);
+	$stmt = $conn->prepare("
+		SELECT 
+			extension,
+			mimeType,
+			mediaType,
+			idbitrateCmd,
+			iddurationCmd
+		FROM FileType
 	");
-	$stmt->execute();
+	$stmt->execute();	
 	
-	//get streamer results and for each toext query which from ext go to it to aggregate
-	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$returnSettings = array();
-	foreach($rows as $streamer)
-	{
-		$stmt = $conn->prepare("
-			SELECT fromExt.Extension as fromExtension
-				FROM fromExt 
-					INNER JOIN ExtensionMap USING(idfromExt)
-					INNER JOIN toExt USING(idtoExt)
-					INNER JOIN transcode_cmd USING(idtranscode_cmd)
-				WHERE toExt.idtoExt = :idtoExt
-					AND transcode_cmd.idtranscode_cmd = :idtranscode_cmd
-					AND fromExt.bitrateCmd = :bitrateCmd
-		");
-		$stmt->bindValue(":idtoExt", $streamer["idtoExt"]);
-		$stmt->bindValue(":idtranscode_cmd", $streamer["idtranscode_cmd"]);
-		$stmt->bindValue(":bitrateCmd", $streamer["bitrateCmd"]);
-		$stmt->execute();
-		
-		$fromExtStr = "";
-		while(($fromExt = $stmt->fetch(PDO::FETCH_ASSOC)) !== false){
-			$fromExtStr .= $fromExt["fromExtension"] . ",";
-		}
-		$fromExtStr = substr($fromExtStr, 0, -1); 
-		
-		//update main result set and strip un-needed ids
-		$returnSettings[] = array(		
-			"fromExtensions" => $fromExtStr,
-			"bitrateCmd" => $streamer["bitrateCmd"],
-			"toExtension" => $streamer["toExtension"],
-			"MimeType" => $streamer["MimeType"],
-			"MediaType" => $streamer["MediaType"],
-			"command" => $streamer["command"],
+	$settings = new SettingGroup();
+	$settings->setSchema(getSchema("retrieveFileTypeSettings"));
+	$settingsData = array();
+	
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);		
+	foreach($rows as $ft)
+	{	
+		$settingsData[] = array(
+			"extension" => $ft["extension"],
+			"mimeType" => $ft["mimeType"],
+			"mediaType" => $ft["mediaType"],
+			"bitrateCmdID" => $ft["idbitrateCmd"],
+			"durationCmdID" => $ft["iddurationCmd"],
 		);
 		
 	}		
 	closeDBConnection($conn);
 	
-	return $returnSettings;
+	$settings->setData($settingsData);
+	
+	return $settings->getSettingsObject();
 }
 
-function saveStreamerSettings($settings_JSON)
+/**
+* get an object representing the server settings
+*/
+function getCommandSettings()
+{
+	//results structure
+	$results = array();
+	
+	//db connection
+	$conn = getDBConnection();
+		
+	//get all settings for each streamer apart from fromExt.Extension and aggregate rows which are identical (DISTINCT)
+	$stmt = $conn->prepare("
+		SELECT 
+			idcommand,
+			command,
+			displayName
+		FROM Command
+	");
+	$stmt->execute();	
+	
+	$settings = new SettingGroup();
+	$settings->setSchema(getSchema("retrieveCommandSettings"));
+	$settingsData = array();
+	
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	foreach($rows as $ft)
+	{		
+		$settingsData[] = array(		
+			"commandID" => $ft["idcommand"],
+			"command" => $ft["command"],
+			"displayName" => $ft["displayName"],
+		);
+		
+	}		
+	closeDBConnection($conn);
+	
+	$settings->setData($settingsData);
+	
+	return $settings->getSettingsObject();
+}
+
+/**
+* get an object representing the server settings
+*/
+function getFileConverterSettings()
+{
+	//results structure
+	$results = array();
+	
+	//db connection
+	$conn = getDBConnection();
+		
+	//get all settings for each streamer apart from fromExt.Extension and aggregate rows which are identical (DISTINCT)
+	$stmt = $conn->prepare("
+		SELECT 
+			idfileConverter,
+			fromFileType,
+			toFileType,
+			idcommand
+		FROM FileConverter
+	");
+	$stmt->execute();	
+	
+		$settings = new SettingGroup();
+	$settings->setSchema(getSchema("retrieveFileConverterSettings"));
+	$settingsData = array();
+	
+	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	foreach($rows as $ft)
+	{		
+		$settingsData[] = array(		
+			"fileConverterID" => $ft["idfileConverter"],
+			"fromFileType" => $ft["fromFileType"],
+			"toFileType" => $ft["toFileType"],
+			"commandID" => $ft["idcommand"],
+		);
+		
+	}		
+	closeDBConnection($conn);
+	
+	$settings->setData($settingsData);
+	
+	return $settings->getSettingsObject();
+}
+
+function saveFileTypeSettings($settings_JSON)
 {
 
-	appLog("Saving new server settings", appLog_VERBOSE);
+	appLog("Saving new File Type settings", appLog_VERBOSE);
 	//get object
 	$settings = json_decode($settings_JSON, true);
 	
@@ -210,77 +280,247 @@ function saveStreamerSettings($settings_JSON)
 	//basic validation
 	$av = new ArgValidator("handleArgValidationError");
 		
-	//validate streamer section
-	foreach($settings as $streamer)
+	//validate more
+	foreach($settings as $ft)
 	{
-		$av->validateArgs($streamer, array(
-			"fromExtensions"	=>		array("string", "notblank"),
-			"bitrateCmd"		=>		array("string", "notblank"),
-			"toExtension"		=>		array("string", "notblank"),
-			"MimeType"			=>		array("string", "notblank"),
-			"MediaType"			=>		array("string", "notblank"),
-			"command"			=>		array("string", "notblank"),
+		$av->validateArgs($ft, array(
+			"extension"		=> array("string", "notblank"),
+			"mimeType"		=> array("string", "notblank"),
+			"mediaType"		=> array("string", "notblank", "regex /[av]/"),
+			"bitrateCmdID" 	=> array("int", "optional"),
+			"durationCmdID" => array("int", "optional"),
 		));
 	}
-	//TODO - add more validation - deduplication etc
 	
+	$conn = getDBConnection();
+	try	{	
+		$conn->beginTransaction();
 		
-	//explode fromExt grouping for db entry
-	$expandedStreamers = array();
-	foreach($settings as $streamer)
-	{
-		$fromExtArr = explode(",", $streamer["fromExtensions"]);
-		//loop through each fromext and create a copy of the streamer for it
-		//var_dump_pre($fromExtArr);
-		foreach($fromExtArr as $fromExt)
+		//get a list of ids we've been passed
+		$FTToKeep = array();
+		foreach($settings as $FT)
 		{
-			$expandedStreamers[] = new Streamer(
-				null,
-				$fromExt,
-				$streamer["toExtension"],
-				$streamer["command"],
-				$streamer["MimeType"],
-				$streamer["MediaType"],
-				$streamer["bitrateCmd"]
-			);
-		}		
-	}
-	
-	//replace old streamers with explanded ones
-	$settings = $expandedStreamers;
-	
-	///POST EXPANSION VALIDATION
-	//make sure that a toExtension.Extension does not appear more than once with different properties (mediaType, mimetype)
-	// and make sure that a fromExtension.Extension does not appear more than once with different properties (bitrateCmd)
-	foreach($settings as $streamer1)
-	{
-		foreach($settings as $streamer2)
+			$FTToKeep[] = $FT["extension"];
+		}
+		appLog("Not deleting extensions: ". implode(',',$FTToKeep), appLog_DEBUG);
+		
+		//now build the delete - so like (?,?,?,? ...
+		$query = "DELETE FROM FileType WHERE extension NOT IN (" . implode(',', array_fill(0,count($FTToKeep),'?')) . ")";
+		$stmt = $conn->prepare($query);
+
+		foreach($FTToKeep as $key => $c)
+		{			
+			$stmt->bindValue($key+1, $c, PDO::PARAM_STR);
+		}
+		$stmt->execute(); //delete the omitted ones	
+		
+		//Whack in the new ones
+		foreach($settings as $ft)
 		{
-			if( // if the extension is the same but the mediaType OR MimeType differ - will not cause DB problem but will produce unexpected results
-				$streamer1->toExt == $streamer2->toExt
-				&& ($streamer1->mime != $streamer2->mime || $streamer1->outputMediaType != $streamer2->outputMediaType)
-			)
-			{
-				reportError("toExtension's cannot be updated twice in the same request. i.e. you have a multiple toExtension entries with differing settings");
+			if(checkFileTypeExists($ft["extension"])){ // need to update
+				$stmt = $conn->prepare("
+					UPDATE 
+						FileType 
+					SET
+						mimeType		= :mimeType,
+						mediaType		= :mediaType,
+						idbitrateCmd	= :idbitrateCmd,
+						iddurationCmd	= :iddurationCmd
+					WHERE
+						extension = :extension
+				");			
+			} else { //new - need to insert			
+				$stmt = $conn->prepare("
+					INSERT INTO 
+						FileType (extension, mimeType, mediaType, idbitrateCmd, iddurationCmd)
+					VALUES
+						(:extension, :mimeType, :mediaType, :idbitrateCmd, :iddurationCmd)
+				");
 			}
-			elseif( // if the extension is the same but the mediaType OR MimeType differ - will not cause DB problem but will produce unexpected results
-				$streamer1->fromExt == $streamer2->fromExt
-				&& ($streamer1->bitrateCmd != $streamer2->bitrateCmd )
-			)
-			{
-				reportError("fromExtension's cannot be updated twice in the same request. i.e. you have a multiple fromExtension entries with differing bitrateCmd's");
-			}
+			$stmt->bindValue(":extension",$ft["extension"], PDO::PARAM_STR);
+			$stmt->bindValue(":mimeType",$ft["mimeType"], PDO::PARAM_STR);
+			$stmt->bindValue(":mediaType",$ft["mediaType"], PDO::PARAM_STR);
+			$stmt->bindValue(":idbitrateCmd",$ft["bitrateCmdID"], PDO::PARAM_STR);
+			$stmt->bindValue(":iddurationCmd",$ft["durationCmdID"], PDO::PARAM_STR);
+			$stmt->execute();	
+		}	
+		
+		$conn->commit();		
+	} catch (PDOException $pe) { // watch for constraint violations since we don't check elsewhere. Should change this
+		appLog($pe, appLog_DEBUG);
+		$conn->rollback();
+		if($pe->errorInfo[0] == "23000"){ // constraint violation
+				reportError("Constraint violation while removing FileType",409);
 		}
 	}
+	closeDBConnection($conn);
+}
+
+function saveCommandSettings($settings_JSON)
+{
+
+	appLog("Saving new command settings", appLog_VERBOSE);
+	//get object
+	$settings = json_decode($settings_JSON, true);
 	
-	//Start whacking them in the DB
+	//validate the bitch!
+	//basic validation
+	$av = new ArgValidator("handleArgValidationError");
+
+	//validate more
+	foreach($settings as $com)
+	{
+		$av->validateArgs($com, array(
+			"commandID"		=> array("int", "optional"), //omit for new commands
+			"command"		=> array("string"),
+			"displayName"		=> array("string", "notblank"),			
+		));
+	}
+
+	//start the transaction
+	$conn = getDBConnection();
+	try {
+		$conn->beginTransaction();
+		
+		//delete omitted commands - DB constraints should take care of most problems here
+		//get a list of ids we've been passed
+		$commandsToKeep = array();
+		foreach($settings as $com)
+		{
+			if(isset($com["commandID"]))
+				$commandsToKeep[] = $com["commandID"];
+		}
+		
+		//now build the delete - so like (?,?,?,? ...
+		$query = "DELETE FROM Command WHERE idcommand NOT IN (" . implode(',', array_fill(0,count($commandsToKeep),'?')) . ")";
+		$stmt = $conn->prepare($query);
+		
+		foreach($commandsToKeep as $key => $c)
+		{
+			$stmt->bindValue($key+1, $c, PDO::PARAM_INT);
+		}
+		$stmt->execute();
+
+		//now update existing/insert new
+		foreach($settings as $com)
+		{
+			if(isset($com["commandID"])) // existing command
+			{
+				$stmt = $conn->prepare("
+					UPDATE 
+						Command 
+					SET
+						command			= :command,
+						displayName		= :displayName
+					WHERE
+						idcommand = :idcommand
+				");
+				$stmt->bindValue(":idcommand",$com["commandID"], PDO::PARAM_INT);
+			} else { // new command
+				$stmt = $conn->prepare("
+					INSERT INTO 
+						Command (command, displayName)
+					VALUES
+						(:command, :displayName)
+				");
+			}
+			$stmt->bindValue(":command",$com["command"], PDO::PARAM_STR);
+			$stmt->bindValue(":displayName",$com["displayName"], PDO::PARAM_STR);
+			$stmt->execute();	
+			
+		}			
+		$conn->commit();
+		
+	} catch (PDOException $pe) { // watch for constraint violations since we don't check elsewhere. Should change this
+			$conn->rollback();
+			appLog($pe, appLog_DEBUG);
+			if($pe->errorInfo[0] == "23000"){ // constraint violation
+					reportError("Constraint violation while removing Command",409);
+			}
+	}	
+	closeDBConnection($conn);
+}
+
+function saveFileConverterSettings($settings_JSON)
+{
+
+	appLog("Saving new File Converter settings", appLog_VERBOSE);
+	//get object
+	$settings = json_decode($settings_JSON, true);
 	
-	$conn = null;
+	//validate the bitch!
+	//basic validation
+	$av = new ArgValidator("handleArgValidationError");
+
+	//validate more
+	foreach($settings as $com)
+	{
+		$av->validateArgs($com, array(
+			"fileConverterID"		=> array("int", "optional"), //omit for new commands
+			"fromFileType"		=> array("string", "notblank"),
+			"toFileType"		=> array("string", "notblank"),
+			"commandID"		=> array("int"),			
+		));
+	}
 
 	//start the transaction
 	$conn = getDBConnection();
 	$conn->beginTransaction();
 	
+	//delete omitted commands - DB constraints should take care of most problems here
+	//get a list of ids we've been passed
+	$FCToKeep = array();
+	foreach($settings as $com)
+	{
+		if(isset($com["fileConverterID"]))
+			$FCToKeep[] = $com["fileConverterID"];
+	}
+	
+	//now build the delete - so like (?,?,?,? ...
+	$query = "DELETE FROM FileConverter WHERE idfileConverter NOT IN (" . implode(',', array_fill(0,count($FCToKeep),'?')) . ")";
+	$stmt = $conn->prepare($query);	
+	
+	foreach($FCToKeep as $key => $c)
+	{
+		$stmt->bindValue($key+1, $c, PDO::PARAM_INT);
+	}
+	$stmt->execute();
+
+	//now update existing/insert new
+	foreach($settings as $com)
+	{
+		if(isset($com["fileConverterID"])) // existing command
+		{
+			$stmt = $conn->prepare("
+				UPDATE 
+					FileConverter 
+				SET
+					fromFileType	= :fromFileType,
+					toFileType		= :toFileType,
+					idcommand		= :idcommand
+				WHERE
+					idfileConverter = :idfileConverter
+			");
+			$stmt->bindValue(":idfileConverter",$com["fileConverterID"], PDO::PARAM_INT);
+		} else { // new command
+			$stmt = $conn->prepare("
+				INSERT INTO 
+					FileConverter (fromFileType, toFileType, idcommand)
+				VALUES
+					(:fromFileType, :toFileType, :idcommand)
+			");
+		}
+		$stmt->bindValue(":fromFileType",$com["fromFileType"], PDO::PARAM_STR);
+		$stmt->bindValue(":toFileType",$com["toFileType"], PDO::PARAM_STR);
+		$stmt->bindValue(":idcommand",$com["commandID"], PDO::PARAM_STR);
+		$stmt->execute();		
+	}
+	
+	$conn->commit();	
+	closeDBConnection($conn);
+}
+
+function blah () {
 	//remove streamers that are to be deleted
 	$DBstreamers = getAllStreamers();
 	$streamerIDsToRemove = array();
@@ -543,5 +783,18 @@ function updateOrInsertTranscodeCmd($conn, $command)
 	}
 	return $transcode_cmdID;
 }
+
+/**
+* checks if a FileType (extension) is in the DB
+*/
+function checkFileTypeExists($ext){
+	try{
+		new FileType($ext);
+	} catch(NoSuchFileTypeException $e) {
+		return false;
+	}
+	return true;
+}
+
 
 ?>

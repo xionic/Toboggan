@@ -2,12 +2,16 @@
 
 
 require_once("config.php");
+require_once("schemata.php");
 
 require_once("classes/userLogin.class.php");
 require_once("lib/PHPArgValidator/PHPArgValidator.class.php");
 require_once("classes/REST_Helpers.class.php");
-require_once("classes/Streamer.class.php");
+require_once("classes/FileConverter.class.php");
 require_once("classes/FileOps.class.php");
+require_once("classes/FileType.class.php");
+require_once("classes/Exceptions.class.php");
+require_once("classes/SettingGroup.class.php");
 
 require_once("functions-db.php");
 require_once("functions-db-user.php");

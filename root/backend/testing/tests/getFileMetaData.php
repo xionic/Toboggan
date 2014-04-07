@@ -20,7 +20,7 @@
 				"displayName"	=> array("string"),
 				"filesize"	=> array("lbound 0"),
 				"duration"	=> array(function($a){return (is_int($a) && $a > 0) || $a == null;}), // can be null, and we cannot do "OR" :(
-				"streamers"	=> array("array"),
+				"converters"	=> array("array"),
 				"tags"		=> array("array"),
 			),
 		)

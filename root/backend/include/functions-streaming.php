@@ -32,7 +32,8 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 	}
 	else{	
 		//streamer settings
-		$streamerObj = getStreamerById($streamerID);
+		$streamerObj = getConverterById($streamerID);
+		
 		if(!$streamerObj)
 		{
 			appLog("Streamer object with id $streamerID does not exist", appLog_INFO);
@@ -40,10 +41,10 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 			return false;
 		}
 		//check that the extension is compatible with the streamer
-		if(strtolower($streamerObj->fromExt) != strtolower($filepathInfo["extension"]))
+		if(strtolower($streamerObj->fromFileType->extension) != strtolower($filepathInfo["extension"]))
 		{
-			appLog("Streamer does not support this extension", appLog_INFO);
-			reportError("Streamer specified by streamerID does not support this file");
+			appLog("StreamerID: ". $streamerObj->id . " does not support this extension", appLog_INFO);
+			reportError("Streamer specified by streamerID: ". $streamerObj->id . "  does not support this file");
 			return false;
 		}
 	
@@ -52,7 +53,7 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 		/**
 		* Get media bitrate
 		*/
-		$maxBitrate = getCurrentMaxBitrate($streamerObj->outputMediaType); //get from db in the end
+		$maxBitrate = getCurrentMaxBitrate($streamerObj->toFileType->mediaType); //get from db in the end
 		if($maxBitrate == 0 || $maxBitrate === false)
 		{
 			appLog("Could not retreive maxBitrate or it was 0 - ignoring", appLog_INFO);
@@ -64,7 +65,7 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 		if($maxBitrate != NO_MAX_BITRATE)//if there is a max bitrate
 		{ 
 			//get the bitrate command with variables expanded
-			$bitrateCommand = expandCmdString($streamerObj->bitrateCmd, 
+			$bitrateCommand = expandCmdString($streamerObj->fromFileType->bitrateCmd, 
 				array(
 					"path" 		=> $file,
 				)
@@ -97,10 +98,10 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 			$mustTranscode = false;
 		}
 		//mimetype of file to be output
-		$mimeType = $streamerObj->mime;		
+		$mimeType = $streamerObj->toFileType->mimeType;		
 		
 		//filename to send
-		$filenameToSend = substr($filepathInfo["basename"], 0, strrpos($filepathInfo["basename"], ".")). "." . $streamerObj->toExt;
+		$filenameToSend = substr($filepathInfo["basename"], 0, strrpos($filepathInfo["basename"], ".")). "." . $streamerObj->toFileType->extension;
 		
 	}// end if download
 	
@@ -135,7 +136,7 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 	
 	if(
 		$streamerID == 0 || //straight passthrough file download
-		(!$mustTranscode && $streamerObj->toExt == $streamerObj->fromExt)
+		(!$mustTranscode && $streamerObj->toFileType->extension == $streamerObj->fromFileType->extension)
 	) // if the file's bitrate does not need to be change and the format is supported by the player, do not transcode
 	{
 		appLog("File does not need to be transcoded, streaming straight through", appLog_VERBOSE);
@@ -290,7 +291,7 @@ function transcodeStream($streamerObj, $file, $skipToTime){
 	$cmd = expandCmdString($streamerObj->cmd, 
 		array(
 			"path" 		=> $file,
-			"bitrate"	=> getCurrentMaxBitrate($streamerObj->outputMediaType),
+			"bitrate"	=> getCurrentMaxBitrate($streamerObj->toFileType->mediaType),
 			"skipToTime"	=> $skipToTime,
 		)
 	);
