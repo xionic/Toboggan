@@ -40,7 +40,7 @@ $PlayerControlsColour2 = rgba(240,240,240,1);
 $TextShadowHighlight = #ccc 1px -1px 1px;
 
 $BodyBackground = "rgba(255,255,255,0);";
-$ContainerBorder = 1px solid black;
+$ContainerBorder = 0px solid grey;
 $LeftRightContainerBorderBottom = 0px solid black;
 
 $BoxShadowStyle = 0px 0px 4px rgba(0,0,0,0.5);
