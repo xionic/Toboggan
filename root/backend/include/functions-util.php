@@ -121,6 +121,7 @@ function normalisePath($fn){
 * reports errors in an appropriate manner
 */
 function reportError($errMsg, $httpcode = 400, $mime = 'text/plain'){
+	appLog($_GET);
 	appLog("Reporting error to user: '".$errMsg."'", appLog_DEBUG);
 	if($mime != JSON_MIME_TYPE) // injection protection
 		$errMsg = htmlentities($errMsg);
