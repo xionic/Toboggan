@@ -9,9 +9,11 @@
 		rightClickedObject = {},
 		currentUserName = "",
 		currentUserID = "",
-		fileTypeSettings = false,
-		commandSettings = false,
-		fileConverterSettings = false,
+		ajaxCache = {
+			fileTypeSettings : false,
+			commandSettings : false,
+			fileConverterSettings : false
+		},
 		converterSettings = {
 			commands: {},
 			fileTypes: {},
@@ -136,7 +138,7 @@
 						$.ajax({
 							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveFileTypeSettings&apikey="+apikey+"&apiver="+apiversion,
 							success: function(data, textStatus, jqHXR) {
-								fileTypeSettings = data;
+								ajaxCache.fileTypeSettings = data;
 								prepareConverters();
 							},
 							error: function(jqHXR, textStatus, errorThrown) {
@@ -149,7 +151,7 @@
 						$.ajax({
 							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveCommandSettings&apikey="+apikey+"&apiver="+apiversion,
 							success: function(data, textStatus, jqHXR) {
-								commandSettings = data;
+								ajaxCache.commandSettings = data;
 								prepareConverters();
 							},
 							error: function(jqHXR, textStatus, errorThrown) {
@@ -162,7 +164,7 @@
 						$.ajax({
 							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveFileConverterSettings&apikey="+apikey+"&apiver="+apiversion,
 							success: function(data, textStatus, jqHXR) {
-								fileConverterSettings = data;
+								ajaxCache.fileConverterSettings = data;
 								prepareConverters();
 							},
 							error: function(jqHXR, textStatus, errorThrown) {
@@ -309,39 +311,55 @@
 			
 		return false;
 	}
-	
+
+	function jsonObjectToTable(jsonObject, jsonObjectSchema, classToAssign) {
+		var outputTable = $("<table></table>").addClass("configTable");
+		outputTable.addClass(classToAssign);
+		for (var objectProperty in jsonObject) {
+			objectProperty = jsonObject[objectProperty];
+			var rowContent = $("<tr></tr>");
+			for (var c in objectProperty)
+			{
+				var tableCell = $("<td></td>");
+				tableCell.text(objectProperty[c]);
+				
+				rowContent.append(tableCell);
+			}
+			outputTable.append(rowContent);
+		}
+		return outputTable;
+	}
+
 	function prepareConverters()
 	{
-		if(!fileTypeSettings || !commandSettings || !fileConverterSettings)
+		if(!ajaxCache.fileTypeSettings || !ajaxCache.commandSettings || !ajaxCache.fileConverterSettings)
 			return;
 
 		var content = $("<div></div>");
 
-		for (var y in commandSettings)
-			converterSettings.commands[commandSettings[y].commandID] = commandSettings[y];
+		for (var x in ajaxCache.fileConverterSettings.data)
+			converterSettings.converters[ajaxCache.fileConverterSettings.data[x].fileConverterId] = ajaxCache.fileConverterSettings.data[x];
 
-		for (var z in fileTypeSettings)
-			converterSettings.fileTypes[fileTypeSettings[z].extension] = fileTypeSettings[z];
+		for (var y in ajaxCache.commandSettings.data)
+			converterSettings.commands[ajaxCache.commandSettings.data[y].commandID] = ajaxCache.commandSettings.data[y];
 
-		var converterTable = $("<table/>");
-		for (var x in fileConverterSettings)
-		{
-			converterSettings.converters[fileConverterSettings[x].fileConverterId] = fileConverterSettings[x];
-			converterTable.append(
-				$("<tr></tr>")
-					.append($("<td></td>")
-							.text(fileConverterSettings[x].fileConverterId)
-					).append($("<td></td>")
-							.text(fileConverterSettings[x].fromFileType)
-					).append($("<td></td>")
-							.text(fileConverterSettings[x].toFileType)
-					).append($("<td></td>")
-							.text(fileConverterSettings[x].commandID))
-			);
-		}
+		for (var z in ajaxCache.fileTypeSettings.data)
+			converterSettings.fileTypes[ajaxCache.fileTypeSettings.data[z].extension] = ajaxCache.fileTypeSettings.data[z];
+
+		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters");
+		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands");
+		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes");
+
+		content.append($("<h2>File Converters</h2>"));
 		content.append(converterTable);
 
-		$("#tab_server_streamers").append(content);
+		content.append($("<h2>Commands</h2>"));
+		content.append(commandTable);
+
+		content.append($("<h2>File Types</h2>"));
+		content.append(fileTypeTable);
+
+		$("#tab_server_streamers").empty().append(content);
 	}
 	
 	function updateUserList(ui)
