@@ -55,7 +55,7 @@ $UsedBarColour = #fa3701;
 $RemainingBarColour = #404040;
 
 $ContextMenuBorder = 1px solid black;
-$ContextMenuBackground = url("jQuery-ui/custom-theme/images/ui-bg_diagonals-small_25_000000_40x40.png");
+$ContextMenuBackground = rgba(237,237,237,1);
 $ContextMenuHighlight = #fff;
 $ContextMenuColour = black;
 
@@ -612,6 +612,7 @@ div.loading
 
 #bandwidthInformation 
 {
+	color: $FontColour;
 	border: $BandwidthInfoBorder;
 	box-shadow: $BoxShadowStyle; 
 	background: $BandwidthBackground;
