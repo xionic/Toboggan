@@ -39,6 +39,14 @@ try
 	//start the session
 	start_session();
 
+	#Get the action
+	if(isset($_GET) && isset($_GET["action"]))
+		$action = $_GET["action"];
+	else
+		$action = "";
+	
+	appLog("Received request for action ". $action, appLog_DEBUG);
+
 	//check user is auth'd
 	if(isset($_GET["action"]) && $_GET["action"] != "login") // special case
 	{
@@ -53,12 +61,6 @@ try
 			header("X-AuthenticatedUsername: " . userLogin::getCurrentUsername());
 		}
 	}
-	
-	if(isset($_GET) && isset($_GET["action"]))
-		$action = $_GET["action"];
-	else
-		$action = "";
-	appLog("Received request for action ". $action, appLog_DEBUG);
 
 	//main selector between actions
 	switch($action)

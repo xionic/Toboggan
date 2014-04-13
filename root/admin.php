@@ -7,6 +7,8 @@
 	<link href='./css/jQuery-ui/mango/jquery-ui.css' rel='stylesheet' type='text/css' />
 	<link href='./css/jQuery.dynatree/default.css' rel='stylesheet' type='text/css' />
 
+	<link href='./css/?spinner.css' rel='stylesheet' type='text/css' />
+	
 	<!-- internal stylesheets -->
 	<link href='./css/?layout.css' rel='stylesheet' type='text/css' />
 	<link href='./css/?theme.css' rel='stylesheet' type='text/css' />

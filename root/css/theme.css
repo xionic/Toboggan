@@ -64,6 +64,8 @@ $PlaylistDropZoneActiveBackground = rgba(250,55,1,0.05);
 $PlaylistDropZoneHoverOutline = 1px solid rgba(250,55,1,0.8);
 $PlaylistDropZoneHoverBackground = rgba(250,55,1,0.1);
 
+$SpinnerColour = rgba(255, 255, 255, 0.3);
+
 */
 
 body {
@@ -646,4 +648,12 @@ div.loading
 	display: inline-block;
 	background: $RemainingBarColour;
 	height: 100%;
+}
+
+/* For the css3 spinner animation: overrides spinner.css */
+body .spinner:not(:required)
+{
+	-webkit-box-shadow: $SpinnerColour 1.5em 0 0 0, $SpinnerColour 1.1em 1.1em 0 0, $SpinnerColour 0 1.5em 0 0, $SpinnerColour -1.1em 1.1em 0 0, $SpinnerColour -1.5em 0 0 0, $SpinnerColour -1.1em -1.1em 0 0, $SpinnerColour 0 -1.5em 0 0, $SpinnerColour 1.1em -1.1em 0 0;
+	-moz-box-shadow: $SpinnerColour 1.5em 0 0 0, $SpinnerColour 1.1em 1.1em 0 0, $SpinnerColour 0 1.5em 0 0, $SpinnerColour -1.1em 1.1em 0 0, $SpinnerColour -1.5em 0 0 0, $SpinnerColour -1.1em -1.1em 0 0, $SpinnerColour 0 -1.5em 0 0, $SpinnerColour 1.1em -1.1em 0 0;
+	box-shadow: $SpinnerColour 1.5em 0 0 0, $SpinnerColour 1.1em 1.1em 0 0, $SpinnerColour 0 1.5em 0 0, $SpinnerColour -1.1em 1.1em 0 0, $SpinnerColour -1.5em 0 0 0, $SpinnerColour -1.1em -1.1em 0 0, $SpinnerColour 0 -1.5em 0 0, $SpinnerColour 1.1em -1.1em 0 0;
 }

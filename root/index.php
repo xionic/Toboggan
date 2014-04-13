@@ -7,11 +7,13 @@
 	<link href='./css/jQuery-ui/mango/jquery-ui.css' rel='stylesheet' type='text/css' />
 	<link href='./css/jQuery.dynatree/default.css' rel='stylesheet' type='text/css' />
 
+	<link href='./css/?spinner.css' rel='stylesheet' type='text/css' />
+	
 	<!-- internal stylesheets -->
 	<link href='./css/?layout.css' rel='stylesheet' type='text/css' />
 	<link href='./css/?theme.css' rel='stylesheet' type='text/css' />
 	<link href='./css/?webkit_hacks.css' rel='stylesheet' type='text/css' />
-
+	
 	<script type="text/javascript" src="./js/jQuery/jQuery.1.7.1.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery-ui/jquery-ui-1.8.21.custom.min.js"></script>
 	<script type="text/javascript" src="./js/jQuery.jPlayer.2.5.0/jquery.jplayer.min.js"></script>
