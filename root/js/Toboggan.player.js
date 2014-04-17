@@ -474,7 +474,7 @@
 						remote_directory = $(trackObject).attr("data-dir"),
 						remote_mediaSource = $(trackObject).attr("data-media_source");
 				var modalDialog = $("<div></div>")
-						.html("<div class='loading'><p><img src='img/ajax.gif' class='throbber' /></p><p>Loading...</p></div>")
+						.html("<div class='loading'><p><span class='spinner' >Loading...</span></p></div>")
 						.dialog({
 							autoOpen: true,
 							title: "File Information",
@@ -974,7 +974,7 @@
 	function displayLoading()
 	{
 		refreshFileListState();
-		$("#tracklistHeader").html("Loading..."+"<img src='img/ajax.gif' alt='loading' class='loading' />");
+		$("#tracklistHeader").html("<span class='spinner'>Loading...</span>");
 	}	
 	
 	function refreshFileListState()
@@ -1096,7 +1096,7 @@
 
 		$("#showBandwidth").mouseenter(function(){
 			$("#bandwidthInformation")
-				.html("<div class='loading'><p><img src='img/ajax.gif' class='throbber' /></p><p>Loading...</p></div>")
+				.html("<div class='loading'><p><span class='spinner' >Loading...</span></p>")
 				.fadeIn();
 			
 			clearInterval($("#bandwidthInformation").attr("data-timeoutId"));
