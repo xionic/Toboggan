@@ -760,7 +760,7 @@
 			
 		});
 		
-		$( "#tracklist li" ).draggable({
+		$( "#tracklist li span.trackObject" ).draggable({
 			appendTo: "body",
 			helper: function(event) {
 				return $("<div class='draggingTrack'></div>");
@@ -781,10 +781,7 @@
 			drop: function( event, ui ) {
 				$( this ).find( ".placeholder" ).remove();
 				
-				//TODO: Extract the metadata information for the track and clone it as well as the filename etc
-				//or some sort of deep clone:
-				//$(ui.draggable).clone().appendTo(this);
-				var trackTagObject = $(ui.draggable).children(".trackObject");
+				var trackTagObject = $(ui.draggable);
 							
 				trackObject = {
 					'text': $(trackTagObject).text(),
