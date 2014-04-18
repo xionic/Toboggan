@@ -31,9 +31,12 @@
 	*/
 	function doLogin()
 	{
-		$("#loginForm").submit(function(){	//handle pressing enter
-			ajaxLogin();
-			return false;
+		$("#loginForm").keypress(function(e) {
+			if(e.which === 13)
+			{
+				ajaxLogin();
+				e.preventDefault();
+			}
 		});
 		//present the login form:
 		$("#loginFormContainer").dialog({
