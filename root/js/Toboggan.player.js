@@ -1039,8 +1039,11 @@
 	function doLogin()
 	{
 		$("#loginForm").keypress(function(e) {
-			e.which === 13 && ajaxLogin();
-			return false;
+			if(e.which === 13)
+			{
+				ajaxLogin();
+				e.preventDefault();
+			}
 		});
 		
 		//present the login form:
