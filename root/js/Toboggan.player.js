@@ -605,7 +605,7 @@
 	{
 		$("#trackMenu .hideInPlaylist, #trackMenu .hideInTracklist").show();
 		$('#trackMenu').hide();
-		$('.overlay').hide();
+		$('.overlay').remove();
 	}
 	
 	/**
