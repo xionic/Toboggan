@@ -21,3 +21,6 @@ define("PERMISSION_ACCESSSTREAMER",5);
 
 //JSON constant
 define("JSON_MIME_TYPE", "application/json");
+
+//number of bytes to read before updating the user's traffic limit
+define("USER_TRAFFIC_LIMIT_UPDATE_THRESHOLD", 100000);
