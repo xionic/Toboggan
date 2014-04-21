@@ -124,7 +124,7 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 	header("Content-Type: " . $mimeType);
 	
 	appLog("Using attachement filename: $filenameToSend", appLog_DEBUG);
-	header("Content-disposition: attachment; filename=".$filenameToSend);
+	header("Content-disposition: attachment; filename=\"".$filenameToSend."\"");
 
 	header("Cache-Control: no-cache");
 	
