@@ -341,7 +341,7 @@
 		var content = $("<div></div>");
 
 		for (var x in ajaxCache.fileConverterSettings.data)
-			converterSettings.converters[ajaxCache.fileConverterSettings.data[x].fileConverterId] = ajaxCache.fileConverterSettings.data[x];
+			converterSettings.converters[ajaxCache.fileConverterSettings.data[x].fileConverterID] = ajaxCache.fileConverterSettings.data[x];
 
 		for (var y in ajaxCache.commandSettings.data)
 			converterSettings.commands[ajaxCache.commandSettings.data[y].commandID] = ajaxCache.commandSettings.data[y];
@@ -352,10 +352,97 @@
 		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters");
 		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands");
 		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes");
+		
+		//TODO: convert this to use the schema that arrives with the retrieve.*Settings 
+		var newConverterButton = $("<a href='#'>New</a>")
+			.button({
+				icons: {primary: "ui-icon-circle-plus"},
+				text: true
+			}).click(function(e){
+				$(newConverterButton).hide();
+				var contentToInsert = $("<div class='skeletonRow converters'></div>");
+				//this is essentially just 3 option->selects
+				//FromFileType
+				var fromFileType = $("<select name='fromFileType' id='converters_fromFileType'></select>");
+				
+				//ToFileType
+				var toFileType = $("<select name='toFileType' id='converters_toFileType'></select>");
+				
+				//populate options on To/From
+				for (var fileType in converterSettings.fileTypes)
+				{
+					var extensionName = converterSettings.fileTypes[fileType].extension;
+					var textToDisplay = extensionName + " (" + converterSettings.fileTypes[fileType].mimeType + " " + converterSettings.fileTypes[fileType].mediaType + ")";
+					fromFileType.append(
+						$("<option/>")
+							.text(textToDisplay)
+							.val(extensionName)
+					);
+					toFileType.append(
+						$("<option/>")
+							.text(textToDisplay)
+							.val(extensionName)
+					);
+				}
+				
+				//CommandID
+				var commandId = $("<select name='commandID' id='converters_commandID'></select>");
 
+				for (var cmd in converterSettings.commands)
+				{
+					var textToDisplay = converterSettings.commands[cmd].displayName + "(" + converterSettings.commands[cmd].commandID + ")";
+					var valueOfOption = converterSettings.commands[cmd].commandID;
+					commandId.append(
+						$("<option />")
+							.text(textToDisplay)
+							.val(valueOfOption)
+					);
+				}
+				
+				contentToInsert.append("<span>FromFileType</span>", fromFileType);
+				contentToInsert.append("<span>ToFileType</span>", toFileType);
+				contentToInsert.append("<span>Command</span>", commandId);
+				
+				var addConverterButton = $("<a href='#'>Add!</a>")
+					.button({
+						icons: {primary: "ui-icon-circle-check"},
+						text: false
+					}).click(function(){
+						var saveData = JSON.parse(JSON.stringify(ajaxCache.fileConverterSettings.data));
+						saveData[saveData.length] = {
+							"fromFileType"	: $("#converters_fromFileType").find(":selected").val(),
+							"toFileType"	: $("#converters_toFileType").find(":selected").val(),
+							"commandID"		: $("#converters_commandID").find(":selected").val()
+						};
+
+						$(addConverterButton).button("disable");
+						$.ajax({
+							url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileConverterSettings&apikey=" + apikey + "&apiver=" + apiversion,
+							type: "POST",
+							data: {
+								settings:	JSON.stringify(saveData)
+							},
+							success: function(data, textStatus,jqHXR){
+								$(newConverterButton).show();
+								$("div.skeletonRow.converters").remove();
+							},
+							error: function(jqHXR, textStatus, errorThrown){
+								alert("An error occurred while saving the user settings");
+								console.error(jqXHR, textStatus, errorThrown);
+							}
+						});
+					});
+				contentToInsert.append(addConverterButton);
+				
+				$("table.configTable.converters").after(contentToInsert);
+			});
+
+		
 		content.append($("<h2>File Converters</h2>"));
 		content.append(converterTable);
-
+		
+		content.append(newConverterButton);
+		
 		content.append($("<h2>Commands</h2>"));
 		content.append(commandTable);
 
