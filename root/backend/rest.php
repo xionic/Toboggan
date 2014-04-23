@@ -185,6 +185,7 @@ try
 			));
 			
 			saveFileTypeSettings($args["settings"]);
+			outputFileTypeSettings_JSON();
 			break;
 		
 		case "retrieveCommandSettings":
@@ -199,6 +200,7 @@ try
 			));
 			
 			saveCommandSettings($args["settings"]);
+			outputCommandSettings_JSON();
 			break;		
 			
 		case "retrieveFileConverterSettings":
@@ -213,6 +215,7 @@ try
 			));
 			
 			saveFileConverterSettings($args["settings"]);
+			outputFileConverterSettings_JSON();
 			break;	
 			
 		case "listUsers":
