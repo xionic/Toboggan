@@ -179,10 +179,6 @@ try
 			break;
 			
 		case "saveFileTypeSettings":	
-			$_POST["settings"] = '[
-			{"extension":"mp3","mimeType":"audio\/mp3","mediaType":"a","bitrateCmdID":"2","durationCmdID":"3"},
-			{"extension":"flv","mimeType":"video\/flv","mediaType":"v","bitrateCmdID":null,"durationCmdID":null}
-			]';
 			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_POST, array(
 				"settings"		=> array("string", "notblank"),
