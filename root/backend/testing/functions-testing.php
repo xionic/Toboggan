@@ -236,7 +236,7 @@
 			echo "<tr>";
 			echo "<td style='width:150px'>";
 				echo $result["action"] . ($result["doLogin"]?" (+login)":"(no login)");
-				echo "<br /><span  onclick='$(this).children().show();return false;'>Show URL ";
+				echo "<br /><span  onclick='$(this).children().toggle();return false;'>Show URL ";
 				echo "<a href='".$result["url"]."' style='display:none'>".$result["url"]."</a></span>";
 			echo "</td>";
 			echo "<td style='width100%'>";

@@ -87,7 +87,7 @@
 			warning: function(event){
 				console.warn(event);
 			},
-			swfPath: "./js/jQuery.jPlayer.2.2.0/",
+			swfPath: "./js/jQuery.jPlayer.2.5.0/",
 			supplied: "mp3,flv",
 			preload: "none",
 			wmode: "window",
@@ -605,7 +605,7 @@
 	{
 		$("#trackMenu .hideInPlaylist, #trackMenu .hideInTracklist").show();
 		$('#trackMenu').hide();
-		$('.overlay').hide();
+		$('.overlay').remove();
 	}
 	
 	/**
@@ -760,7 +760,7 @@
 			
 		});
 		
-		$( "#tracklist li" ).draggable({
+		$( "#tracklist li span.trackObject" ).draggable({
 			appendTo: "body",
 			helper: function(event) {
 				return $("<div class='draggingTrack'></div>");
@@ -781,10 +781,7 @@
 			drop: function( event, ui ) {
 				$( this ).find( ".placeholder" ).remove();
 				
-				//TODO: Extract the metadata information for the track and clone it as well as the filename etc
-				//or some sort of deep clone:
-				//$(ui.draggable).clone().appendTo(this);
-				var trackTagObject = $(ui.draggable).children(".trackObject");
+				var trackTagObject = $(ui.draggable);
 							
 				trackObject = {
 					'text': $(trackTagObject).text(),
@@ -1039,8 +1036,11 @@
 	function doLogin()
 	{
 		$("#loginForm").keypress(function(e) {
-			e.which === 13 && ajaxLogin();
-			return false;
+			if(e.which === 13)
+			{
+				ajaxLogin();
+				e.preventDefault();
+			}
 		});
 		
 		//present the login form:

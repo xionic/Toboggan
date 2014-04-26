@@ -124,7 +124,7 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 	header("Content-Type: " . $mimeType);
 	
 	appLog("Using attachement filename: $filenameToSend", appLog_DEBUG);
-	header("Content-disposition: attachment; filename=".$filenameToSend);
+	header("Content-disposition: attachment; filename=\"".$filenameToSend."\"");
 
 	header("Cache-Control: no-cache");
 	
@@ -279,6 +279,7 @@ function transcodeStream($streamerObj, $file, $skipToTime){
 	* loop until trancode process dies outputing the data stream
 	*/
 	$bytesToRead = 8192; // this is the normal size to read, it will be reduced in order to hit the traffic limit and not exceed it.
+	$bytesReadSinceTrafUpdate = 0; //The total number of bytes we've read since we last updated the user's traffic limit. Used to batch updates to the limit to avoid spamming the DB
 	while(true){
 	
 		//start time for bandwidth throttling
@@ -308,7 +309,11 @@ function transcodeStream($streamerObj, $file, $skipToTime){
 		print $output;
 		
 		//update traffic used for traffic limit
-		updateUserUsedTraffic(userLogin::getCurrentUserID(), (int)($bytesToRead/1024));
+		$bytesReadSinceTrafUpdate += (int)($bytesToRead/1024);
+		if($bytesReadSinceTrafUpdate > USER_TRAFFIC_LIMIT_UPDATE_THRESHOLD){
+			updateUserUsedTraffic(userLogin::getCurrentUserID(), $bytesReadSinceTrafUpdate);
+			$bytesReadSinceTrafUpdate = 0;
+		}
 		
 		//get error output
 		$errOutput = fgets($pipes[2]);
