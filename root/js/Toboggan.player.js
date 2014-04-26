@@ -87,7 +87,7 @@
 			warning: function(event){
 				console.warn(event);
 			},
-			swfPath: "./js/jQuery.jPlayer.2.2.0/",
+			swfPath: "./js/jQuery.jPlayer.2.5.0/",
 			supplied: "mp3,flv",
 			preload: "none",
 			wmode: "window",
