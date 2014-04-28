@@ -147,6 +147,8 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 		appLog("File must be transcoded", appLog_VERBOSE);
 		transcodeStream($streamerObj, $file, $skipToTime);
 	}
+
+	appLog("Streaming complete", appLog_VERBOSE);
 	
 }
 /**
