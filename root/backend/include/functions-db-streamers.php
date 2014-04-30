@@ -37,38 +37,6 @@ function getConverterById($id){
 }
 
 /**
-* get a streamer profile from the fromExtension and toExtension
-*/
-function getStreamerByExtensions($fromExt, $toExt)
-{
-	//only admins can use this function
-	checkActionAllowed("administrator");
-	
-	$conn = getDBConnection();
-	
-	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
-				INNER JOIN fromExt USING (idfromExt)
-				INNER JOIN toExt USING(idtoExt)
-				INNER JOIN transcode_cmd USING(idtranscode_cmd)
-				WHERE 
-					`fromExt`.Extension = :fromExt
-					AND `toExt`.Extension = :toExt
-				");
-	$stmt->bindValue(":fromExt",$fromExt, PDO::PARAM_STR);
-	$stmt->bindValue(":toExt",$toExt, PDO::PARAM_STR);
-	$stmt->execute();
-
-	$row = $stmt->fetch(PDO::FETCH_ASSOC);
-	$stmt->closeCursor();
-	closeDBConnection($conn);
-	
-	if($row)//check user has permission to access the streamer)
-		return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
-	else
-		return false;
-}
-
-/**
 * output a JSON object representing the server FileType settings
 */
 function outputFileTypeSettings_JSON()
