@@ -179,16 +179,13 @@ try
 			break;
 			
 		case "saveFileTypeSettings":	
-			$_POST["settings"] = '[
-			{"extension":"mp3","mimeType":"audio\/mp3","mediaType":"a","bitrateCmdID":"2","durationCmdID":"3"},
-			{"extension":"flv","mimeType":"video\/flv","mediaType":"v","bitrateCmdID":null,"durationCmdID":null}
-			]';
 			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_POST, array(
 				"settings"		=> array("string", "notblank"),
 			));
 			
 			saveFileTypeSettings($args["settings"]);
+			outputFileTypeSettings_JSON();
 			break;
 		
 		case "retrieveCommandSettings":
@@ -203,6 +200,7 @@ try
 			));
 			
 			saveCommandSettings($args["settings"]);
+			outputCommandSettings_JSON();
 			break;		
 			
 		case "retrieveFileConverterSettings":
@@ -217,6 +215,7 @@ try
 			));
 			
 			saveFileConverterSettings($args["settings"]);
+			outputFileConverterSettings_JSON();
 			break;	
 			
 		case "listUsers":

@@ -87,7 +87,7 @@
 			warning: function(event){
 				console.warn(event);
 			},
-			swfPath: "./js/jQuery.jPlayer.2.2.0/",
+			swfPath: "./js/jQuery.jPlayer.2.5.0/",
 			supplied: "mp3,flv",
 			preload: "none",
 			wmode: "window",
@@ -474,7 +474,7 @@
 						remote_directory = $(trackObject).attr("data-dir"),
 						remote_mediaSource = $(trackObject).attr("data-media_source");
 				var modalDialog = $("<div></div>")
-						.html("<div class='loading'><p><img src='img/ajax.gif' class='throbber' /></p><p>Loading...</p></div>")
+						.html("<div class='loading'><p><span class='spinner' >Loading...</span></p></div>")
 						.dialog({
 							autoOpen: true,
 							title: "File Information",
@@ -605,7 +605,7 @@
 	{
 		$("#trackMenu .hideInPlaylist, #trackMenu .hideInTracklist").show();
 		$('#trackMenu').hide();
-		$('.overlay').hide();
+		$('.overlay').remove();
 	}
 	
 	/**
@@ -760,7 +760,7 @@
 			
 		});
 		
-		$( "#tracklist li" ).draggable({
+		$( "#tracklist li span.trackObject" ).draggable({
 			appendTo: "body",
 			helper: function(event) {
 				return $("<div class='draggingTrack'></div>");
@@ -781,10 +781,7 @@
 			drop: function( event, ui ) {
 				$( this ).find( ".placeholder" ).remove();
 				
-				//TODO: Extract the metadata information for the track and clone it as well as the filename etc
-				//or some sort of deep clone:
-				//$(ui.draggable).clone().appendTo(this);
-				var trackTagObject = $(ui.draggable).children(".trackObject");
+				var trackTagObject = $(ui.draggable);
 							
 				trackObject = {
 					'text': $(trackTagObject).text(),
@@ -974,7 +971,7 @@
 	function displayLoading()
 	{
 		refreshFileListState();
-		$("#tracklistHeader").html("Loading..."+"<img src='img/ajax.gif' alt='loading' class='loading' />");
+		$("#tracklistHeader").html("<span class='spinner'>Loading...</span>");
 	}	
 	
 	function refreshFileListState()
@@ -1039,8 +1036,11 @@
 	function doLogin()
 	{
 		$("#loginForm").keypress(function(e) {
-			e.which === 13 && ajaxLogin();
-			return false;
+			if(e.which === 13)
+			{
+				ajaxLogin();
+				e.preventDefault();
+			}
 		});
 		
 		//present the login form:
@@ -1096,7 +1096,7 @@
 
 		$("#showBandwidth").mouseenter(function(){
 			$("#bandwidthInformation")
-				.html("<div class='loading'><p><img src='img/ajax.gif' class='throbber' /></p><p>Loading...</p></div>")
+				.html("<div class='loading'><p><span class='spinner' >Loading...</span></p>")
 				.fadeIn();
 			
 			clearInterval($("#bandwidthInformation").attr("data-timeoutId"));

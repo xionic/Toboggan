@@ -35,80 +35,6 @@ function getConverterById($id){
 	
 	
 }
-/**
-* returns an object representing all streamers - must be admin to call
-*/
-function getAllStreamers()
-{
-	//only admins can use this function
-	checkActionAllowed("administrator");
-
-	$conn = getDBConnection();
-	
-	$stmt = $conn->prepare(
-		"SELECT 
-			idextensionMap, 
-			`fromExt`.Extension as fromExt, 
-			`toExt`.Extension as toExt, 
-			command, MimeType , 
-			MediaType, 
-			bitrateCmd 
-		FROM extensionMap 
-			INNER JOIN fromExt USING (idfromExt)
-			INNER JOIN toExt USING(idtoExt)
-			INNER JOIN transcode_cmd USING(idtranscode_cmd)
-	");
-	$stmt->execute();
-
-	$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$stmt->closeCursor();
-	closeDBConnection($conn);
-		
-	if($rows)
-	{
-		$streamers = array();
-		foreach($rows as $row)
-		{
-			//if(checkUserPermission("accessStreamer",$row["idextensionMap"]))//check user has permission to access the streamer
-				$streamers[] =  new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
-		}
-		return $streamers;
-	}
-	else
-		return false;
-}
-
-/**
-* get a streamer profile from the fromExtension and toExtension
-*/
-function getStreamerByExtensions($fromExt, $toExt)
-{
-	//only admins can use this function
-	checkActionAllowed("administrator");
-	
-	$conn = getDBConnection();
-	
-	$stmt = $conn->prepare("SELECT idextensionMap, `fromExt`.Extension as fromExt, `toExt`.Extension as toExt, command, MimeType , MediaType, bitrateCmd FROM extensionMap 
-				INNER JOIN fromExt USING (idfromExt)
-				INNER JOIN toExt USING(idtoExt)
-				INNER JOIN transcode_cmd USING(idtranscode_cmd)
-				WHERE 
-					`fromExt`.Extension = :fromExt
-					AND `toExt`.Extension = :toExt
-				");
-	$stmt->bindValue(":fromExt",$fromExt, PDO::PARAM_STR);
-	$stmt->bindValue(":toExt",$toExt, PDO::PARAM_STR);
-	$stmt->execute();
-
-	$row = $stmt->fetch(PDO::FETCH_ASSOC);
-	$stmt->closeCursor();
-	closeDBConnection($conn);
-	
-	if($row)//check user has permission to access the streamer)
-		return new Streamer($row["idextensionMap"], $row["fromExt"], $row["toExt"],$row["command"],$row["MimeType"],$row["MediaType"], $row["bitrateCmd"]);
-	else
-		return false;
-}
 
 /**
 * output a JSON object representing the server FileType settings
@@ -520,52 +446,6 @@ function saveFileConverterSettings($settings_JSON)
 	closeDBConnection($conn);
 }
 
-function blah () {
-	//remove streamers that are to be deleted
-	$DBstreamers = getAllStreamers();
-	$streamerIDsToRemove = array();
-	foreach($DBstreamers as $DBStreamer)
-	{
-		foreach($settings as $newStreamer)
-		{
-			if($DBStreamer->fromExt == $newStreamer->fromExt && $DBStreamer->toExt == $newStreamer->toExt)
-				continue 2;
-		}
-		$streamerIDsToRemove[] = $DBStreamer->id;
-	}
-	
-	//do the removing from the DB
-	foreach($streamerIDsToRemove as $id)
-	{
-		removeStreamer($conn, $id);
-	}
-	
-	//prepare the data to be inserted	
-	
-	//loop through the streamers and check for changes and additions
-	foreach($settings as $newStreamer)
-	{
-		$DBStreamer = null;
-		
-		appLog($newStreamer->fromExt . " " . $newStreamer->toExt);
-		if(($DBStreamer = getStreamerByExtensions($newStreamer->fromExt, $newStreamer->toExt)) !== false)
-		{//existing streamer to update
-			//port existing id into the newStreamer's class to simply update the existing record
-			$newStreamer->id = $DBStreamer->id;
-			
-			updateStreamer($conn, $newStreamer);
-		}
-		else
-		{//new streamer to add
-			insertStreamer($conn, $newStreamer);
-		}
-	}
-	
-	$conn->commit();
-	
-	closeDBConnection($conn);
-
-}
 /**
  * updates a streamer - (has to work inside an existing transaction, hence the $conn)
 */
