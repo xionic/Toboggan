@@ -23,7 +23,7 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 	global $config;
 	
 	//default mime
-	$mimeType = "application/octet-stream";
+	$mimeType = "application/octet-stream"; // we don't override this for download - should we? 
 	
 	//check if this is a download
 	if($streamerID == 0){
@@ -157,13 +157,14 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 function passthroughStream($file){
 
 	$fileSize = FileOps::filesize($file);
-	
-	//THis needs to be the size of the request - i.e. think about ranges
-	header("Content-Length: $fileSize");
+	appLog("Filesize is $fileSize bytes", appLog_DEBUG);
+
+	header("Accept-Ranges: bytes");
 
 	//Handle HTTP Range requests
 	if (isset($_SERVER['HTTP_RANGE'])) {
-	    if (!preg_match("/^bytes=\d*-\d*(,\d*-\d*)*$/", $_SERVER['HTTP_RANGE'])) {
+//	    if (!preg_match("/^bytes=\d*-\d*(,\d*-\d*)*$/", $_SERVER['HTTP_RANGE'])) { //not handling multi range reqs atm
+	    if (!preg_match("/^bytes=[0-9]*-[0-9]*$/", $_SERVER['HTTP_RANGE'])) {
 		header('HTTP/1.1 416 Requested Range Not Satisfiable');
 		header('Content-Range: bytes */' . $fileSize); // Required in 416.
 		exit;
@@ -172,24 +173,40 @@ function passthroughStream($file){
 	    $ranges = explode(',', substr($_SERVER['HTTP_RANGE'], 6));
 	    foreach ($ranges as $range) {
 		$parts = explode('-', $range);
-		$start = $parts[0]; // If this is empty, this should be 0.
+		$start = $parts[0]; // If this is empty, we need to take the final $end bytes of the file
 		$end = $parts[1]; // If this is empty or greater than than filelength - 1, this should be filelength - 1.
 
-		if($start == "")
-			$start = 0;
-		if($end == "")
-			$end = $fileSize - 1;
+		if($start == ""){
+			if($end == ""){
+				//invalid req
+				reportError("Invalid range requested", 400);
+			} else {
+				//we need the last $end bytes
+				$start = $fileSize - $end; 
+				$end = $fileSize - 1;
+			}
+		}
+		if($end == ""){
+			//we need to return $start to the end of the file
+			$end = $fileSize -1;
+		}
+		appLog("Received req for byte range '".$_SERVER['HTTP_RANGE']."' => returning bytes $start to $end",appLog_DEBUG);
 
 		if ($start > $end || $start < 0 || $end > $fileSize - 1) {
 		    header('HTTP/1.1 416 Requested Range Not Satisfiable');
 		    header('Content-Range: bytes */' . $fileSize); // Required in 416.
 		    exit;
 		}
+		
+		//THis needs to be the size of the request - i.e. think about ranges
+		appLog("Setting Content-Length to " . ($end - $start +1) , appLog_DEBUG);
+		header("Content-Length: " . $end - $start +1 );
+
 		passthroughStreamRange($file, $start, $end, $fileSize);
-		exit;
-		break; //only handling single ranges at the moment		
 	    }
 	} else{
+		appLog("Setting Content-Length to " . $fileSize, appLog_DEBUG);
+		header("Content-Length: " . $fileSize);
 		passthroughStreamRange($file,false,false,$fileSize);
 	}
 }
