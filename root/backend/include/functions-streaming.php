@@ -159,6 +159,9 @@ function passthroughStream($file){
 	$fileSize = FileOps::filesize($file);
 	appLog("Filesize is $fileSize bytes", appLog_DEBUG);
 
+
+	//we can't send Transfer-Encoding and Content-Length
+	header_remove("Transfer-Encoding");
 	header("Accept-Ranges: bytes");
 
 	//Handle HTTP Range requests
@@ -173,9 +176,11 @@ function passthroughStream($file){
 	    $ranges = explode(',', substr($_SERVER['HTTP_RANGE'], 6));
 	    foreach ($ranges as $range) {
 		$parts = explode('-', $range);
-		$start = $parts[0]; // If this is empty, we need to take the final $end bytes of the file
-		$end = $parts[1]; // If this is empty or greater than than filelength - 1, this should be filelength - 1.
+		$reqByteStart = $parts[0]; // If this is empty, we need to take the final $end bytes of the file
+		$reqByteEnd = $parts[1]; // If this is empty or greater than than filelength - 1, this should be filelength - 1.
 
+		$start = $reqByteStart;
+		$end = $reqByteEnd;
 		if($start == ""){
 			if($end == ""){
 				//invalid req
@@ -197,28 +202,33 @@ function passthroughStream($file){
 		    header('Content-Range: bytes */' . $fileSize); // Required in 416.
 		    exit;
 		}
+
+		$rangeContentLength = $end - $start +1;
+
+		//We're OK to proceed
+		header("Content-Range: bytes " . $reqByteStart . "-" . $reqByteEnd . "/" . $fileSize);
 		
-		//THis needs to be the size of the request - i.e. think about ranges
-		appLog("Setting Content-Length to " . ($end - $start +1) , appLog_DEBUG);
-		header("Content-Length: " . $end - $start +1 );
+		//This needs to be the size of the request - i.e. think about ranges
+		appLog("Setting Content-Length to " . $rangeContentLength , appLog_DEBUG);
+		header("Content-Length: " . $rangeContentLength);
 
 		passthroughStreamRange($file, $start, $end, $fileSize);
 	    }
 	} else{
 		appLog("Setting Content-Length to " . $fileSize, appLog_DEBUG);
 		header("Content-Length: " . $fileSize);
-		passthroughStreamRange($file,false,false,$fileSize);
+		passthroughStreamRange($file,0,$fileSize-1,$fileSize);
 	}
 }
 
 /**
-* Streams the speficied byte ranges of the file straight through
-* if $startByte or $endByte is false, handle as a full file request, no range
+ * Streams the speficied byte ranges of the file straight through
 */
 function passthroughStreamRange($file, $startByte, $endByte, $fileSize){
 
+
+
 	appLog("Handling passthough stream for bytes ranges: $startByte to $endByte", appLog_DEBUG);
-	$isByteRangeReq = $startByte !== false && $endByte !== false; // are we dealing with a HTTP Range request?
 
 	$fh = @fopen($file,'rb');
 	if(!$fh)
@@ -227,8 +237,8 @@ function passthroughStreamRange($file, $startByte, $endByte, $fileSize){
 		exit;
 	}
 
-//	appLog($fileSize);
-
+	//start in the right place ;)
+	fseek($fh,$startByte);
 
 	//limit bandwidth
 	$maxBandwidth = getCurrentMaxBandwidth();
@@ -240,14 +250,14 @@ function passthroughStreamRange($file, $startByte, $endByte, $fileSize){
 	appLog("Limiting bandwidth to ". $maxBandwidth . "KB/s", appLog_DEBUG);
 	
 	//calc bytes to read each second
-	$bytesToRead = $maxBandwidth*1024;
+	$bytesToRead = $maxBandwidth*1024; 
 	
 	while(!feof($fh))
 	{
 		//prevent php timeout
 		set_time_limit(60);
 		
-		//traffic limits
+		//traffic limits - in KB!!!
 		$remainingTraffic = getRemainingUserTrafficLimit(userLogin::getCurrentUserID());
 		if($remainingTraffic !== false)
 		{
@@ -264,7 +274,14 @@ function passthroughStreamRange($file, $startByte, $endByte, $fileSize){
 		}
 		//get start position of file pointer
 		$pointerStart = ftell($fh);
-		
+
+		//need to return the byte range asked for - up to $endbyte - plus 1 since if range is 1-3, pointerStart will be 1, endByte 3, but we need to read 3 bytes- 1,2 and 3
+		$bytesLeftToRead = $endByte - $pointerStart + 1;
+		if($bytesLeftToRead == 0){ // we're done - need to skip on - fread is not happy reading 0 bytes
+			break;
+		} elseif($bytesLeftToRead < $bytesToRead){ //adjust to only read remaining requested bytes
+			$bytesToRead = $bytesLeftToRead; // this should only be affecting the final read
+		}
 		//start time for bandwidth throttling
 		$startTime = microtime(true);
 		
@@ -276,10 +293,8 @@ function passthroughStreamRange($file, $startByte, $endByte, $fileSize){
 		}
 		//read the remainder
 		print(fread($fh, $bytesToRead % getConfig("singleReadMaxBytes")));
-		
 		//calc the number of bytes actually read
 		$bytesRead = ftell($fh) - $pointerStart;
-		
 		//update traffic used for traffic limit
 		updateUserUsedTraffic(userLogin::getCurrentUserID(), (int)($bytesRead/1024));
 		
