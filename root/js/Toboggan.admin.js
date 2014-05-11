@@ -100,7 +100,7 @@
 					$("<ul id='configTabs'/>")
 						.append($("<li><a href='#tab_welcome'>Welcome</a></li>"))
 			//			.append($("<li><a href='#tab_client'>Client</a></li>"))
-						.append($("<li><a href='#tab_server_streamers'>Streamers</a></li>"))
+						.append($("<li><a href='#tab_server_converters'>File Converters</a></li>"))
 						.append($("<li><a href='#tab_server_users'>Users</a></li>"))
 						.append($("<li><a href='#tab_server_mediaSources'>Media Sources</a></li>"))
 						.append($("<li><a href='#tab_server_log_contents'>View Server Log</a></li>"))
@@ -111,7 +111,7 @@
 									<p>Please select from the tabs at the top of the page to chose which facet of Toboggan to configure</p>"))
 				)
 				.append(
-					$("<div id='tab_server_streamers'></div>")
+					$("<div id='tab_server_converters'></div>")
 				)
 				.append(
 					$("<div id='tab_server_users'></div>")
@@ -133,9 +133,8 @@
 				//TODO: display loading placeholder here
 				switch(ui.panel.id)
 				{
-					case 'tab_server_streamers':
+					case 'tab_server_converters':
 						$(ui.panel).empty();
-						$(ui.panel).append("<h1>Add/Remove Streamers</h1>");
 						
 						//pull down retrieveFileTypeSettings
 						$.ajax({
@@ -371,17 +370,18 @@
 				//populate options on To/From
 				for (var fileType in converterSettings.fileTypes)
 				{
+					var fileTypeID = converterSettings.fileTypes[fileType].fileTypeID;
 					var extensionName = converterSettings.fileTypes[fileType].extension;
 					var textToDisplay = extensionName + " (" + converterSettings.fileTypes[fileType].mimeType + " " + converterSettings.fileTypes[fileType].mediaType + ")";
 					fromFileType.append(
 						$("<option/>")
 							.text(textToDisplay)
-							.val(extensionName)
+							.val(fileTypeID)
 					);
 					toFileType.append(
 						$("<option/>")
 							.text(textToDisplay)
-							.val(extensionName)
+							.val(fileTypeID)
 					);
 				}
 				
@@ -410,9 +410,9 @@
 					}).click(function(){
 						var saveData = JSON.parse(JSON.stringify(ajaxCache.fileConverterSettings.data));
 						saveData[saveData.length] = {
-							"fromFileType"	: $("#converters_fromFileType").find(":selected").val(),
-							"toFileType"	: $("#converters_toFileType").find(":selected").val(),
-							"commandID"		: $("#converters_commandID").find(":selected").val()
+							"fromFileTypeID": $("#converters_fromFileType").find(":selected").val(),
+							"toFileTypeID": $("#converters_toFileType").find(":selected").val(),
+							"commandID": $("#converters_commandID").find(":selected").val()
 						};
 
 						$(addConverterButton).button("disable");
@@ -449,7 +449,7 @@
 		content.append($("<h2>File Types</h2>"));
 		content.append(fileTypeTable);
 
-		$("#tab_server_streamers").empty().append(content);
+		$("#tab_server_converters").empty().append(content);
 	}
 	
 	function updateUserList(ui)
