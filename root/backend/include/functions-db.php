@@ -322,32 +322,4 @@ function saveMediaSourceSettings($settings_JSON)
 	closeDBConnection($conn);
 }
 
-/**
-* function to retrieve the durationCmd from the db for a fromExt
-*/
-function getDurationCommand($fromExt)
-{
-	$conn = getDBConnection();
-	$stmt = $conn->prepare("
-		SELECT 
-			command			
-		FROM 
-			FileType 
-			INNER JOIN Command ON (idcommand = iddurationCmd)
-		WHERE Extension = :fromExt AND command IS NOT NULL");
-	$stmt->bindValue(":fromExt",$fromExt, PDO::PARAM_STR);
-	$stmt->execute();
-
-	$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	closeDBConnection($conn);	
-	
-	//ensure the user has permission to user the streamer that the duration command is defined in
-	if(count($results))
-	{		
-		return $results[0]["command"];
-	}
-	return null;
-}
-
-
 ?>

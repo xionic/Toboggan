@@ -317,7 +317,7 @@ catch(PDOException $pdoe)
 		appLog("Rolling back DB transaction", appLog_ERROR);
 		$conn->rollBack();
 	}*/
-	appLog(var_export($pdoe,true), appLog_DEBUG2);
+	appLog($pdoe, appLog_ERROR);
 	reportServerError('PDOException: '.$pdoe->getMessage(),500);
 }
 

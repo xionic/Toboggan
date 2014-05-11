@@ -15,8 +15,8 @@
 			"json" => array(
 				"schema" => array("array"),
 				"/data/*/fileConverterID" => array("int"),
-				"/data/*/fromFileType" => array("notblank"),
-				"/data/*/toFileType" => array("notblank"),
+				"/data/*/fromFileTypeID" => array("int"),
+				"/data/*/toFileTypeID" => array("int"),
 				"/data/*/commandID" => array("int"),
 			)
 		)

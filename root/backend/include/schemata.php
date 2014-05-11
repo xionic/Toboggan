@@ -2,6 +2,11 @@
 
 $schema["retrieveFileTypeSettings"] = array(
 	array(
+			"fileTypeID" => array(
+			"displayName"=> "File Type ID",
+			"type"=> "int",
+			"readonly" => true
+		),
 		"extension" => array(
 			"displayName"=> "Extension",
 			"type"=> "text",
@@ -59,12 +64,12 @@ $schema["retrieveFileConverterSettings"] = array(
 		),
 		"fromFileType" => array(
 			"displayName"=> "Extension to convert from",
-			"type"=> "text",
+			"type"=> "int",
 			"readonly" => false
 		),
 		"toFileType" => array(
 			"displayName"=> "Extension to convert to",
-			"type"=> "text",
+			"type"=> "int",
 			"readonly" => false
 		),
 		"commandID" => array(

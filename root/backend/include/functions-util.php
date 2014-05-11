@@ -121,8 +121,7 @@ function normalisePath($fn){
 * reports errors in an appropriate manner
 */
 function reportError($errMsg, $httpcode = 400, $mime = 'text/plain'){
-	appLog($_GET);
-	appLog("Reporting error to user: '".$errMsg."'", appLog_DEBUG);
+	appLog("Reporting error to user: '".$errMsg."'", appLog_ERROR);
 	if($mime != JSON_MIME_TYPE) // injection protection
 		$errMsg = htmlentities($errMsg);
 	restTools::sendResponse	($errMsg,$httpcode, $mime);
@@ -142,7 +141,8 @@ function handleArgValidationError($msg, $argName="", $argValue="")
 */
 function reportServerError($errMsg, $httpcode = 500, $mime = 'text/plain')
 {
-	appLog("Server Error: '".$errMsg."'", appLog_INFO);
+	$debugInfo = debug_backtrace(1);
+	appLog("Server Error at ". $debugInfo[0]["file"].":". $debugInfo[0]["line"] .": '".$errMsg."'", appLog_ERROR);
 	if($mime != JSON_MIME_TYPE) // injection protection
 		$errMsg = htmlentities($errMsg);
 	restTools::sendResponse	("There was an error in the ". APPNAME ." server application. Please check the server log.",$httpcode, $mime);

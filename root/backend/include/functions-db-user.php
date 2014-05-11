@@ -156,7 +156,7 @@ function getUserObject($userid)
 	$stmt = $conn->prepare("
 		SELECT 
 			idfileConverter as id, 
-			(fromFileType || ' -> '  || toFileType) as displayName, 
+			(ftfrom.Extension || ' -> '  || ftto.extension) as displayName, 
 			CASE WHEN PermissionAction.idAction IS NOT NULL THEN 'Y' ELSE 'N' END as granted
 		FROM FileConverter
 				CROSS JOIN User 
@@ -169,6 +169,8 @@ function getUserObject($userid)
 						PermissionAction.targetObjectID = FileConverter.idfileConverter 
 						AND PermissionAction.idUser=User.idUser
 					) 
+				INNER JOIN FileType ftfrom on (FileConverter.fromidfileType = ftfrom.idfileType)
+				INNER JOIN FileType ftto on (FileConverter.toidfileType = ftto.idfileType)
 			WHERE User.idUser= :userid;
 		
 	");

@@ -216,8 +216,10 @@ function getMediaDuration($filepath)
 	$filepathInfo = pathinfo($filepath);
 	$ext = strtolower($filepathInfo["extension"]);
 	
+	$ft = FileType::getFileTypeFromExtension($ext);
+	
 	//get command to extract duration
-	$durationCmd = getDurationCommand($ext);
+	$durationCmd = $ft->getDurationCommand();
 	if($durationCmd == null)
 		return null;
 	
@@ -227,7 +229,6 @@ function getMediaDuration($filepath)
 			"path" 		=> $filepath,
 		)
 	);
-	//appLog($durationCmd);
 	
 	$duration = exec($durationCmd);
 	
