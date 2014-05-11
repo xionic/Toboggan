@@ -64,7 +64,7 @@ class FileType
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);		
 		closeDBConnection($conn);
 		
-		if(count($rows) == 0)
+		if($rows == false || count($row) == 0)
 		{
 				throw new NoSuchFileTypeException("No FileType with extension: " . $ext);
 				return null;
