@@ -354,7 +354,7 @@
 			converterSettings.commands[ajaxCache.commandSettings.data[y].commandID] = ajaxCache.commandSettings.data[y];
 
 		for (var z in ajaxCache.fileTypeSettings.data)
-			converterSettings.fileTypes[ajaxCache.fileTypeSettings.data[z].extension] = ajaxCache.fileTypeSettings.data[z];
+			converterSettings.fileTypes[ajaxCache.fileTypeSettings.data[z].fileTypeID] = ajaxCache.fileTypeSettings.data[z];
 
 		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters");
 		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands");
@@ -444,7 +444,57 @@
 				
 				$("table.configTable.converters").after(contentToInsert);
 			});
+			
+		var newCommandButton = $("<a href='#'>New</a>")
+			.button({
+				icons: {primary: "ui-icon-circle-plus"},
+				text: true
+			}).click(function(e){
+				$(newCommandButton).hide();
+				var contentToInsert = $("<div class='skeletonRow commands'></div>");
+				
+				contentToInsert.append("<span>Description</span>", $("<input type='text' id='commands_displayName' />"));
+				contentToInsert.append("<span>Command</span>", $("<input type='text' id='commands_command' />"));
+				
+				var addCommandButton = $("<a href='#'>Add!</a>")
+					.button({
+						icons: {primary: "ui-icon-circle-check"},
+						text: false
+					}).click(function(){
+						var saveData = JSON.parse(JSON.stringify(ajaxCache.commandSettings.data));
+						saveData[saveData.length] = {
+							"command": $("#commands_command").val(),
+							"displayName": $("#commands_displayName").val(),
+						};
 
+						$(addCommandButton).button("disable");
+						$.ajax({
+							url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveCommandSettings&apikey=" + apikey + "&apiver=" + apiversion,
+							type: "POST",
+							data: {
+								settings:	JSON.stringify(saveData)
+							},
+							success: function(data, textStatus,jqHXR){
+								$(newConverterButton).show();
+								$("div.skeletonRow.converters").remove();
+							},
+							error: function(jqHXR, textStatus, errorThrown){
+								alert("An error occurred while saving the user settings");
+								console.error(jqXHR, textStatus, errorThrown);
+							}
+						});
+					});
+				contentToInsert.append(addCommandButton);
+				$("table.configTable.commands").after(contentToInsert);
+			});
+		var newFileTypeButton = $("<a href='#'>New</a>")
+			.button({
+				icons: {primary: "ui-icon-circle-plus"},
+				text: true
+			}).click(function(e){
+				$(newFileTypeButton).hide();
+				var contentToInsert = $("<div class='skeletonRow fileTypes'></div>");
+			});
 		
 		content.append($("<h2>File Converters</h2>"));
 		content.append(converterTable);
@@ -453,9 +503,11 @@
 		
 		content.append($("<h2>Commands</h2>"));
 		content.append(commandTable);
+		content.append(newCommandButton);
 
 		content.append($("<h2>File Types</h2>"));
 		content.append(fileTypeTable);
+		content.append(newFileTypeButton);
 
 		$("#tab_server_converters").empty().append(content);
 	}
