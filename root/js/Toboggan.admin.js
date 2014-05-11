@@ -340,6 +340,22 @@
 		return outputTable;
 	}
 
+	function getCommandsAsSelectBox()
+	{
+		var commandId = $("<select></select>");
+		for (var cmd in converterSettings.commands)
+		{
+			var textToDisplay = converterSettings.commands[cmd].displayName + "(" + converterSettings.commands[cmd].commandID + ")";
+			var valueOfOption = converterSettings.commands[cmd].commandID;
+			commandId.append(
+				$("<option />")
+					.text(textToDisplay)
+					.val(valueOfOption)
+			);
+		}
+		return commandId
+	}
+	
 	function prepareConverters()
 	{
 		if(!ajaxCache.fileTypeSettings || !ajaxCache.commandSettings || !ajaxCache.fileConverterSettings)
@@ -393,23 +409,13 @@
 					);
 				}
 				
-				//CommandID
-				var commandId = $("<select name='commandID' id='converters_commandID'></select>");
-
-				for (var cmd in converterSettings.commands)
-				{
-					var textToDisplay = converterSettings.commands[cmd].displayName + "(" + converterSettings.commands[cmd].commandID + ")";
-					var valueOfOption = converterSettings.commands[cmd].commandID;
-					commandId.append(
-						$("<option />")
-							.text(textToDisplay)
-							.val(valueOfOption)
-					);
-				}
+				var commandObject = getCommandsAsSelectBox();
+				commandObject.attr('id', "converters_commandID");
+				commandObject.attr('name', "commandID");
 				
 				contentToInsert.append("<span>FromFileType</span>", fromFileType);
 				contentToInsert.append("<span>ToFileType</span>", toFileType);
-				contentToInsert.append("<span>Command</span>", commandId);
+				contentToInsert.append("<span>Command</span>", commandObject);
 				
 				var addConverterButton = $("<a href='#'>Add!</a>")
 					.button({
@@ -493,7 +499,57 @@
 				text: true
 			}).click(function(e){
 				$(newFileTypeButton).hide();
-				var contentToInsert = $("<div class='skeletonRow fileTypes'></div>");
+				var contentToInsert = $("<div class='skeletonRow filetypes'></div>");
+				
+				contentToInsert.append("<span>Extension</span>", $("<input type='text' id='filetypes_extension' />"));
+				contentToInsert.append("<span>MIME Type</span>", $("<input type='text' id='filetypes_mimetype' />"));
+				contentToInsert.append("<span>Media Type</span>", $("<input type='text' id='filetypes_mediatype' />"));
+				
+				var bitrateCmdObject = getCommandsAsSelectBox();
+				bitrateCmdObject.attr('id', "fileTypes_bitrateCmdID");
+				bitrateCmdObject.attr('name', "bitrateCmdID");
+				//bitrateCmdObject.append("<option value=''>None</option>");
+				contentToInsert.append("<span>Bitrate Command</span>", bitrateCmdObject);
+				
+				var durationCmdObject = getCommandsAsSelectBox();
+				durationCmdObject.attr('id', "fileTypes_durationCmdID");
+				durationCmdObject.attr('name', "durationCmdID");
+				//durationCmdObject.append("<option value=''>None</option>");
+				contentToInsert.append("<span>Duration Command</span>", durationCmdObject);
+				
+				var addFileTypeButton = $("<a href='#'>Add!</a>")
+					.button({
+						icons: {primary: "ui-icon-circle-check"},
+						text: false
+					}).click(function(){
+						var saveData = JSON.parse(JSON.stringify(ajaxCache.fileTypeSettings.data));
+						saveData[saveData.length] = {
+							"extension": $("#filetypes_extension").val(),
+							"mimeType": $("#filetypes_mimetype").val(),
+							"mediaType": $("#filetypes_mediatype").val(),
+							"bitrateCmdID": $("#fileTypes_bitrateCmdID").find(":selected").val(),
+							"durationCmdID": $("#fileTypes_durationCmdID").find(":selected").val(),
+						};
+
+						$(addFileTypeButton).button("disable");
+						$.ajax({
+							url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileTypeSettings&apikey=" + apikey + "&apiver=" + apiversion,
+							type: "POST",
+							data: {
+								settings:	JSON.stringify(saveData)
+							},
+							success: function(data, textStatus,jqHXR){
+								$(newConverterButton).show();
+								$("div.skeletonRow.converters").remove();
+							},
+							error: function(jqHXR, textStatus, errorThrown){
+								alert("An error occurred while saving the user settings");
+								console.error(jqXHR, textStatus, errorThrown);
+							}
+						});
+					});
+				contentToInsert.append(addFileTypeButton);
+				$("table.configTable.filetypes").after(contentToInsert);
 			});
 		
 		content.append($("<h2>File Converters</h2>"));
