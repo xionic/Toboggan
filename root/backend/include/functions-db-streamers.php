@@ -240,8 +240,8 @@ function saveFileTypeSettings($settings_JSON)
 			"extension"		=> array("string", "notblank"),
 			"mimeType"		=> array("string", "notblank"),
 			"mediaType"		=> array("string", "notblank", "regex /[av]/"),
-			"bitrateCmdID" 	=> array("int", "optional"),
-			"durationCmdID" => array("int", "optional"),
+			"bitrateCmdID" 	=> array(function($a){return (is_int($a+0) || is_null($a));}),
+			"durationCmdID" => array(function($a){return (is_int($a+0) || is_null($a));}),
 		));
 	}
 
@@ -287,7 +287,7 @@ function saveFileTypeSettings($settings_JSON)
 				$stmt->bindValue(":idFileType",$ft["fileTypeID"], PDO::PARAM_INT);
 			} else if (checkFileTypeExists($ft["extension"])){ // the ext already exists - we should have an id, but we don't
 				$conn->rollback();
-				reportError("FileType with extension " . $ft["extension"] . " already exists, but fileTypeID was not given");				
+				reportError("FileType with extension " . $ft["extension"] . " already exists, but fileTypeID was not given", 400);				
 			} else{//new - need to insert
 				appLog("inserting ". $ft["extension"]);
 				$stmt = $conn->prepare("

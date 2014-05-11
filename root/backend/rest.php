@@ -178,7 +178,7 @@ try
 			outputFileTypeSettings_JSON();
 			break;
 			
-		case "saveFileTypeSettings":	
+		case "saveFileTypeSettings":
 			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_POST, array(
 				"settings"		=> array("string", "notblank"),
