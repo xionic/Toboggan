@@ -317,6 +317,14 @@
 	function jsonObjectToTable(jsonObject, jsonObjectSchema, classToAssign) {
 		var outputTable = $("<table></table>").addClass("configTable");
 		outputTable.addClass(classToAssign);
+		var headerRow = $("<tr></tr>");
+		for (var heading in jsonObjectSchema[0])
+		{
+			headerRow.append(
+				$("<td></td>").text(jsonObjectSchema[0][heading].displayName)
+			);
+		}
+		outputTable.append(headerRow);
 		for (var objectProperty in jsonObject) {
 			objectProperty = jsonObject[objectProperty];
 			var rowContent = $("<tr></tr>");
