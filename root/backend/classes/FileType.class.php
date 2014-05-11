@@ -64,7 +64,7 @@ class FileType
 		$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);		
 		closeDBConnection($conn);
 		
-		if($rows == false || count($row) == 0)
+		if($rows == false || count($rows) == 0)
 		{
 				throw new NoSuchFileTypeException("No FileType with extension: " . $ext);
 				return null;
@@ -122,12 +122,12 @@ class FileType
 		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		closeDBConnection($conn);	
 
-		if(count($results) == 0)
+		if($results == null || count($results) == 0)
 		{
 				throw new NoSuchFileTypeException("No such extension: " . $extension);
 		}
 			
-		return $results[0];		
+		return $results[0]["command"];		
 	}
 	
 	//query the db to get the bitrate command from the id

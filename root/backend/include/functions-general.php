@@ -45,7 +45,8 @@ function getFileMetaData($mediaSourceID, $dir, $filename)
 	$fileMetaData["filesize"] = filesize($filePath);
 	
 	//duration
-	$fileMetaData["duration"] = getMediaDuration($filePath);
+	if(($duration = getMediaDuration($filePath)) !== null)
+		$fileMetaData["duration"] = getMediaDuration($filePath);
 	
 	//tags
 	$fileMetaData["tags"] = getFileTags($filePath);

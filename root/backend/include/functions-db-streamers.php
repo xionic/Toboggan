@@ -465,9 +465,9 @@ function saveFileConverterSettings($settings_JSON)
 		} else { // new command
 			$stmt = $conn->prepare("
 				INSERT INTO 
-					FileConverter (fromFileType, toFileType, idcommand)
+					FileConverter (fromidfileType, toidfileType, idcommand)
 				VALUES
-					(:fromFileType, :toFileType, :idcommand)
+					(:fromidfileType, :toidfileType, :idcommand)
 			");
 		}
 		$stmt->bindValue(":fromidfileType",$com["fromFileTypeID"], PDO::PARAM_INT);
