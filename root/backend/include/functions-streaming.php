@@ -322,7 +322,7 @@ function transcodeStream($streamerObj, $file, $skipToTime){
 	);
 
 	//expand placeholders in command string
-	$cmd = expandCmdString($streamerObj->cmd, 
+	$cmd = expandCmdString($streamerObj->getCommand(), 
 		array(
 			"path" 		=> $file,
 			"bitrate"	=> getCurrentMaxBitrate($streamerObj->toFileType->mediaType),

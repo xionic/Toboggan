@@ -51,13 +51,13 @@ class FileConverter
 			WHERE 
 				idcommand = :idcommand"
 		);
-		$stmt->bindValue(":idcommand",$this->durationCmdID, PDO::PARAM_INT);
+		$stmt->bindValue(":idcommand",$this->cmdID, PDO::PARAM_INT);
 		$stmt->execute();
 		
 		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		closeDBConnection($conn);	
 			
-		return $results[0];	
+		return $results[0]["command"];	
 	}
 }
 
