@@ -132,15 +132,18 @@
 		$("#searchForm").submit(function(event){
 			event.preventDefault();
 			event.stopPropagation();
-
+			
+			var searchQuery = $("#search_query").val();
+			if (!searchQuery)
+				return;
 			//un-highlight the selected folder			
 			if(activeNode = $("#folderlist").dynatree("getTree").getActiveNode())
 				activeNode.deactivate();
 			
-			searchForMedia(	
+			searchForMedia(
 				$("#search_mediaSourceSelector").val(), 
 				$("#search_dir").val(), 
-				$("#search_query").val()
+				searchQuery
 			);			
 		});
 		
