@@ -19,8 +19,8 @@
 	}
 
 	$actionsToTest = null;	
-	if(isset($_GET["testAction"]))
-		$actionsToTest[] = $_GET["testAction"];
+	if(isset($_GET["action"]))
+		$actionsToTest[] = $_GET["action"];
 	
 	runTests($actionsToTest);
 	displayResultsTable();

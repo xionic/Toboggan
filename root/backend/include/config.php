@@ -34,7 +34,7 @@ define("APPNAME", "Toboggan");
 //user password salt
 $config["passwordSalt"] = "JbC^*(I4GJbgz7V)";
 
-//sesssion data
+//session data
 $config["sessionName"] = "Toboggan";
 
 //max amount of data to read in one fread call
