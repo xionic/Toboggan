@@ -250,6 +250,10 @@ try
 			));
 			addUser($args["settings"]);
 		break;
+	
+		case "getAddUserSchema":
+			outputAddUserSchema_JSON();
+			break;
 		
 		case "deleteUser";
 			checkActionAllowed("administrator");

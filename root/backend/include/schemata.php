@@ -80,4 +80,8 @@ $schema["retrieveFileConverterSettings"] = array(
 	)
 );
 
+$schema["getAddUserSchema"] = array(
+	
+);
+
 ?>

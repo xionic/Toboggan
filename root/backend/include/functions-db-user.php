@@ -43,6 +43,17 @@ function outputUserList_JSON()
 }
 
 /**
+ * Outputs the schema for a request to addUser
+ */
+function outputAddUserSchema_JSON()
+{
+	$settings = new SettingGroup();
+	$settings->setSchema(getSchema("getAddUserSchema"));
+	$settingsObj = $settings->getSettingsObject();
+	restTools::sendResponse(json_encode($settingsObj),200,JSON_MIME_TYPE);	
+}
+
+/**
 * returns an array of users with userid and username
 */
 function getUsers()
