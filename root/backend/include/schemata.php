@@ -81,7 +81,114 @@ $schema["retrieveFileConverterSettings"] = array(
 );
 
 $schema["getAddUserSchema"] = array(
-	
+	"username" => array(
+		"displayName"=> "Username",
+		"type"=> "text",
+		"readonly" => false
+	),
+	"email" => array(
+		"displayName"=> "Email Address",
+		"type"=> "text",
+		"readonly" => false
+	),
+	"enabled" => array(
+		"displayName"=> "Enabled",
+		"type"=> "boolean",
+		"readonly" => false
+	),
+	"maxAudioBitrate" => array(
+		"displayName"=> "Max Audio Bitrate",
+		"type"=> "int",
+		"readonly" => false
+	),
+	"maxVideoBitrate" => array(
+		"displayName"=> "Max Video Bitrate",
+		"type"=> "int",
+		"readonly" => false
+	),
+	"maxBandwidth" => array(
+		"displayName"=> "Max Bandwidth",
+		"type"=> "int",
+		"readonly" => false
+	),
+	"enableTrafficLimit" => array(
+		"displayName"=> "Enable traffic Limit",
+		"type"=> "boolean",
+		"readonly" => false
+	),
+	"trafficLimit" => array(
+		"displayName"=> "Traffic limit",
+		"type"=> "int",
+		"readonly" => false
+	),
+	"trafficLimitPeriod" => array(
+		"displayName"=> "Traffic limit reset time ",
+		"type"=> "int",
+		"readonly" => false
+	),
+	"trafficUsed" => array(
+		"displayName"=> "Traffic currently used",
+		"type"=> "int",
+		"readonly" => false
+	),
+	"timeToReset" => array(
+		"displayName"=> "Time to traffic limit reset",
+		"type"=> "int",
+		"readonly" => false
+	),
+	"permissions" => array(
+		"general" => array(
+			"id" => array(
+				"displayName"=> "ID of permission",
+				"type"=> "int",
+				"readonly" => true
+			),
+			"displayName" => array(
+				"displayName"=> "Permission",
+				"type"=> "text",
+				"readonly" => true
+			),
+			"granted" => array(
+				"displayName"=> "Granted?",
+				"type"=> "text",
+				"readonly" => false
+			),
+		),
+		"mediaSources" => array(
+			"id" => array(
+				"displayName"=> "ID of media source",
+				"type"=> "int",
+				"readonly" => true
+			),
+			"displayName" => array(
+				"displayName"=> "Media Source",
+				"type"=> "text",
+				"readonly" => true
+			),
+			"granted" => array(
+				"displayName"=> "Granted?",
+				"type"=> "text",
+				"readonly" => false
+			),
+		),
+		"fileConverters" => array(
+			"id" => array(
+				"displayName"=> "ID of file converter",
+				"type"=> "int",
+				"readonly" => true
+			),
+			"displayName" => array(
+				"displayName"=> "File Converter",
+				"type"=> "text",
+				"readonly" => true
+			),
+			"granted" => array(
+				"displayName"=> "Granted?",
+				"type"=> "text",
+				"readonly" => false
+			),
+		),
+	),
 );
 
 ?>

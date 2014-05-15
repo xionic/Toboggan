@@ -188,7 +188,7 @@ function getUserObject($userid)
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->execute();
 	$userStreamerPerms = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$userObj["permissions"]["streamers"] = $userStreamerPerms;
+	$userObj["permissions"]["fileConverters"] = $userStreamerPerms;
 	
 	
 	$conn->commit();	
@@ -233,7 +233,7 @@ function updateUser($userid, $json_settings){
 	$av->validateArgs($userSettings["permissions"], array(
 		"general"				=> array("array"),
 		"mediaSources"			=> array("array"),
-		"streamers"				=> array("array"),
+		"fileConverters"				=> array("array"),
 	));
 	
 	foreach($userSettings["permissions"]["general"] as $perm)
@@ -250,7 +250,7 @@ function updateUser($userid, $json_settings){
 			"granted"			=> array("string", "notblank", "regex /[YN]/"),
 		));
 	}
-	foreach($userSettings["permissions"]["streamers"] as $perm)
+	foreach($userSettings["permissions"]["fileConverters"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
@@ -320,7 +320,7 @@ function updateUser($userid, $json_settings){
 	}
 	
 	//streamer permissions
-	foreach($userSettings["permissions"]["streamers"] as $perm)
+	foreach($userSettings["permissions"]["fileConverters"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
 			$newUserPermissions[] = array("actionid" => PERMISSION_ACCESSSTREAMER,  "targetObjectID" => $perm["id"]);
@@ -389,7 +389,7 @@ function addUser($json_settings)
 	$av->validateArgs($userSettings["permissions"], array(
 		"general"				=> array("array"),
 		"mediaSources"			=> array("array"),
-		"streamers"				=> array("array"),
+		"fileConverters"				=> array("array"),
 	));
 	foreach($userSettings["permissions"]["general"] as $perm)
 	{
@@ -405,7 +405,7 @@ function addUser($json_settings)
 			"granted"			=> array("string", "notblank", "regex /[YN]/"),
 		));
 	}
-	foreach($userSettings["permissions"]["streamers"] as $perm)
+	foreach($userSettings["permissions"]["fileConverters"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
@@ -456,7 +456,7 @@ function addUser($json_settings)
 	$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
 	$stmt->bindValue(":password", userLogin::hashPassword($userSettings["password"]), PDO::PARAM_STR);
 	$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
-	$stmt->bindValue(":enabled", $userSettings["enabled"], PDO::PARAM_INT);
+	$stmt->bindValue(":enabled", $userSettings["enabled"]==='Y', PDO::PARAM_BOOL);
 	$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
@@ -485,7 +485,7 @@ function addUser($json_settings)
 	}
 	
 	//streamer permissions
-	foreach($userSettings["permissions"]["streamers"] as $perm)
+	foreach($userSettings["permissions"]["fileConverters"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
 			$newUserPermissions[] = array("actionid" => PERMISSION_ACCESSSTREAMER,  "targetObjectID" => $perm["id"]);
