@@ -35,9 +35,9 @@
 				"/permissions/mediaSources/*/displayName"	=> array("notblank"),
 				"/permissions/mediaSources/*/granted"		=> array("regex /Y|N/"),
 				
-				"/permissions/streamers/*/id"	=> array("int"),
-				"/permissions/streamers/*/displayName"	=> array("notblank"),
-				"/permissions/streamers/*/granted"	=> array("regex /Y|N/"),
+				"/permissions/fileConverters/*/id"	=> array("int"),
+				"/permissions/fileConverters/*/displayName"	=> array("notblank"),
+				"/permissions/fileConverters/*/granted"	=> array("regex /Y|N/"),
 
 			),
 		)
