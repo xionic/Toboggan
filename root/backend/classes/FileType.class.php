@@ -122,11 +122,6 @@ class FileType
 		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		closeDBConnection($conn);	
 
-		if($results == null || count($results) == 0)
-		{
-				throw new NoSuchFileTypeException("No such extension: " . $extension);
-		}
-			
 		return $results[0]["command"];		
 	}
 	
@@ -152,12 +147,7 @@ class FileType
 		$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 		closeDBConnection($conn);	
 
-		if(count($results) == 0)
-		{
-				throw new NoSuchFileTypeException("No such extension: " . $extension);
-		}
-			
-		return $results[0];		
+		return $results[0]["command"];		
 	}
 	
 }
