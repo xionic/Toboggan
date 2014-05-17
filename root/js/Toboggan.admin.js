@@ -570,12 +570,50 @@
 	
 	function updateUserList(ui)
 	{
+		function createAndAppendInputsTo(target, newInput) {
+			var newHTMLInput = {
+				type: "",
+				id: "",
+				isInteger: false
+			};
+			switch (newInput.type) {
+				case "int":
+					newHTMLInput.type = "number";
+					newHTMLInput.isInteger = true;
+					break;
+				case "boolean":
+					newHTMLInput.type = "checkbox";
+					break;
+				case "password":
+					newHTMLInput.type = "password";
+					break;
+				case "text":
+				default:
+					newHTMLInput.type = "text";
+		}
+
+			var newHTMLInputID = "opt_usr_input_new" + newInput.name;
+			target.append(
+				$("<p>").append(
+						$("<label>").text(newInput.displayName).attr("for", newHTMLInputID)
+					).append(
+						$("<input class='opt_usr_input' type='" + newHTMLInput.type + "'/>")
+							.attr({
+								"id": newHTMLInputID,
+								"name": newInput.name,
+								"value": '',
+								"readonly": (newInput.readonly ? "readonly" : false)
+							})
+					)
+			);
+		}
+
 		$.ajax({
 			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=listUsers&apikey="+apikey+"&apiver="+apiversion,
 			success: function(data, textStatus, jqXHR){
-				
+
 				currentUserID = jqXHR.getResponseHeader("X-AuthenticatedUserID");
-				
+
 				$(ui.panel).empty();
 				$(ui.panel).append("<h1>Add/Remove and Configure Users</h1>");
 				var userList = $("<select name='userList' id='opt_user_select' />");
@@ -627,7 +665,7 @@
 										
 										var tabBarContainer = $("<ul/>");
 										var tabIndex=0;
-										for (permissionCategory in data[lbl])
+										for (var permissionCategory in data[lbl])
 										{
 											var categoryContainer = $("<div/>").attr("id","perm_tab_"+tabIndex);
 											tabBarContainer.append($("<li/>")
@@ -637,7 +675,7 @@
 																)
 														);
 											
-											for (permIndex in data[lbl][permissionCategory] )
+											for (var permIndex in data[lbl][permissionCategory] )
 											{
 												$(categoryContainer).append(
 													$("<p>")
@@ -816,7 +854,7 @@
 							console.error(jqXHR, textStatus, errorThrown);
 						}
 					})
-				})
+				});
 				
 				$(ui.panel).append(
 					$("<div id='opt_usr_leftFrame' />")
@@ -829,96 +867,105 @@
 								}).click(function(e){
 									e.preventDefault();
 									$("#opt_usr_rightFrameTarget").empty();
-									var inputNames = new Array("username","password","email","enabled",
-																	"maxAudioBitrate","maxVideoBitrate","maxBandwidth",
-																	"enableTrafficLimit","trafficLimit","trafficLimitPeriod");
-									var newinputType = "";
-									for (x=0;x<inputNames.length;++x)
-									{
-										switch(inputNames[x])
-										{
-											case "maxAudioBitrate":
-											case "maxVideoBitrate":
-											case "maxBandwidth":
-											case "trafficLimitPeriod":
-											case "trafficLimit":
-												newinputType = "number";													
-											break;
-											case "enableTrafficLimit":
-											case "enabled":
-												newinputType = "checkbox";													
-											break;
-											case "password":
-												newinputType = "password";
-											break;
-											default:
-												newinputType = "text";
-										}
-										
-										newinputID = "opt_usr_input_new"+inputNames[x];
-									
-										$("#opt_usr_rightFrameTarget").append(
-											$("<p>").append(
-												$("<label>").text(inputNames[x]).attr("for", newinputID)
-											).append(
-												$("<input class='opt_usr_input' type='"+newinputType+"'>")
-													.attr({
-															"id":		newinputID,
-															"name":		inputNames[x],
-															"value":	'',
-															})
-													
-											)
-										);
-									}
-									$("#opt_usr_rightFrameTarget").append(
-										$("<button id='opt_usr_input_addBtn'>Add User</button>")
-											.button({
-												icons: {primary: "ui-icon-circle-plus"},
-												text: true
-											})
-											.click(function(){
-												//display indication of it!
-												var btnObj = $(this);
-												btnObj.text("Saving...");
-												btnObj.attr("disabled",true);
-												$("#opt_user_select").attr("disabled",true);
-												
-												var saveData = {};
-												$("#opt_usr_rightFrameTarget input").each(function(){
-												
-													saveData[$(this).attr("name")] = $(this).val();
-													
-													if($(this).attr("type") == "checkbox")
-														saveData[$(this).attr("name")] = $(this).attr("checked")?"Y":"N";
-													else if ($(this).attr("name")=="password")
-													{
-														//SHA256 the password
-														saveData[$(this).attr("name")] = new jsSHA($(this).val()).getHash("SHA-256","B64");
-													}
-												});
 
-												//save the new user
-												$.ajax({
-													url: g_Toboggan_basePath+"/backend/rest.php"+"?action=addUser&apikey="+apikey+"&apiver="+apiversion,
-													type: "POST",
-													data: {
-														settings:	JSON.stringify(saveData)
-													},
-													success: function(data, textStatus,jqHXR){
-														btnObj.text("Add");
-														btnObj.attr("disabled",false);
-														$("#opt_user_select").attr("disabled",false);
-														updateUserList(ui);
-													},
-													error: function(jqHXR, textStatus, errorThrown){
-														alert("An error occurred while adding the user");
-														console.error(jqXHR, textStatus, errorThrown);
+									$.ajax({
+										url: g_Toboggan_basePath+"/backend/rest.php"+"?action=getAddUserSchema&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
+										type: "POST",
+										error: function(jqHXR, textStatus, errorThrown){
+											alert("An error occurred while deleting the user");
+											console.error(jqXHR, textStatus, errorThrown);
+										},
+										success: function(data, textStatus,jqHXR)
+										{
+											for(var x in data.schema) {
+												if (x == "permissions")
+												{
+													//create target input thingy
+													var permissionsTarget = $("<div id='permissionsTarget'></div>");
+													var tabBarContainer = $("<ul/>");
+													var tabIndex=0;
+													
+													for(var permCat in data.schema.permissions)
+													{
+														var categoryContainer = $("<div/>").attr("id","perm_tab_"+tabIndex);
+														tabBarContainer.append($("<li/>")
+															.append($("<a/>")
+																.attr("href","#perm_tab_"+tabIndex)
+																.text(permCat)
+															)
+														);
+
+														for (var permName in data.schema.permissions[permCat] )
+														{
+															var newPermissionsInput = data.schema.permissions[permCat][permName];
+															newPermissionsInput.name = permName;
+															createAndAppendInputsTo(categoryContainer, newPermissionsInput);
+														}
+														categoryContainer.appendTo(permissionsTarget);
+														tabIndex++;
 													}
-												});
-											})
-									);
-							})
+													permissionsTarget.prepend(tabBarContainer);
+													permissionsTarget.tabs({selected: 0});
+													$("#opt_usr_rightFrameTarget").append(permissionsTarget);
+													continue;
+												}
+
+												var newInput = data.schema[x];
+												newInput.name = x;
+												createAndAppendInputsTo($("#opt_usr_rightFrameTarget"), newInput);
+											}
+
+											$("#opt_usr_rightFrameTarget").append(
+												$("<button id='opt_usr_input_addBtn'>Add User</button>")
+													.button({
+														icons: {primary: "ui-icon-circle-plus"},
+														text: true
+													})
+													.click(function(){
+														//display indication of it!
+														var btnObj = $(this);
+														btnObj.text("Saving...");
+														btnObj.attr("disabled",true);
+														$("#opt_user_select").attr("disabled",true);
+
+														var saveData = {};
+														$("#opt_usr_rightFrameTarget input").each(function(){
+
+															saveData[$(this).attr("name")] = $(this).val();
+
+															if($(this).attr("type") == "checkbox")
+																saveData[$(this).attr("name")] = $(this).attr("checked")?"Y":"N";
+															else if ($(this).attr("name")=="password")
+															{
+																//SHA256 the password
+																saveData[$(this).attr("name")] = new jsSHA($(this).val()).getHash("SHA-256","B64");
+															}
+														});
+
+														//save the new user
+														$.ajax({
+															url: g_Toboggan_basePath+"/backend/rest.php"+"?action=addUser&apikey="+apikey+"&apiver="+apiversion,
+															type: "POST",
+															data: {
+																settings:	JSON.stringify(saveData)
+															},
+															success: function(data, textStatus,jqHXR){
+																btnObj.text("Add");
+																btnObj.attr("disabled",false);
+																$("#opt_user_select").attr("disabled",false);
+																updateUserList(ui);
+															},
+															error: function(jqHXR, textStatus, errorThrown){
+																alert("An error occurred while adding the user");
+																console.error(jqXHR, textStatus, errorThrown);
+															}
+														});
+													})
+											);
+										}
+									});
+
+								})
 						)
 					)
 					.append($("<fieldset id='opt_usr_rightFrameFieldset'><legend>User Details</legend><div id='opt_usr_rightFrameTarget'/></fieldset>"));
