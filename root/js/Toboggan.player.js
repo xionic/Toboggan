@@ -192,7 +192,7 @@
 						width: 180,
 						title: "Information",
 					});
-				},
+				}
 			});
 			return false;
 		});		
@@ -224,7 +224,7 @@
 		
 		//TODO: Flip this to the ping method, pretty I/O heavy for no good reason currently
 		$.ajax({
-			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveClientSettings&apikey="+apikey+"&apiver="+apiversion,
+			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=ping&apikey="+apikey+"&apiver="+apiversion,
 			success:  function(data, textStatus, xhr) {
 			    var initObject = {
 			    	username: xhr.getResponseHeader("X-AuthenticatedUsername"),
@@ -1041,7 +1041,7 @@
 				//reset the search bar
 				$("#search_mediaSourceSelector option[value='all']").attr("selected","selected");
 				$("#search_query").val("");
-			},
+			}
 		});	
 	}
 	
