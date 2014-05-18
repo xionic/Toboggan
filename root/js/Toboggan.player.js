@@ -565,9 +565,14 @@
 
 
 		$(".first_li , .sec_li, .inner_li span").hover(function () {
-			if ( $(this).children().size() >0 )
-					$(this).find('.inner_li').show();	
-					$(this).css({cursor : 'default'});
+			if ( $(this).children().size() > 0 ) {
+				$(this).find('.inner_li').show();
+				$(this).css({cursor : 'default'});
+				var contextPosition = $("#trackMenu").offset();
+				if(contextPosition.left + $("#trackMenu").width() > 0.95*$(window).width())
+					$(this).find(".inner_li").css({"margin-left": -2 + -1*$("#trackMenu").width()});
+
+			}
 		}, 
 		function () {
 			$(this).find('.inner_li').hide();
@@ -599,7 +604,14 @@
 			})
 			.appendTo(document.body);
 		
-		$("#trackMenu").css({ left: e.pageX, top: e.pageY, zIndex: '1001' }).show();
+		var leftPosition = e.pageX;
+		var topPosition = e.pageY;
+		if(leftPosition + $("#trackMenu").width() > 0.95*$(window).width())
+			leftPosition = leftPosition - $("#trackMenu").width();
+		if(topPosition + $("#trackMenu").height() > 0.95*$(window).height())
+			topPosition = topPosition - $("#trackMenu").height();
+		$("#trackMenu").css({ left: leftPosition, top: topPosition, zIndex: '1001' }).show();
+
 
 		return false;
 	}
