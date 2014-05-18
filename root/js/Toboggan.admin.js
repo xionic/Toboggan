@@ -320,7 +320,7 @@
 				$("<th></th>").text(jsonObjectSchema[0][heading].displayName)
 			);
 		}
-		headerRow.append($("<th></th>").text("..."));
+		headerRow.append($("<th></th>").text(" "));
 
 		outputTable.append(headerRow);
 		for (var objectProperty in jsonObject) {
