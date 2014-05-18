@@ -2,23 +2,19 @@
 	Holds the JS used for the administration system
 */
 (function(){
-	var apikey = '{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}',
-		apiversion = '0.6',
-		initialProgressEvent = false,	//used to ensure that the initial progress event is the only one handled
-		playerCSSProperties = {},
-		rightClickedObject = {},
-		currentUserName = "",
-		currentUserID = "",
-		ajaxCache = {
-			fileTypeSettings : false,
-			commandSettings : false,
-			fileConverterSettings : false
-		},
-		converterSettings = {
-			commands: {},
-			fileTypes: {},
-			converters : {}
-			};
+	var apikey = '{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}';
+	var apiversion = '0.6';
+	var currentUserID = "";
+	var ajaxCache = {
+		fileTypeSettings: false,
+		commandSettings: false,
+		fileConverterSettings: false
+	};
+	var converterSettings = {
+		commands: {},
+		fileTypes: {},
+		converters: {}
+	};
 	/**
 		jQuery Entry Point
 	*/
@@ -59,7 +55,7 @@
 				'username': $("#username").val(),
 				'password': hash
 			},
-			success: function(data,textStatus,jqHXR){
+			success: function(data, textStatus, jqXHR){
 				var allowedAdminLogin=false;
 				for (var x=0; x < data.permissions.length; ++x)
 				{
@@ -81,8 +77,8 @@
 					alert("Administrative access has not been granted by the remote server");
 				}
 			},
-			error: function(jqhxr,textstatus,errorthrown){
-				console.debug(jqhxr,textstatus,errorthrown);
+			error: function(jqXHR, textStatus, errorThrown){
+				console.debug(jqXHR, textStatus, errorThrown);
 				alert("Login Failed");							
 			}
 		});
@@ -139,39 +135,39 @@
 						//pull down retrieveFileTypeSettings
 						$.ajax({
 							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveFileTypeSettings&apikey="+apikey+"&apiver="+apiversion,
-							success: function(data, textStatus, jqHXR) {
+							success: function(data, textStatus, jqXHR) {
 								ajaxCache.fileTypeSettings = data;
 								prepareConverters();
 							},
-							error: function(jqHXR, textStatus, errorThrown) {
+							error: function(jqXHR, textStatus, errorThrown) {
 								alert("An error occurred while retrieveFileTypeSettings");
-								console.error(jqHXR, textStatus, errorThrown);
+								console.error(jqXHR, textStatus, errorThrown);
 							}
 						});
 
 						//pull down retrieveCommandSettings
 						$.ajax({
 							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveCommandSettings&apikey="+apikey+"&apiver="+apiversion,
-							success: function(data, textStatus, jqHXR) {
+							success: function(data, textStatus, jqXHR) {
 								ajaxCache.commandSettings = data;
 								prepareConverters();
 							},
-							error: function(jqHXR, textStatus, errorThrown) {
+							error: function(jqXHR, textStatus, errorThrown) {
 								alert("An error occurred while retrieveCommandSettings");
-								console.error(jqHXR, textStatus, errorThrown);
+								console.error(jqXHR, textStatus, errorThrown);
 							}
 						});
 
 						//pull down retrieveFileConverterSettings
 						$.ajax({
 							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveFileConverterSettings&apikey="+apikey+"&apiver="+apiversion,
-							success: function(data, textStatus, jqHXR) {
+							success: function(data, textStatus, jqXHR) {
 								ajaxCache.fileConverterSettings = data;
 								prepareConverters();
 							},
-							error: function(jqHXR, textStatus, errorThrown) {
+							error: function(jqXHR, textStatus, errorThrown) {
 								alert("An error occurred while retrieveFileConverterSettings");
-								console.error(jqHXR, textStatus, errorThrown);
+								console.error(jqXHR, textStatus, errorThrown);
 							}
 						});
 
@@ -271,9 +267,9 @@
 												success: function(data, textStatus, jqXHR){
 													$( "#configDialog" ).dialog( "close" );
 												},
-												error: function(jqHXR, textStatus, errorThrown){
+												error: function(jqXHR, textStatus, errorThrown){
 													alert("A mild saving catastrophe has occurred, please check the error log");
-													console.error(jqHXR, textStatus, errorThrown);
+													console.error(jqXHR, textStatus, errorThrown);
 												}	
 											});
 										})
@@ -291,9 +287,9 @@
 									$("#serverLogSizeDisplay").text($("#serverLogSize").val());
 									$("#server_log_contents_target").text(data.logFileText.substring(data.logFileText.indexOf('\n')+1,data.logFileText.length));
 								},
-								error: function(jqHXR, textStatus, errorThrown){
+								error: function(jqXHR, textStatus, errorThrown){
 									alert("An error has occurred loading the server log: " + textStatus + "\n see the js error console for the full error object");
-									console.error(jqHXR, textStatus, errorThrown);
+									console.error(jqXHR, textStatus, errorThrown);
 								}	
 							});
 						});
@@ -314,27 +310,49 @@
 		return false;
 	}
 
-	function jsonObjectToTable(jsonObject, jsonObjectSchema, classToAssign) {
+	function jsonObjectToTable(jsonObject, jsonObjectSchema, classToAssign, actionCallback) {
 		var outputTable = $("<table></table>").addClass("configTable");
 		outputTable.addClass(classToAssign);
 		var headerRow = $("<tr></tr>");
 		for (var heading in jsonObjectSchema[0])
 		{
 			headerRow.append(
-				$("<td></td>").text(jsonObjectSchema[0][heading].displayName)
+				$("<th></th>").text(jsonObjectSchema[0][heading].displayName)
 			);
 		}
+		headerRow.append($("<th></th>").text("..."));
+
 		outputTable.append(headerRow);
 		for (var objectProperty in jsonObject) {
 			objectProperty = jsonObject[objectProperty];
 			var rowContent = $("<tr></tr>");
+			var dataAttributes = {};
 			for (var c in objectProperty)
 			{
 				var tableCell = $("<td></td>");
 				tableCell.text(objectProperty[c]);
 				
 				rowContent.append(tableCell);
+				dataAttributes["data-"+c] = objectProperty[c];
 			}
+
+			rowContent.append(
+				$("<td></td>")
+					.append($("<a href='#'>Remove</a>")
+						.button({
+							icons: {primary: "ui-icon-circle-minus"},
+							text: false
+						})
+						.click(function(e){
+							e.preventDefault();
+							if(actionCallback)
+								actionCallback(this, e);
+							return false;
+						})
+						.attr(dataAttributes)
+					)
+			);
+
 			outputTable.append(rowContent);
 		}
 		return outputTable;
@@ -355,7 +373,7 @@
 		}
 		return commandId
 	}
-	
+
 	function prepareConverters()
 	{
 		if(!ajaxCache.fileTypeSettings || !ajaxCache.commandSettings || !ajaxCache.fileConverterSettings)
@@ -372,11 +390,89 @@
 		for (var z in ajaxCache.fileTypeSettings.data)
 			converterSettings.fileTypes[ajaxCache.fileTypeSettings.data[z].fileTypeID] = ajaxCache.fileTypeSettings.data[z];
 
-		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters");
-		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands");
-		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes");
+		//TODO: Refactor these deletes in with the saves below into one method
+		var removeConverterCallback = function(obj, e){
+			var fc_id = $(obj).attr("data-fileconverterid");
+			var saveData = JSON.parse(JSON.stringify(ajaxCache.fileConverterSettings.data));
+			for(var idx in saveData) {
+				if(saveData[idx].fileconverterid == fc_id){
+					saveData.splice(idx, 1);
+					break;
+				}
+			}
+			$(obj).button("disable");
+			
+			$.ajax({
+				url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileConverterSettings&apikey=" + apikey + "&apiver=" + apiversion,
+				type: "POST",
+				data: {
+					settings:	JSON.stringify(saveData)
+				},
+				success: function(data, textStatus,jqXHR){
+					$(obj).show();
+					$(obj).parent().parent().remove();
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					alert("An error occurred while saving the user settings");
+					console.error(jqXHR, textStatus, errorThrown);
+				}
+			});
+		};
+		var removeCommandCallback = function(obj, e){
+            var rc_id = $(obj).attr("data-commandid");
+			var saveData = JSON.parse(JSON.stringify(ajaxCache.commandSettings.data));
+			for(var idx in saveData) {
+				if(saveData[idx].commandID == rc_id){
+					saveData.splice(idx, 1);
+					break;
+				}
+			}
+			
+			$.ajax({
+				url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveCommandSettings&apikey=" + apikey + "&apiver=" + apiversion,
+				type: "POST",
+				data: {
+					settings: JSON.stringify(saveData)
+				},
+				success: function(data, textStatus,jqXHR){
+					$(obj).parent().parent().remove();
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					alert(jqXHR.responseText);
+					console.error(jqXHR, textStatus, errorThrown);
+				}
+			});
+		};
+		var removeFileTypeCallback = function(obj, e){
+            var ft_id = $(obj).attr("data-filetypeid");
+			var saveData = JSON.parse(JSON.stringify(ajaxCache.fileTypeSettings.data));
+			for(var idx in saveData) {
+				if(saveData[idx].fileTypeID == ft_id){
+					saveData.splice(idx, 1);
+					break;
+				}
+			}
+			
+			$.ajax({
+				url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileTypeSettings&apikey=" + apikey + "&apiver=" + apiversion,
+				type: "POST",
+				data: {
+					settings:	JSON.stringify(saveData)
+				},
+				success: function(data, textStatus,jqXHR){
+					$(obj).parent().parent().remove();
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					alert(jqXHR.responseText);
+					console.error(jqXHR, textStatus, errorThrown);
+				}
+			});
+		};
+
+		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters", removeConverterCallback);
+		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands", removeCommandCallback);
+		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes", removeFileTypeCallback);
 		
-		//TODO: convert this to use the schema that arrives with the retrieve.*Settings 
 		var newConverterButton = $("<a href='#'>New</a>")
 			.button({
 				icons: {primary: "ui-icon-circle-plus"},
@@ -436,11 +532,11 @@
 							data: {
 								settings:	JSON.stringify(saveData)
 							},
-							success: function(data, textStatus,jqHXR){
+							success: function(data, textStatus,jqXHR){
 								$(newConverterButton).show();
 								$("div.skeletonRow.converters").remove();
 							},
-							error: function(jqHXR, textStatus, errorThrown){
+							error: function(jqXHR, textStatus, errorThrown){
 								alert("An error occurred while saving the user settings");
 								console.error(jqXHR, textStatus, errorThrown);
 							}
@@ -480,11 +576,11 @@
 							data: {
 								settings:	JSON.stringify(saveData)
 							},
-							success: function(data, textStatus,jqHXR){
+							success: function(data, textStatus,jqXHR){
 								$(newConverterButton).show();
 								$("div.skeletonRow.converters").remove();
 							},
-							error: function(jqHXR, textStatus, errorThrown){
+							error: function(jqXHR, textStatus, errorThrown){
 								alert("An error occurred while saving the user settings");
 								console.error(jqXHR, textStatus, errorThrown);
 							}
@@ -528,7 +624,7 @@
 							"mimeType": $("#filetypes_mimetype").val(),
 							"mediaType": $("#filetypes_mediatype").val(),
 							"bitrateCmdID": $("#fileTypes_bitrateCmdID").find(":selected").val(),
-							"durationCmdID": $("#fileTypes_durationCmdID").find(":selected").val(),
+							"durationCmdID": $("#fileTypes_durationCmdID").find(":selected").val()
 						};
 
 						$(addFileTypeButton).button("disable");
@@ -538,11 +634,11 @@
 							data: {
 								settings:	JSON.stringify(saveData)
 							},
-							success: function(data, textStatus,jqHXR){
+							success: function(data, textStatus,jqXHR){
 								$(newConverterButton).show();
 								$("div.skeletonRow.converters").remove();
 							},
-							error: function(jqHXR, textStatus, errorThrown){
+							error: function(jqXHR, textStatus, errorThrown){
 								alert("An error occurred while saving the user settings");
 								console.error(jqXHR, textStatus, errorThrown);
 							}
@@ -632,7 +728,7 @@
 					$.ajax({
 						url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveUserSettings&apikey="+apikey+"&apiver="+apiversion,
 						data: { 'userid': $(this).val() },
-						success: function(data, textStatus,jqHXR){
+						success: function(data, textStatus,jqXHR){
 							
 							//Data driven for now!
 							for (lbl in data)
@@ -757,12 +853,12 @@
 											data: {
 												settings:	JSON.stringify(saveData)
 											},
-											success: function(data, textStatus,jqHXR){
+											success: function(data, textStatus,jqXHR){
 												btnObj.text("Update");
 												btnObj.attr("disabled",false);
 												$("#opt_user_select").attr("disabled",false);
 											},
-											error: function(jqHXR, textStatus, errorThrown){
+											error: function(jqXHR, textStatus, errorThrown){
 												alert("An error occurred while saving the user settings");
 												console.error(jqXHR, textStatus, errorThrown);
 											}
@@ -786,14 +882,14 @@
 											$.ajax({
 												url: g_Toboggan_basePath+"/backend/rest.php"+"?action=deleteUser&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
 												type: "POST",
-												success: function(data, textStatus,jqHXR){
+												success: function(data, textStatus,jqXHR){
 													btnObj.text("Delete User");
 													btnObj.attr("disabled",false);
 													$("#opt_user_select").attr("disabled",false);
 													alert("User Successfully Deleted");
 													updateUserList(ui);
 												},
-												error: function(jqHXR, textStatus, errorThrown){
+												error: function(jqXHR, textStatus, errorThrown){
 													alert("An error occurred while deleting the user");
 													console.error(jqXHR, textStatus, errorThrown);
 												}
@@ -832,12 +928,12 @@
 													data: {
 														password:	passwd
 													},
-													success: function(data, textStatus,jqHXR){
+													success: function(data, textStatus,jqXHR){
 														btnObj.text("Update User's Password");
 														btnObj.attr("disabled",false);
 														$("#opt_user_select").attr("disabled",false);
 													},
-													error: function(jqHXR, textStatus, errorThrown){
+													error: function(jqXHR, textStatus, errorThrown){
 														alert("An error occurred while saving the user settings");
 														console.error(jqXHR, textStatus, errorThrown);
 													}
@@ -849,7 +945,7 @@
 							)
 							
 						},
-						error: function(jqHXR, textStatus, errorThrown){
+						error: function(jqXHR, textStatus, errorThrown){
 							alert("An error occurred while retrieving the user settings");
 							console.error(jqXHR, textStatus, errorThrown);
 						}
@@ -871,11 +967,11 @@
 									$.ajax({
 										url: g_Toboggan_basePath+"/backend/rest.php"+"?action=getAddUserSchema&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
 										type: "POST",
-										error: function(jqHXR, textStatus, errorThrown){
+										error: function(jqXHR, textStatus, errorThrown){
 											alert("An error occurred while deleting the user");
 											console.error(jqXHR, textStatus, errorThrown);
 										},
-										success: function(data, textStatus,jqHXR)
+										success: function(data, textStatus,jqXHR)
 										{
 											for(var x in data.schema) {
 												if (x == "permissions")
@@ -949,13 +1045,13 @@
 															data: {
 																settings:	JSON.stringify(saveData)
 															},
-															success: function(data, textStatus,jqHXR){
+															success: function(data, textStatus,jqXHR){
 																btnObj.text("Add");
 																btnObj.attr("disabled",false);
 																$("#opt_user_select").attr("disabled",false);
 																updateUserList(ui);
 															},
-															error: function(jqHXR, textStatus, errorThrown){
+															error: function(jqXHR, textStatus, errorThrown){
 																alert("An error occurred while adding the user");
 																console.error(jqXHR, textStatus, errorThrown);
 															}
@@ -973,7 +1069,7 @@
 				userList.change();
 			
 			},
-			error: function(jqHXR, textStatus, errorThrown){
+			error: function(jqXHR, textStatus, errorThrown){
 				alert("An error occurred while retrieving the user settings");
 				console.error(jqXHR, textStatus, errorThrown);
 			}
