@@ -43,6 +43,17 @@ function outputUserList_JSON()
 }
 
 /**
+ * Outputs the schema for a request to addUser
+ */
+function outputAddUserSchema_JSON()
+{
+	$settings = new SettingGroup();
+	$settings->setSchema(getSchema("getAddUserSchema"));
+	$settingsObj = $settings->getSettingsObject();
+	restTools::sendResponse(json_encode($settingsObj),200,JSON_MIME_TYPE);	
+}
+
+/**
 * returns an array of users with userid and username
 */
 function getUsers()
@@ -156,7 +167,7 @@ function getUserObject($userid)
 	$stmt = $conn->prepare("
 		SELECT 
 			idfileConverter as id, 
-			(fromFileType || ' -> '  || toFileType) as displayName, 
+			(ftfrom.Extension || ' -> '  || ftto.extension) as displayName, 
 			CASE WHEN PermissionAction.idAction IS NOT NULL THEN 'Y' ELSE 'N' END as granted
 		FROM FileConverter
 				CROSS JOIN User 
@@ -169,13 +180,15 @@ function getUserObject($userid)
 						PermissionAction.targetObjectID = FileConverter.idfileConverter 
 						AND PermissionAction.idUser=User.idUser
 					) 
+				INNER JOIN FileType ftfrom on (FileConverter.fromidfileType = ftfrom.idfileType)
+				INNER JOIN FileType ftto on (FileConverter.toidfileType = ftto.idfileType)
 			WHERE User.idUser= :userid;
 		
 	");
 	$stmt->bindValue(":userid", $userid, PDO::PARAM_INT);
 	$stmt->execute();
 	$userStreamerPerms = $stmt->fetchAll(PDO::FETCH_ASSOC);
-	$userObj["permissions"]["streamers"] = $userStreamerPerms;
+	$userObj["permissions"]["fileConverters"] = $userStreamerPerms;
 	
 	
 	$conn->commit();	
@@ -220,7 +233,7 @@ function updateUser($userid, $json_settings){
 	$av->validateArgs($userSettings["permissions"], array(
 		"general"				=> array("array"),
 		"mediaSources"			=> array("array"),
-		"streamers"				=> array("array"),
+		"fileConverters"				=> array("array"),
 	));
 	
 	foreach($userSettings["permissions"]["general"] as $perm)
@@ -237,7 +250,7 @@ function updateUser($userid, $json_settings){
 			"granted"			=> array("string", "notblank", "regex /[YN]/"),
 		));
 	}
-	foreach($userSettings["permissions"]["streamers"] as $perm)
+	foreach($userSettings["permissions"]["fileConverters"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
@@ -307,7 +320,7 @@ function updateUser($userid, $json_settings){
 	}
 	
 	//streamer permissions
-	foreach($userSettings["permissions"]["streamers"] as $perm)
+	foreach($userSettings["permissions"]["fileConverters"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
 			$newUserPermissions[] = array("actionid" => PERMISSION_ACCESSSTREAMER,  "targetObjectID" => $perm["id"]);
@@ -376,7 +389,7 @@ function addUser($json_settings)
 	$av->validateArgs($userSettings["permissions"], array(
 		"general"				=> array("array"),
 		"mediaSources"			=> array("array"),
-		"streamers"				=> array("array"),
+		"fileConverters"				=> array("array"),
 	));
 	foreach($userSettings["permissions"]["general"] as $perm)
 	{
@@ -392,7 +405,7 @@ function addUser($json_settings)
 			"granted"			=> array("string", "notblank", "regex /[YN]/"),
 		));
 	}
-	foreach($userSettings["permissions"]["streamers"] as $perm)
+	foreach($userSettings["permissions"]["fileConverters"] as $perm)
 	{
 		$av->validateArgs($perm, array(
 			"id"				=> array("int"),
@@ -443,7 +456,7 @@ function addUser($json_settings)
 	$stmt->bindValue(":username", $userSettings["username"], PDO::PARAM_STR);
 	$stmt->bindValue(":password", userLogin::hashPassword($userSettings["password"]), PDO::PARAM_STR);
 	$stmt->bindValue(":email", $userSettings["email"], PDO::PARAM_STR);
-	$stmt->bindValue(":enabled", $userSettings["enabled"], PDO::PARAM_INT);
+	$stmt->bindValue(":enabled", $userSettings["enabled"]==='Y', PDO::PARAM_BOOL);
 	$stmt->bindValue(":maxAudioBitrate", $userSettings["maxAudioBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxVideoBitrate", $userSettings["maxVideoBitrate"], PDO::PARAM_INT);
 	$stmt->bindValue(":maxBandwidth", $userSettings["maxBandwidth"], PDO::PARAM_INT);
@@ -472,7 +485,7 @@ function addUser($json_settings)
 	}
 	
 	//streamer permissions
-	foreach($userSettings["permissions"]["streamers"] as $perm)
+	foreach($userSettings["permissions"]["fileConverters"] as $perm)
 	{
 		if($perm["granted"] == 'Y')
 			$newUserPermissions[] = array("actionid" => PERMISSION_ACCESSSTREAMER,  "targetObjectID" => $perm["id"]);

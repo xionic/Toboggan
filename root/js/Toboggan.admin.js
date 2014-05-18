@@ -2,23 +2,19 @@
 	Holds the JS used for the administration system
 */
 (function(){
-	var apikey = '{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}',
-		apiversion = '0.6',
-		initialProgressEvent = false,	//used to ensure that the initial progress event is the only one handled
-		playerCSSProperties = {},
-		rightClickedObject = {},
-		currentUserName = "",
-		currentUserID = "",
-		ajaxCache = {
-			fileTypeSettings : false,
-			commandSettings : false,
-			fileConverterSettings : false
-		},
-		converterSettings = {
-			commands: {},
-			fileTypes: {},
-			converters : {}
-			};
+	var apikey = '{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}';
+	var apiversion = '0.6';
+	var currentUserID = "";
+	var ajaxCache = {
+		fileTypeSettings: false,
+		commandSettings: false,
+		fileConverterSettings: false
+	};
+	var converterSettings = {
+		commands: {},
+		fileTypes: {},
+		converters: {}
+	};
 	/**
 		jQuery Entry Point
 	*/
@@ -59,7 +55,7 @@
 				'username': $("#username").val(),
 				'password': hash
 			},
-			success: function(data,textStatus,jqHXR){
+			success: function(data, textStatus, jqXHR){
 				var allowedAdminLogin=false;
 				for (var x=0; x < data.permissions.length; ++x)
 				{
@@ -81,8 +77,8 @@
 					alert("Administrative access has not been granted by the remote server");
 				}
 			},
-			error: function(jqhxr,textstatus,errorthrown){
-				console.debug(jqhxr,textstatus,errorthrown);
+			error: function(jqXHR, textStatus, errorThrown){
+				console.debug(jqXHR, textStatus, errorThrown);
 				alert("Login Failed");							
 			}
 		});
@@ -100,7 +96,7 @@
 					$("<ul id='configTabs'/>")
 						.append($("<li><a href='#tab_welcome'>Welcome</a></li>"))
 			//			.append($("<li><a href='#tab_client'>Client</a></li>"))
-						.append($("<li><a href='#tab_server_streamers'>Streamers</a></li>"))
+						.append($("<li><a href='#tab_server_converters'>File Converters</a></li>"))
 						.append($("<li><a href='#tab_server_users'>Users</a></li>"))
 						.append($("<li><a href='#tab_server_mediaSources'>Media Sources</a></li>"))
 						.append($("<li><a href='#tab_server_log_contents'>View Server Log</a></li>"))
@@ -111,7 +107,7 @@
 									<p>Please select from the tabs at the top of the page to chose which facet of Toboggan to configure</p>"))
 				)
 				.append(
-					$("<div id='tab_server_streamers'></div>")
+					$("<div id='tab_server_converters'></div>")
 				)
 				.append(
 					$("<div id='tab_server_users'></div>")
@@ -133,46 +129,45 @@
 				//TODO: display loading placeholder here
 				switch(ui.panel.id)
 				{
-					case 'tab_server_streamers':
+					case 'tab_server_converters':
 						$(ui.panel).empty();
-						$(ui.panel).append("<h1>Add/Remove Streamers</h1>");
 						
 						//pull down retrieveFileTypeSettings
 						$.ajax({
 							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveFileTypeSettings&apikey="+apikey+"&apiver="+apiversion,
-							success: function(data, textStatus, jqHXR) {
+							success: function(data, textStatus, jqXHR) {
 								ajaxCache.fileTypeSettings = data;
 								prepareConverters();
 							},
-							error: function(jqHXR, textStatus, errorThrown) {
+							error: function(jqXHR, textStatus, errorThrown) {
 								alert("An error occurred while retrieveFileTypeSettings");
-								console.error(jqHXR, textStatus, errorThrown);
+								console.error(jqXHR, textStatus, errorThrown);
 							}
 						});
 
 						//pull down retrieveCommandSettings
 						$.ajax({
 							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveCommandSettings&apikey="+apikey+"&apiver="+apiversion,
-							success: function(data, textStatus, jqHXR) {
+							success: function(data, textStatus, jqXHR) {
 								ajaxCache.commandSettings = data;
 								prepareConverters();
 							},
-							error: function(jqHXR, textStatus, errorThrown) {
+							error: function(jqXHR, textStatus, errorThrown) {
 								alert("An error occurred while retrieveCommandSettings");
-								console.error(jqHXR, textStatus, errorThrown);
+								console.error(jqXHR, textStatus, errorThrown);
 							}
 						});
 
 						//pull down retrieveFileConverterSettings
 						$.ajax({
 							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveFileConverterSettings&apikey="+apikey+"&apiver="+apiversion,
-							success: function(data, textStatus, jqHXR) {
+							success: function(data, textStatus, jqXHR) {
 								ajaxCache.fileConverterSettings = data;
 								prepareConverters();
 							},
-							error: function(jqHXR, textStatus, errorThrown) {
+							error: function(jqXHR, textStatus, errorThrown) {
 								alert("An error occurred while retrieveFileConverterSettings");
-								console.error(jqHXR, textStatus, errorThrown);
+								console.error(jqXHR, textStatus, errorThrown);
 							}
 						});
 
@@ -272,9 +267,9 @@
 												success: function(data, textStatus, jqXHR){
 													$( "#configDialog" ).dialog( "close" );
 												},
-												error: function(jqHXR, textStatus, errorThrown){
+												error: function(jqXHR, textStatus, errorThrown){
 													alert("A mild saving catastrophe has occurred, please check the error log");
-													console.error(jqHXR, textStatus, errorThrown);
+													console.error(jqXHR, textStatus, errorThrown);
 												}	
 											});
 										})
@@ -292,9 +287,9 @@
 									$("#serverLogSizeDisplay").text($("#serverLogSize").val());
 									$("#server_log_contents_target").text(data.logFileText.substring(data.logFileText.indexOf('\n')+1,data.logFileText.length));
 								},
-								error: function(jqHXR, textStatus, errorThrown){
+								error: function(jqXHR, textStatus, errorThrown){
 									alert("An error has occurred loading the server log: " + textStatus + "\n see the js error console for the full error object");
-									console.error(jqHXR, textStatus, errorThrown);
+									console.error(jqXHR, textStatus, errorThrown);
 								}	
 							});
 						});
@@ -315,22 +310,68 @@
 		return false;
 	}
 
-	function jsonObjectToTable(jsonObject, jsonObjectSchema, classToAssign) {
+	function jsonObjectToTable(jsonObject, jsonObjectSchema, classToAssign, actionCallback) {
 		var outputTable = $("<table></table>").addClass("configTable");
 		outputTable.addClass(classToAssign);
+		var headerRow = $("<tr></tr>");
+		for (var heading in jsonObjectSchema[0])
+		{
+			headerRow.append(
+				$("<th></th>").text(jsonObjectSchema[0][heading].displayName)
+			);
+		}
+		headerRow.append($("<th></th>").text(" "));
+
+		outputTable.append(headerRow);
 		for (var objectProperty in jsonObject) {
 			objectProperty = jsonObject[objectProperty];
 			var rowContent = $("<tr></tr>");
+			var dataAttributes = {};
 			for (var c in objectProperty)
 			{
 				var tableCell = $("<td></td>");
 				tableCell.text(objectProperty[c]);
 				
 				rowContent.append(tableCell);
+				dataAttributes["data-"+c] = objectProperty[c];
 			}
+
+			rowContent.append(
+				$("<td></td>")
+					.append($("<a href='#'>Remove</a>")
+						.button({
+							icons: {primary: "ui-icon-circle-minus"},
+							text: false
+						})
+						.click(function(e){
+							e.preventDefault();
+							if(actionCallback)
+								actionCallback(this, e);
+							return false;
+						})
+						.attr(dataAttributes)
+					)
+			);
+
 			outputTable.append(rowContent);
 		}
 		return outputTable;
+	}
+
+	function getCommandsAsSelectBox()
+	{
+		var commandId = $("<select></select>");
+		for (var cmd in converterSettings.commands)
+		{
+			var textToDisplay = converterSettings.commands[cmd].displayName + "(" + converterSettings.commands[cmd].commandID + ")";
+			var valueOfOption = converterSettings.commands[cmd].commandID;
+			commandId.append(
+				$("<option />")
+					.text(textToDisplay)
+					.val(valueOfOption)
+			);
+		}
+		return commandId
 	}
 
 	function prepareConverters()
@@ -347,13 +388,91 @@
 			converterSettings.commands[ajaxCache.commandSettings.data[y].commandID] = ajaxCache.commandSettings.data[y];
 
 		for (var z in ajaxCache.fileTypeSettings.data)
-			converterSettings.fileTypes[ajaxCache.fileTypeSettings.data[z].extension] = ajaxCache.fileTypeSettings.data[z];
+			converterSettings.fileTypes[ajaxCache.fileTypeSettings.data[z].fileTypeID] = ajaxCache.fileTypeSettings.data[z];
 
-		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters");
-		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands");
-		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes");
+		//TODO: Refactor these deletes in with the saves below into one method
+		var removeConverterCallback = function(obj, e){
+			var fc_id = $(obj).attr("data-fileconverterid");
+			var saveData = JSON.parse(JSON.stringify(ajaxCache.fileConverterSettings.data));
+			for(var idx in saveData) {
+				if(saveData[idx].fileconverterid == fc_id){
+					saveData.splice(idx, 1);
+					break;
+				}
+			}
+			$(obj).button("disable");
+			
+			$.ajax({
+				url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileConverterSettings&apikey=" + apikey + "&apiver=" + apiversion,
+				type: "POST",
+				data: {
+					settings:	JSON.stringify(saveData)
+				},
+				success: function(data, textStatus,jqXHR){
+					$(obj).show();
+					$(obj).parent().parent().remove();
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					alert("An error occurred while saving the user settings");
+					console.error(jqXHR, textStatus, errorThrown);
+				}
+			});
+		};
+		var removeCommandCallback = function(obj, e){
+            var rc_id = $(obj).attr("data-commandid");
+			var saveData = JSON.parse(JSON.stringify(ajaxCache.commandSettings.data));
+			for(var idx in saveData) {
+				if(saveData[idx].commandID == rc_id){
+					saveData.splice(idx, 1);
+					break;
+				}
+			}
+			
+			$.ajax({
+				url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveCommandSettings&apikey=" + apikey + "&apiver=" + apiversion,
+				type: "POST",
+				data: {
+					settings: JSON.stringify(saveData)
+				},
+				success: function(data, textStatus,jqXHR){
+					$(obj).parent().parent().remove();
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					alert(jqXHR.responseText);
+					console.error(jqXHR, textStatus, errorThrown);
+				}
+			});
+		};
+		var removeFileTypeCallback = function(obj, e){
+            var ft_id = $(obj).attr("data-filetypeid");
+			var saveData = JSON.parse(JSON.stringify(ajaxCache.fileTypeSettings.data));
+			for(var idx in saveData) {
+				if(saveData[idx].fileTypeID == ft_id){
+					saveData.splice(idx, 1);
+					break;
+				}
+			}
+			
+			$.ajax({
+				url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileTypeSettings&apikey=" + apikey + "&apiver=" + apiversion,
+				type: "POST",
+				data: {
+					settings:	JSON.stringify(saveData)
+				},
+				success: function(data, textStatus,jqXHR){
+					$(obj).parent().parent().remove();
+				},
+				error: function(jqXHR, textStatus, errorThrown){
+					alert(jqXHR.responseText);
+					console.error(jqXHR, textStatus, errorThrown);
+				}
+			});
+		};
+
+		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters", removeConverterCallback);
+		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands", removeCommandCallback);
+		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes", removeFileTypeCallback);
 		
-		//TODO: convert this to use the schema that arrives with the retrieve.*Settings 
 		var newConverterButton = $("<a href='#'>New</a>")
 			.button({
 				icons: {primary: "ui-icon-circle-plus"},
@@ -371,37 +490,28 @@
 				//populate options on To/From
 				for (var fileType in converterSettings.fileTypes)
 				{
+					var fileTypeID = converterSettings.fileTypes[fileType].fileTypeID;
 					var extensionName = converterSettings.fileTypes[fileType].extension;
 					var textToDisplay = extensionName + " (" + converterSettings.fileTypes[fileType].mimeType + " " + converterSettings.fileTypes[fileType].mediaType + ")";
 					fromFileType.append(
 						$("<option/>")
 							.text(textToDisplay)
-							.val(extensionName)
+							.val(fileTypeID)
 					);
 					toFileType.append(
 						$("<option/>")
 							.text(textToDisplay)
-							.val(extensionName)
+							.val(fileTypeID)
 					);
 				}
 				
-				//CommandID
-				var commandId = $("<select name='commandID' id='converters_commandID'></select>");
-
-				for (var cmd in converterSettings.commands)
-				{
-					var textToDisplay = converterSettings.commands[cmd].displayName + "(" + converterSettings.commands[cmd].commandID + ")";
-					var valueOfOption = converterSettings.commands[cmd].commandID;
-					commandId.append(
-						$("<option />")
-							.text(textToDisplay)
-							.val(valueOfOption)
-					);
-				}
+				var commandObject = getCommandsAsSelectBox();
+				commandObject.attr('id', "converters_commandID");
+				commandObject.attr('name', "commandID");
 				
 				contentToInsert.append("<span>FromFileType</span>", fromFileType);
 				contentToInsert.append("<span>ToFileType</span>", toFileType);
-				contentToInsert.append("<span>Command</span>", commandId);
+				contentToInsert.append("<span>Command</span>", commandObject);
 				
 				var addConverterButton = $("<a href='#'>Add!</a>")
 					.button({
@@ -410,9 +520,9 @@
 					}).click(function(){
 						var saveData = JSON.parse(JSON.stringify(ajaxCache.fileConverterSettings.data));
 						saveData[saveData.length] = {
-							"fromFileType"	: $("#converters_fromFileType").find(":selected").val(),
-							"toFileType"	: $("#converters_toFileType").find(":selected").val(),
-							"commandID"		: $("#converters_commandID").find(":selected").val()
+							"fromFileTypeID": $("#converters_fromFileType").find(":selected").val(),
+							"toFileTypeID": $("#converters_toFileType").find(":selected").val(),
+							"commandID": $("#converters_commandID").find(":selected").val()
 						};
 
 						$(addConverterButton).button("disable");
@@ -422,11 +532,11 @@
 							data: {
 								settings:	JSON.stringify(saveData)
 							},
-							success: function(data, textStatus,jqHXR){
+							success: function(data, textStatus,jqXHR){
 								$(newConverterButton).show();
 								$("div.skeletonRow.converters").remove();
 							},
-							error: function(jqHXR, textStatus, errorThrown){
+							error: function(jqXHR, textStatus, errorThrown){
 								alert("An error occurred while saving the user settings");
 								console.error(jqXHR, textStatus, errorThrown);
 							}
@@ -436,7 +546,107 @@
 				
 				$("table.configTable.converters").after(contentToInsert);
 			});
+			
+		var newCommandButton = $("<a href='#'>New</a>")
+			.button({
+				icons: {primary: "ui-icon-circle-plus"},
+				text: true
+			}).click(function(e){
+				$(newCommandButton).hide();
+				var contentToInsert = $("<div class='skeletonRow commands'></div>");
+				
+				contentToInsert.append("<span>Description</span>", $("<input type='text' id='commands_displayName' />"));
+				contentToInsert.append("<span>Command</span>", $("<input type='text' id='commands_command' />"));
+				
+				var addCommandButton = $("<a href='#'>Add!</a>")
+					.button({
+						icons: {primary: "ui-icon-circle-check"},
+						text: false
+					}).click(function(){
+						var saveData = JSON.parse(JSON.stringify(ajaxCache.commandSettings.data));
+						saveData[saveData.length] = {
+							"command": $("#commands_command").val(),
+							"displayName": $("#commands_displayName").val(),
+						};
 
+						$(addCommandButton).button("disable");
+						$.ajax({
+							url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveCommandSettings&apikey=" + apikey + "&apiver=" + apiversion,
+							type: "POST",
+							data: {
+								settings:	JSON.stringify(saveData)
+							},
+							success: function(data, textStatus,jqXHR){
+								$(newConverterButton).show();
+								$("div.skeletonRow.converters").remove();
+							},
+							error: function(jqXHR, textStatus, errorThrown){
+								alert("An error occurred while saving the user settings");
+								console.error(jqXHR, textStatus, errorThrown);
+							}
+						});
+					});
+				contentToInsert.append(addCommandButton);
+				$("table.configTable.commands").after(contentToInsert);
+			});
+		var newFileTypeButton = $("<a href='#'>New</a>")
+			.button({
+				icons: {primary: "ui-icon-circle-plus"},
+				text: true
+			}).click(function(e){
+				$(newFileTypeButton).hide();
+				var contentToInsert = $("<div class='skeletonRow filetypes'></div>");
+				
+				contentToInsert.append("<span>Extension</span>", $("<input type='text' id='filetypes_extension' />"));
+				contentToInsert.append("<span>MIME Type</span>", $("<input type='text' id='filetypes_mimetype' />"));
+				contentToInsert.append("<span>Media Type</span>", $("<input type='text' id='filetypes_mediatype' />"));
+				
+				var bitrateCmdObject = getCommandsAsSelectBox();
+				bitrateCmdObject.attr('id', "fileTypes_bitrateCmdID");
+				bitrateCmdObject.attr('name', "bitrateCmdID");
+				//bitrateCmdObject.append("<option value=''>None</option>");
+				contentToInsert.append("<span>Bitrate Command</span>", bitrateCmdObject);
+				
+				var durationCmdObject = getCommandsAsSelectBox();
+				durationCmdObject.attr('id', "fileTypes_durationCmdID");
+				durationCmdObject.attr('name', "durationCmdID");
+				//durationCmdObject.append("<option value=''>None</option>");
+				contentToInsert.append("<span>Duration Command</span>", durationCmdObject);
+				
+				var addFileTypeButton = $("<a href='#'>Add!</a>")
+					.button({
+						icons: {primary: "ui-icon-circle-check"},
+						text: false
+					}).click(function(){
+						var saveData = JSON.parse(JSON.stringify(ajaxCache.fileTypeSettings.data));
+						saveData[saveData.length] = {
+							"extension": $("#filetypes_extension").val(),
+							"mimeType": $("#filetypes_mimetype").val(),
+							"mediaType": $("#filetypes_mediatype").val(),
+							"bitrateCmdID": $("#fileTypes_bitrateCmdID").find(":selected").val(),
+							"durationCmdID": $("#fileTypes_durationCmdID").find(":selected").val()
+						};
+
+						$(addFileTypeButton).button("disable");
+						$.ajax({
+							url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileTypeSettings&apikey=" + apikey + "&apiver=" + apiversion,
+							type: "POST",
+							data: {
+								settings:	JSON.stringify(saveData)
+							},
+							success: function(data, textStatus,jqXHR){
+								$(newConverterButton).show();
+								$("div.skeletonRow.converters").remove();
+							},
+							error: function(jqXHR, textStatus, errorThrown){
+								alert("An error occurred while saving the user settings");
+								console.error(jqXHR, textStatus, errorThrown);
+							}
+						});
+					});
+				contentToInsert.append(addFileTypeButton);
+				$("table.configTable.filetypes").after(contentToInsert);
+			});
 		
 		content.append($("<h2>File Converters</h2>"));
 		content.append(converterTable);
@@ -445,21 +655,61 @@
 		
 		content.append($("<h2>Commands</h2>"));
 		content.append(commandTable);
+		content.append(newCommandButton);
 
 		content.append($("<h2>File Types</h2>"));
 		content.append(fileTypeTable);
+		content.append(newFileTypeButton);
 
-		$("#tab_server_streamers").empty().append(content);
+		$("#tab_server_converters").empty().append(content);
 	}
 	
 	function updateUserList(ui)
 	{
+		function createAndAppendInputsTo(target, newInput) {
+			var newHTMLInput = {
+				type: "",
+				id: "",
+				isInteger: false
+			};
+			switch (newInput.type) {
+				case "int":
+					newHTMLInput.type = "number";
+					newHTMLInput.isInteger = true;
+					break;
+				case "boolean":
+					newHTMLInput.type = "checkbox";
+					break;
+				case "password":
+					newHTMLInput.type = "password";
+					break;
+				case "text":
+				default:
+					newHTMLInput.type = "text";
+		}
+
+			var newHTMLInputID = "opt_usr_input_new" + newInput.name;
+			target.append(
+				$("<p>").append(
+						$("<label>").text(newInput.displayName).attr("for", newHTMLInputID)
+					).append(
+						$("<input class='opt_usr_input' type='" + newHTMLInput.type + "'/>")
+							.attr({
+								"id": newHTMLInputID,
+								"name": newInput.name,
+								"value": '',
+								"readonly": (newInput.readonly ? "readonly" : false)
+							})
+					)
+			);
+		}
+
 		$.ajax({
 			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=listUsers&apikey="+apikey+"&apiver="+apiversion,
 			success: function(data, textStatus, jqXHR){
-				
+
 				currentUserID = jqXHR.getResponseHeader("X-AuthenticatedUserID");
-				
+
 				$(ui.panel).empty();
 				$(ui.panel).append("<h1>Add/Remove and Configure Users</h1>");
 				var userList = $("<select name='userList' id='opt_user_select' />");
@@ -478,7 +728,7 @@
 					$.ajax({
 						url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveUserSettings&apikey="+apikey+"&apiver="+apiversion,
 						data: { 'userid': $(this).val() },
-						success: function(data, textStatus,jqHXR){
+						success: function(data, textStatus,jqXHR){
 							
 							//Data driven for now!
 							for (lbl in data)
@@ -511,7 +761,7 @@
 										
 										var tabBarContainer = $("<ul/>");
 										var tabIndex=0;
-										for (permissionCategory in data[lbl])
+										for (var permissionCategory in data[lbl])
 										{
 											var categoryContainer = $("<div/>").attr("id","perm_tab_"+tabIndex);
 											tabBarContainer.append($("<li/>")
@@ -521,7 +771,7 @@
 																)
 														);
 											
-											for (permIndex in data[lbl][permissionCategory] )
+											for (var permIndex in data[lbl][permissionCategory] )
 											{
 												$(categoryContainer).append(
 													$("<p>")
@@ -603,12 +853,12 @@
 											data: {
 												settings:	JSON.stringify(saveData)
 											},
-											success: function(data, textStatus,jqHXR){
+											success: function(data, textStatus,jqXHR){
 												btnObj.text("Update");
 												btnObj.attr("disabled",false);
 												$("#opt_user_select").attr("disabled",false);
 											},
-											error: function(jqHXR, textStatus, errorThrown){
+											error: function(jqXHR, textStatus, errorThrown){
 												alert("An error occurred while saving the user settings");
 												console.error(jqXHR, textStatus, errorThrown);
 											}
@@ -632,14 +882,14 @@
 											$.ajax({
 												url: g_Toboggan_basePath+"/backend/rest.php"+"?action=deleteUser&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
 												type: "POST",
-												success: function(data, textStatus,jqHXR){
+												success: function(data, textStatus,jqXHR){
 													btnObj.text("Delete User");
 													btnObj.attr("disabled",false);
 													$("#opt_user_select").attr("disabled",false);
 													alert("User Successfully Deleted");
 													updateUserList(ui);
 												},
-												error: function(jqHXR, textStatus, errorThrown){
+												error: function(jqXHR, textStatus, errorThrown){
 													alert("An error occurred while deleting the user");
 													console.error(jqXHR, textStatus, errorThrown);
 												}
@@ -678,12 +928,12 @@
 													data: {
 														password:	passwd
 													},
-													success: function(data, textStatus,jqHXR){
+													success: function(data, textStatus,jqXHR){
 														btnObj.text("Update User's Password");
 														btnObj.attr("disabled",false);
 														$("#opt_user_select").attr("disabled",false);
 													},
-													error: function(jqHXR, textStatus, errorThrown){
+													error: function(jqXHR, textStatus, errorThrown){
 														alert("An error occurred while saving the user settings");
 														console.error(jqXHR, textStatus, errorThrown);
 													}
@@ -695,12 +945,12 @@
 							)
 							
 						},
-						error: function(jqHXR, textStatus, errorThrown){
+						error: function(jqXHR, textStatus, errorThrown){
 							alert("An error occurred while retrieving the user settings");
 							console.error(jqXHR, textStatus, errorThrown);
 						}
 					})
-				})
+				});
 				
 				$(ui.panel).append(
 					$("<div id='opt_usr_leftFrame' />")
@@ -713,96 +963,105 @@
 								}).click(function(e){
 									e.preventDefault();
 									$("#opt_usr_rightFrameTarget").empty();
-									var inputNames = new Array("username","password","email","enabled",
-																	"maxAudioBitrate","maxVideoBitrate","maxBandwidth",
-																	"enableTrafficLimit","trafficLimit","trafficLimitPeriod");
-									var newinputType = "";
-									for (x=0;x<inputNames.length;++x)
-									{
-										switch(inputNames[x])
-										{
-											case "maxAudioBitrate":
-											case "maxVideoBitrate":
-											case "maxBandwidth":
-											case "trafficLimitPeriod":
-											case "trafficLimit":
-												newinputType = "number";													
-											break;
-											case "enableTrafficLimit":
-											case "enabled":
-												newinputType = "checkbox";													
-											break;
-											case "password":
-												newinputType = "password";
-											break;
-											default:
-												newinputType = "text";
-										}
-										
-										newinputID = "opt_usr_input_new"+inputNames[x];
-									
-										$("#opt_usr_rightFrameTarget").append(
-											$("<p>").append(
-												$("<label>").text(inputNames[x]).attr("for", newinputID)
-											).append(
-												$("<input class='opt_usr_input' type='"+newinputType+"'>")
-													.attr({
-															"id":		newinputID,
-															"name":		inputNames[x],
-															"value":	'',
-															})
-													
-											)
-										);
-									}
-									$("#opt_usr_rightFrameTarget").append(
-										$("<button id='opt_usr_input_addBtn'>Add User</button>")
-											.button({
-												icons: {primary: "ui-icon-circle-plus"},
-												text: true
-											})
-											.click(function(){
-												//display indication of it!
-												var btnObj = $(this);
-												btnObj.text("Saving...");
-												btnObj.attr("disabled",true);
-												$("#opt_user_select").attr("disabled",true);
-												
-												var saveData = {};
-												$("#opt_usr_rightFrameTarget input").each(function(){
-												
-													saveData[$(this).attr("name")] = $(this).val();
-													
-													if($(this).attr("type") == "checkbox")
-														saveData[$(this).attr("name")] = $(this).attr("checked")?"Y":"N";
-													else if ($(this).attr("name")=="password")
-													{
-														//SHA256 the password
-														saveData[$(this).attr("name")] = new jsSHA($(this).val()).getHash("SHA-256","B64");
-													}
-												});
 
-												//save the new user
-												$.ajax({
-													url: g_Toboggan_basePath+"/backend/rest.php"+"?action=addUser&apikey="+apikey+"&apiver="+apiversion,
-													type: "POST",
-													data: {
-														settings:	JSON.stringify(saveData)
-													},
-													success: function(data, textStatus,jqHXR){
-														btnObj.text("Add");
-														btnObj.attr("disabled",false);
-														$("#opt_user_select").attr("disabled",false);
-														updateUserList(ui);
-													},
-													error: function(jqHXR, textStatus, errorThrown){
-														alert("An error occurred while adding the user");
-														console.error(jqXHR, textStatus, errorThrown);
+									$.ajax({
+										url: g_Toboggan_basePath+"/backend/rest.php"+"?action=getAddUserSchema&apikey="+apikey+"&apiver="+apiversion+"&userid="+($("#opt_usr_input_idUser").val()),
+										type: "POST",
+										error: function(jqXHR, textStatus, errorThrown){
+											alert("An error occurred while deleting the user");
+											console.error(jqXHR, textStatus, errorThrown);
+										},
+										success: function(data, textStatus,jqXHR)
+										{
+											for(var x in data.schema) {
+												if (x == "permissions")
+												{
+													//create target input thingy
+													var permissionsTarget = $("<div id='permissionsTarget'></div>");
+													var tabBarContainer = $("<ul/>");
+													var tabIndex=0;
+													
+													for(var permCat in data.schema.permissions)
+													{
+														var categoryContainer = $("<div/>").attr("id","perm_tab_"+tabIndex);
+														tabBarContainer.append($("<li/>")
+															.append($("<a/>")
+																.attr("href","#perm_tab_"+tabIndex)
+																.text(permCat)
+															)
+														);
+
+														for (var permName in data.schema.permissions[permCat] )
+														{
+															var newPermissionsInput = data.schema.permissions[permCat][permName];
+															newPermissionsInput.name = permName;
+															createAndAppendInputsTo(categoryContainer, newPermissionsInput);
+														}
+														categoryContainer.appendTo(permissionsTarget);
+														tabIndex++;
 													}
-												});
-											})
-									);
-							})
+													permissionsTarget.prepend(tabBarContainer);
+													permissionsTarget.tabs({selected: 0});
+													$("#opt_usr_rightFrameTarget").append(permissionsTarget);
+													continue;
+												}
+
+												var newInput = data.schema[x];
+												newInput.name = x;
+												createAndAppendInputsTo($("#opt_usr_rightFrameTarget"), newInput);
+											}
+
+											$("#opt_usr_rightFrameTarget").append(
+												$("<button id='opt_usr_input_addBtn'>Add User</button>")
+													.button({
+														icons: {primary: "ui-icon-circle-plus"},
+														text: true
+													})
+													.click(function(){
+														//display indication of it!
+														var btnObj = $(this);
+														btnObj.text("Saving...");
+														btnObj.attr("disabled",true);
+														$("#opt_user_select").attr("disabled",true);
+
+														var saveData = {};
+														$("#opt_usr_rightFrameTarget input").each(function(){
+
+															saveData[$(this).attr("name")] = $(this).val();
+
+															if($(this).attr("type") == "checkbox")
+																saveData[$(this).attr("name")] = $(this).attr("checked")?"Y":"N";
+															else if ($(this).attr("name")=="password")
+															{
+																//SHA256 the password
+																saveData[$(this).attr("name")] = new jsSHA($(this).val()).getHash("SHA-256","B64");
+															}
+														});
+
+														//save the new user
+														$.ajax({
+															url: g_Toboggan_basePath+"/backend/rest.php"+"?action=addUser&apikey="+apikey+"&apiver="+apiversion,
+															type: "POST",
+															data: {
+																settings:	JSON.stringify(saveData)
+															},
+															success: function(data, textStatus,jqXHR){
+																btnObj.text("Add");
+																btnObj.attr("disabled",false);
+																$("#opt_user_select").attr("disabled",false);
+																updateUserList(ui);
+															},
+															error: function(jqXHR, textStatus, errorThrown){
+																alert("An error occurred while adding the user");
+																console.error(jqXHR, textStatus, errorThrown);
+															}
+														});
+													})
+											);
+										}
+									});
+
+								})
 						)
 					)
 					.append($("<fieldset id='opt_usr_rightFrameFieldset'><legend>User Details</legend><div id='opt_usr_rightFrameTarget'/></fieldset>"));
@@ -810,7 +1069,7 @@
 				userList.change();
 			
 			},
-			error: function(jqHXR, textStatus, errorThrown){
+			error: function(jqXHR, textStatus, errorThrown){
 				alert("An error occurred while retrieving the user settings");
 				console.error(jqXHR, textStatus, errorThrown);
 			}

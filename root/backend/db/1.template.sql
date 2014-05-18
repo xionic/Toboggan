@@ -4,11 +4,11 @@ PRAGMA journal_mode=WAL;
 --create the tables
 CREATE TABLE `FileConverter` (
 	`idfileConverter` INTEGER PRIMARY KEY AUTOINCREMENT,
-	`fromFileType` CHAR(8) NOT NULL ,
-	`toFileType` CHAR(8) NOT NULL ,
+	`fromidfileType` INT NOT NULL ,
+	`toidfileType` INT NOT NULL ,
 	`idcommand` INT NOT NULL ,
-	FOREIGN KEY (`fromFileType` ) REFERENCES `FileType` (`extension` )
-	FOREIGN KEY (`toFileType` ) REFERENCES `FileType` (`extension` )
+	FOREIGN KEY (`fromidfileType` ) REFERENCES `FileType` (`idfileType` )
+	FOREIGN KEY (`toidfileType` ) REFERENCES `FileType` (`idfileType` )
 	
 	CONSTRAINT `command`
 		FOREIGN KEY (`idcommand` )
@@ -16,12 +16,13 @@ CREATE TABLE `FileConverter` (
 		ON DELETE NO ACTION
 		ON UPDATE NO ACTION
 	CONSTRAINT `extMap`
-		UNIQUE (`fromFileType`, toFileType)
+		UNIQUE (`fromidfileType`, toidfileType)
 		ON CONFLICT ROLLBACK
 );
 
 CREATE TABLE `FileType` (
-	`extension` CHAR(8) PRIMARY KEY,
+	`idfileType` INTEGER PRIMARY KEY AUTOINCREMENT,
+	`extension` CHAR(8),
 	`mimeType` VARCHAR(32) NOT NULL ,
 	`mediaType` VARCHAR(1) NOT NULL ,
 	`idbitrateCmd` INT NULL ,

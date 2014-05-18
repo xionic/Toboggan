@@ -178,7 +178,7 @@ try
 			outputFileTypeSettings_JSON();
 			break;
 			
-		case "saveFileTypeSettings":	
+		case "saveFileTypeSettings":
 			checkActionAllowed("administrator");
 			$args = $av->validateArgs($_POST, array(
 				"settings"		=> array("string", "notblank"),
@@ -250,6 +250,10 @@ try
 			));
 			addUser($args["settings"]);
 		break;
+	
+		case "getAddUserSchema":
+			outputAddUserSchema_JSON();
+			break;
 		
 		case "deleteUser";
 			checkActionAllowed("administrator");
@@ -317,7 +321,7 @@ catch(PDOException $pdoe)
 		appLog("Rolling back DB transaction", appLog_ERROR);
 		$conn->rollBack();
 	}*/
-	appLog(var_export($pdoe,true), appLog_DEBUG2);
+	appLog($pdoe, appLog_ERROR);
 	reportServerError('PDOException: '.$pdoe->getMessage(),500);
 }
 

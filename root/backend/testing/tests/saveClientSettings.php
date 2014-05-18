@@ -5,14 +5,21 @@
 
 		//get args
 		array(
-			"settingsBlob" => "mytestsettingstosave",
 		),
 
 		//checks
 		array(
 			"statusCodes" => array(
-				"pass" => "^200$"
+				"pass" => "^20(0|4)$"
 			),	
+		),
+
+		//do login?
+		true,
+
+		//Post args
+		array (
+			"settingsBlob" => "test harness settings"
 		)
 	);
 

@@ -1,7 +1,5 @@
 <?php
 
-//	require_once("TBTest.class.php");
-//	require_once("TBTestStatusCode.class.php");
 	require_once("../lib/PHPArgValidator/PHPArgValidator.class.php");
 
 	$config["testAPIKey"] = "{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}";
@@ -11,8 +9,10 @@
 	$config["basicAuth"] = isset($_GET["bauser"]);
 	$config["basicAuthUser"] = $_GET["bauser"];
 	$config["basicAuthPass"] = $_GET["bapass"];
+	define("DBPATH", "../db/main.db");
+	define("PDO_DSN", "sqlite:".DBPATH);
 	
-	//make requests agains the rest API with the args (get) and postargs provided
+	//make requests against the rest API with the args (get) and postargs provided
 	function hitAPI($action, $args, $postargs = null, $cookiefile = null){
 		global $config;
 		
@@ -38,6 +38,7 @@
 			curl_setopt($ch, CURLOPT_COOKIEJAR, $cookiefile);
 		}
 		if($postargs !==null){
+			testLog("Using post args: " . var_export($postargs,true));
 			curl_setopt($ch, CURLOPT_POST, $cookiefile);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, $postargs);			
 		}
@@ -84,7 +85,7 @@
 	
 	You can include/omit any of the above tests 
 	*/
-	function performTest($action, $getArgs, $checks = array(), $doLogin = true){
+	function performTest($action, $getArgs, $postArgs, $checks = array(), $doLogin = true){
 		global $config;
 		
 		$cookiefile = null;
@@ -95,7 +96,7 @@
 			hitAPI("login", array(),array("username" => $config["testUser"], "password" => $config["testPass"]), $cookiefile);
 		}		
 		
-		$res = hitAPI($action, $getArgs, null, $cookiefile);
+		$res = hitAPI($action, $getArgs, $postArgs, $cookiefile);
 		
 		testLog($res["info"]);
 
@@ -156,9 +157,49 @@
 			$results["checks"]["json"]["passed"] = $jsonCheckPassed;
 			$results["checks"]["json"]["result"] = $jsonFailReason;
 			$results["checks"]["json"]["checks"] = $checks["json"];
-		}
+		}//End of JSON checks
+		
+		//do SQL checks
+		if(isset($checks["sql"])){
+				
+				$conn = getDBConnection();
+				$stmt = $conn->prepare($checks["sql"]["query"]);
+				$stmt->execute();
 
-		//End of JSON checks
+				$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+				$conn = null;
+				
+				/*$rows = array(
+					"test1" => "val1",
+					"test2" => array(
+						"subkey1" => "subval1",
+					),
+				);
+				$checks["sql"]["validate"] = array(
+					"test1" => "val1",
+					"test2" => array(
+						"subkey2" => "subval1",
+					),
+				);*/
+						
+			
+				if(!compareArrays($checks["sql"]["validate"], $rows) || !compareArrays($rows,$checks["sql"]["validate"])){
+					$sqlCheckPassed = false;
+					$sqlCheckResult = "Arrays are different";
+				} else {
+					$sqlCheckPassed = true;
+					$sqlCheckResult = "OK";
+				}
+					
+				
+				//var_dump($rows);
+				//var_dump($checks["sql"]["validate"]);
+				
+				$results["checks"]["sql"]["passed"] = $sqlCheckPassed;
+				$results["checks"]["sql"]["result"] = $sqlCheckResult;
+				$results["checks"]["sql"]["checks"] = $checks["sql"];
+				
+		}//End of SQL checks
 		
 		//clean up
 		if($cookiefile !==null){
@@ -173,7 +214,7 @@
 	function testLog($text){
 		if(isset($_GET["debug"])){
 			echo "<pre>";
-			var_dump($text );
+			var_dump($text);
 			echo "</pre>";
 		}
 	}
@@ -184,14 +225,42 @@
 		$jsonCheckPassed = false;
 		//testLog("Validation Error - $msg ($argName = $argVal)");
 	}
+	
+	//recursive function to validate one array against another in both structure and values
+	function compareArrays($arr1, $arr2){
+		$fail = false;
+		foreach ($arr1 as $key1 => $val1){
+			if(!isset($arr2[$key1]) && @$arr2[$key1] !== null){ // if key is not present in the second array
+				$fail = true; 
+				//var_dump("compareArrays fail - key not present in second array:". $key1);
+				break;
+			} else if (is_array($val1) && is_array($arr2[$key1])){ //if both arrays
+				//var_dump("recursing into $key1");
+				$res = compareArrays($val1, $arr2[$key1]);
+				//var_dump("stepping out back to  $key1");
+				if(!$res){				
+					$fail = true;
+					var_dump("compareArrays fail - not both arrays:". $key1);
+					break;
+				}
+				
+			} else if((string)$val1 !== (string)$arr2[$key1]){ //if values are different
+				$fail = true; 
+				//var_dump("compareArrays fail - values differ for key:". $key1);
+				break;
+			}
+		}
+		
+		return !$fail;
+	}
 
 	//hacky! all this should be OOPed but feck it for now
 	$tests = array();
 	$results = array();
 	//registers a test to be run in the batch
-	function registerTest($action, $getArgs, $checks, $login = true){
+	function registerTest($action, $getArgs, $checks, $login = true, $postArgs = null){
 		global $tests;
-		$tests[] = array("action" => $action, "getArgs" => $getArgs, "checks" =>  $checks, "login" => $login);
+		$tests[] = array("action" => $action, "getArgs" => $getArgs, "postArgs" => $postArgs, "checks" =>  $checks, "login" => $login);
 	}
 
 	//testsToRun is an array of names of tests to run, if null all are run
@@ -200,7 +269,7 @@
 		
 		foreach($tests as $test){			
 			if($actionsToTest === null || in_array($test["action"], $actionsToTest)){ // only run tests we asked for
-				$results[] = performTest($test["action"], $test["getArgs"], $test["checks"], $test["login"]);
+				$results[] = performTest($test["action"], $test["getArgs"], $test["postArgs"], $test["checks"], $test["login"]);
 				testLog($results[count($results)- 1]);
 			}
 		}
@@ -257,5 +326,22 @@
 		}
 		echo "</table>";
 	}
+	
+/**
+* get a database connection
+*/
+function getDBConnection()
+{
+	if(!is_readable(DBPATH)){
+		testLog("DB does not exist or is not readable. If this is a new installation did you run install.sh? (See README)", 500); 
+	}	
+	$db = new PDO(PDO_DSN);
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+	
+	//enable foreign key enforcement - not enabled by default in sqlite and must be done per connection
+	$db->exec("PRAGMA foreign_keys = ON");	
+	
+	return $db;		
+}
 
 ?> 

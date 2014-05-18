@@ -91,6 +91,7 @@ class userLogin {
 			case "US-Auth1":
 				list($sentUsername, $sentPassHash) = explode("|",$authData);
 				$sentUsername = base64_decode($sentUsername);					
+				appLog("Authing with credentials from HTTP header. username: $sentUsername", appLog_DEBUG);
 
 				return userLogin::checkUserCredsValid($sentUsername, $sentPassHash);
 				break;
@@ -106,7 +107,6 @@ class userLogin {
 		$userRows = getUserInfo($username);
 		$passhash = $userRows['password'];
 		$ourPassStr = userLogin::hashPassword($password);
-
 		if($ourPassStr===$passhash && $userRows["enabled"] == 1) // passwords match and user not disabled
 		{
 			return $userRows["idUser"];			
