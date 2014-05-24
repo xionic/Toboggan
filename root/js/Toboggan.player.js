@@ -2,15 +2,16 @@
 	Holds the JS used for the player system, playlist management etc
 */
 (function(){
-	var apikey='{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}',
-		apiversion='0.6',
-		initialProgressEvent=false,	//used to ensure that the initial progress event is the only one handled
+	var apikey = '{05C8236E-4CB2-11E1-9AD8-A28BA559B8BC}',
+		apiversion = '0.6',
+		initialProgressEvent = false,	//used to ensure that the initial progress event is the only one handled
 		playerCSSProperties = {},
 		isFullscreen = {},
 		rightClickedObject = {},
 		currentUserName = "",
 		currentUserID = "",
-		clientSettings = {};
+		clientSettings = {},
+		clientSettingsSaveTimeout = false;
 	/**
 		jQuery Entry Point
 	*/
@@ -263,21 +264,27 @@
 	
 	function saveClientSettings()
 	{
-		$.ajax({
-			url: g_Toboggan_basePath+"/backend/rest.php"+"?action=saveClientSettings&apikey="+apikey+"&apiver="+apiversion,
-			type: 'POST',
-			data: {
-				'settingsBlob': JSON.stringify(clientSettings)
-			},
-			success:  function(data, textStatus, xhr) {
-				console.debug("settings saved: " + textStatus,data);
-			},
-			error: function(jq, textStatus, errorThrown) {
-				//TODO: handle this
-				console.error("SaveClientSettings Error " + textStatus);
-				console.log(jq, errorThrown);
-			}
-		});
+		if(clientSettingsSaveTimeout)
+			clearTimeout(clientSettingsSaveTimeout);
+		clientSettingsSaveTimeout = setTimeout(function(){
+			
+			$.ajax({
+				url: g_Toboggan_basePath+"/backend/rest.php"+"?action=saveClientSettings&apikey="+apikey+"&apiver="+apiversion,
+				type: 'POST',
+				data: {
+					'settingsBlob': JSON.stringify(clientSettings)
+				},
+				success:  function(data, textStatus, xhr) {
+					console.debug("settings saved: " + textStatus,data);
+				},
+				error: function(jq, textStatus, errorThrown) {
+					//TODO: handle this
+					console.error("SaveClientSettings Error " + textStatus);
+					console.log(jq, errorThrown);
+				}
+			});
+			
+		}, 100);
 	}
 
 	/**
