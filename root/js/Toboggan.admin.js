@@ -309,7 +309,77 @@
 			
 		return false;
 	}
+	
+	function createConverterTableFromJson (jsonObject, jsonObjectSchema, classToAssign, actionCallback)
+	{
+		var outputTable = $("<table></table>").addClass("configTable");
+		outputTable.addClass(classToAssign);
+		var headerRow = $("<tr></tr>");
+		for (var heading in jsonObjectSchema[0])
+		{
+			headerRow.append(
+				$("<th></th>").text(jsonObjectSchema[0][heading].displayName)
+			);
+		}
+		
+		headerRow.append($("<th></th>").text(" "));
+		outputTable.append(headerRow);
+		
+		for (var objectKey in jsonObject) {
+			var objectProperty = jsonObject[objectKey];
+			var rowContent = $("<tr></tr>");
+			var dataAttributes = {};
+			for (var c in objectProperty)
+			{
+				var thisID = "fc_" + objectKey + "_" + c;
+				var tableCell = $("<td></td>");
+				switch(c)
+				{
+					case "fromFileTypeID":
+					case "toFileTypeID":
+						var ftSelects = getFileTypesAsSelectBox();
+						ftSelects.attr("id",thisID);
+						ftSelects.attr("name",thisID);
+						$(ftSelects).find("option[value=" + objectProperty[c] + "]").attr("selected","selected");
+						tableCell.append(ftSelects);
+					break;
+					case "commandID":
+						var commandSelect = getCommandsAsSelectBox();
+						commandSelect.attr("id", thisID);
+						commandSelect.attr("name", thisID);
+						$(commandSelect).find("option[value=" + objectProperty[c] + "]").attr("selected","selected");
+						tableCell.append(commandSelect);
+					break;
+					default:
+						tableCell.text(objectProperty[c]);
+				}
+				
+				rowContent.append(tableCell);
+				dataAttributes["data-"+c] = objectProperty[c];
+			}
+			
+			rowContent.append(
+				$("<td></td>")
+					.append($("<a href='#'>Remove</a>")
+						.button({
+							icons: {primary: "ui-icon-circle-minus"},
+							text: false
+						})
+						.click(function(e){
+							e.preventDefault();
+							if(actionCallback)
+								actionCallback(this, e);
+							return false;
+						})
+						.attr(dataAttributes)
+					)
+			);
 
+			outputTable.append(rowContent);
+		}
+		return outputTable;
+	}
+	
 	function jsonObjectToTable(jsonObject, jsonObjectSchema, classToAssign, actionCallback) {
 		var outputTable = $("<table></table>").addClass("configTable");
 		outputTable.addClass(classToAssign);
@@ -373,7 +443,23 @@
 		}
 		return commandId
 	}
-
+	
+	function getFileTypesAsSelectBox()
+	{
+		var fileTypes = $("<select></select>");
+		for (var ft in converterSettings.fileTypes)
+		{
+			var textToDisplay = converterSettings.fileTypes[ft].extension + "(" + converterSettings.fileTypes[ft].fileTypeID + ")";
+			var valueOfOption = converterSettings.fileTypes[ft].fileTypeID;
+			fileTypes.append(
+				$("<option />")
+				.text(textToDisplay)
+				.val(valueOfOption)
+			);
+		}
+		return fileTypes;
+	}
+	
 	function prepareConverters()
 	{
 		if(!ajaxCache.fileTypeSettings || !ajaxCache.commandSettings || !ajaxCache.fileConverterSettings)
@@ -457,7 +543,7 @@
 				url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileTypeSettings&apikey=" + apikey + "&apiver=" + apiversion,
 				type: "POST",
 				data: {
-					settings:	JSON.stringify(saveData)
+					settings: JSON.stringify(saveData)
 				},
 				success: function(data, textStatus,jqXHR){
 					$(obj).parent().parent().remove();
@@ -469,9 +555,9 @@
 			});
 		};
 
-		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters", removeConverterCallback);
 		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands", removeCommandCallback);
 		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes", removeFileTypeCallback);
+		var converterTable = createConverterTableFromJson(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters", removeConverterCallback);
 		
 		var newConverterButton = $("<a href='#'>New</a>")
 			.button({
@@ -589,6 +675,7 @@
 				contentToInsert.append(addCommandButton);
 				$("table.configTable.commands").after(contentToInsert);
 			});
+
 		var newFileTypeButton = $("<a href='#'>New</a>")
 			.button({
 				icons: {primary: "ui-icon-circle-plus"},
