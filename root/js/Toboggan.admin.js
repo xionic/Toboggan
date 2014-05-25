@@ -310,77 +310,7 @@
 		return false;
 	}
 	
-	function createConverterTableFromJson (jsonObject, jsonObjectSchema, classToAssign, actionCallback)
-	{
-		var outputTable = $("<table></table>").addClass("configTable");
-		outputTable.addClass(classToAssign);
-		var headerRow = $("<tr></tr>");
-		for (var heading in jsonObjectSchema[0])
-		{
-			headerRow.append(
-				$("<th></th>").text(jsonObjectSchema[0][heading].displayName)
-			);
-		}
-		
-		headerRow.append($("<th></th>").text(" "));
-		outputTable.append(headerRow);
-		
-		for (var objectKey in jsonObject) {
-			var objectProperty = jsonObject[objectKey];
-			var rowContent = $("<tr></tr>");
-			var dataAttributes = {};
-			for (var c in objectProperty)
-			{
-				var thisID = "fc_" + objectKey + "_" + c;
-				var tableCell = $("<td></td>");
-				switch(c)
-				{
-					case "fromFileTypeID":
-					case "toFileTypeID":
-						var ftSelects = getFileTypesAsSelectBox();
-						ftSelects.attr("id",thisID);
-						ftSelects.attr("name",thisID);
-						$(ftSelects).find("option[value=" + objectProperty[c] + "]").attr("selected","selected");
-						tableCell.append(ftSelects);
-					break;
-					case "commandID":
-						var commandSelect = getCommandsAsSelectBox();
-						commandSelect.attr("id", thisID);
-						commandSelect.attr("name", thisID);
-						$(commandSelect).find("option[value=" + objectProperty[c] + "]").attr("selected","selected");
-						tableCell.append(commandSelect);
-					break;
-					default:
-						tableCell.text(objectProperty[c]);
-				}
-				
-				rowContent.append(tableCell);
-				dataAttributes["data-"+c] = objectProperty[c];
-			}
-			
-			rowContent.append(
-				$("<td></td>")
-					.append($("<a href='#'>Remove</a>")
-						.button({
-							icons: {primary: "ui-icon-circle-minus"},
-							text: false
-						})
-						.click(function(e){
-							e.preventDefault();
-							if(actionCallback)
-								actionCallback(this, e);
-							return false;
-						})
-						.attr(dataAttributes)
-					)
-			);
-
-			outputTable.append(rowContent);
-		}
-		return outputTable;
-	}
-	
-	function jsonObjectToTable(jsonObject, jsonObjectSchema, classToAssign, actionCallback) {
+	function jsonObjectToTable(jsonObject, jsonObjectSchema, classToAssign, contentCallback, actionCallback) {
 		var outputTable = $("<table></table>").addClass("configTable");
 		outputTable.addClass(classToAssign);
 		var headerRow = $("<tr></tr>");
@@ -399,9 +329,7 @@
 			var dataAttributes = {};
 			for (var c in objectProperty)
 			{
-				var tableCell = $("<td></td>");
-				tableCell.text(objectProperty[c]);
-				
+				var tableCell = contentCallback($("<td></td>"), c, objectProperty[c])
 				rowContent.append(tableCell);
 				dataAttributes["data-"+c] = objectProperty[c];
 			}
@@ -555,9 +483,38 @@
 			});
 		};
 
-		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands", removeCommandCallback);
-		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes", removeFileTypeCallback);
-		var converterTable = createConverterTableFromJson(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters", removeConverterCallback);
+		var commandTable = jsonObjectToTable(converterSettings.commands, ajaxCache.commandSettings.schema, "commands", function(tableCell, key, value) {
+			tableCell.text(value);
+			return tableCell;
+		}, removeCommandCallback);
+		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes", function(tableCell, key, value) {
+			tableCell.text(value); 
+			return tableCell;
+		}, removeFileTypeCallback);
+		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters", function(tableCell, key, value) {
+			var thisID = "fc_" + key;
+			switch(key)
+			{
+				case "fromFileTypeID":
+				case "toFileTypeID":
+					var ftSelects = getFileTypesAsSelectBox();
+					ftSelects.attr("id",thisID);
+					ftSelects.attr("name",thisID);
+					$(ftSelects).find("option[value=" + value + "]").attr("selected","selected");
+					tableCell.append(ftSelects);
+				break;
+				case "commandID":
+					var commandSelect = getCommandsAsSelectBox();
+					commandSelect.attr("id", thisID);
+					commandSelect.attr("name", thisID);
+					$(commandSelect).find("option[value=" + value + "]").attr("selected","selected");
+					tableCell.append(commandSelect);
+				break;
+				default:
+					tableCell.text(value);
+			}
+			return tableCell;
+		}, removeConverterCallback);
 		
 		var newConverterButton = $("<a href='#'>New</a>")
 			.button({
