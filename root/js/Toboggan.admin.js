@@ -356,7 +356,7 @@
 		return outputTable;
 	}
 
-	function getCommandsAsSelectBox()
+	function getCommandsAsSelectBox(allowNull)
 	{
 		var commandId = $("<select></select>");
 		for (var cmd in converterSettings.commands)
@@ -369,6 +369,12 @@
 					.val(valueOfOption)
 			);
 		}
+		if(allowNull)
+			commandId.append(
+				$("<option />")
+					.text("none")
+					.val("")
+			);
 		return commandId
 	}
 	
@@ -488,7 +494,23 @@
 			return tableCell;
 		}, removeCommandCallback);
 		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes", function(tableCell, key, value) {
-			tableCell.text(value); 
+			var thisID = "fc_" + key;
+			switch(key)
+			{
+				case "bitrateCmdID":
+				case "durationCmdID":
+					var commandSelect = getCommandsAsSelectBox(true);
+					commandSelect.attr("id", thisID);
+					commandSelect.attr("name", thisID);
+					if(value)
+						$(commandSelect).find("option[value='" + value + "']").attr("selected","selected");
+					else
+						$(commandSelect).find("option[value='']").attr("selected","selected");
+					tableCell.append(commandSelect);
+				break;
+				default:
+					tableCell.text(value);
+			}
 			return tableCell;
 		}, removeFileTypeCallback);
 		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters", function(tableCell, key, value) {
@@ -645,13 +667,13 @@
 				contentToInsert.append("<span>MIME Type</span>", $("<input type='text' id='filetypes_mimetype' />"));
 				contentToInsert.append("<span>Media Type</span>", $("<input type='text' id='filetypes_mediatype' />"));
 				
-				var bitrateCmdObject = getCommandsAsSelectBox();
+				var bitrateCmdObject = getCommandsAsSelectBox(true);
 				bitrateCmdObject.attr('id', "fileTypes_bitrateCmdID");
 				bitrateCmdObject.attr('name', "bitrateCmdID");
 				//bitrateCmdObject.append("<option value=''>None</option>");
 				contentToInsert.append("<span>Bitrate Command</span>", bitrateCmdObject);
 				
-				var durationCmdObject = getCommandsAsSelectBox();
+				var durationCmdObject = getCommandsAsSelectBox(true);
 				durationCmdObject.attr('id', "fileTypes_durationCmdID");
 				durationCmdObject.attr('name', "durationCmdID");
 				//durationCmdObject.append("<option value=''>None</option>");
