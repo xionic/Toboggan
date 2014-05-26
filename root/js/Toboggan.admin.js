@@ -131,7 +131,7 @@
 				{
 					case 'tab_server_converters':
 						$(ui.panel).empty();
-						
+						ajaxCache = {};
 						//pull down retrieveFileTypeSettings
 						$.ajax({
 							url: g_Toboggan_basePath+"/backend/rest.php"+"?action=retrieveFileTypeSettings&apikey="+apikey+"&apiver="+apiversion,
@@ -415,7 +415,7 @@
 			var fc_id = $(obj).attr("data-fileconverterid");
 			var saveData = JSON.parse(JSON.stringify(ajaxCache.fileConverterSettings.data));
 			for(var idx in saveData) {
-				if(saveData[idx].fileconverterid == fc_id){
+				if(saveData[idx].fileConverterID == fc_id){
 					saveData.splice(idx, 1);
 					break;
 				}
