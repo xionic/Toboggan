@@ -406,23 +406,19 @@
 				position: ["center", 50],
 				close: function(event, ui) {
 					$(newButton).button("enable");
-				}
+				},
+				buttons : [
+					{ 
+						text: "save",
+						click: function() {
+							$(newButton).button("enable");
+							$(this).dialog("close");
+							saveCallback();
+						}
+					}
+				]
 			});
-		
 		$(newButton).button("disable");
-		var addButton = $("<a href='#'>Add!</a>")
-			.button({
-				icons: {primary: "ui-icon-circle-check"},
-				text: false
-			}).click(function(){
-				$(addButton).button("disable");
-				saveCallback();
-				modalDialog.dialog({hide:true});
-				modalDialog.remove();
-				$(newButton).button("enable");
-			});
-		
-		contentToInsert.append($("<div></div>").append(addButton));
 		modalDialog.html(contentToInsert);
 	}
 	
