@@ -553,7 +553,7 @@
 						}
 						
 						modalDialog.html(innerHTML);
-					},
+					}
 				});	
 			}
 			

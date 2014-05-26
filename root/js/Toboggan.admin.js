@@ -274,7 +274,7 @@
 											});
 										})
 									));;
-							},
+							}
 						});	
 					break;
 					case 'tab_server_log_contents':
@@ -394,6 +394,38 @@
 		return fileTypes;
 	}
 	
+	function newFCObjectLightbox(contentToInsert, title, newButton, saveCallback)
+	{
+		var modalDialog = $("<div></div>")
+			.dialog({
+				autoOpen: true,
+				title: title,
+				modal: true,
+				draggable: true,
+				width: '75%',
+				position: ["center", 50],
+				close: function(event, ui) {
+					$(newButton).button("enable");
+				}
+			});
+		
+		$(newButton).button("disable");
+		var addButton = $("<a href='#'>Add!</a>")
+			.button({
+				icons: {primary: "ui-icon-circle-check"},
+				text: false
+			}).click(function(){
+				$(addButton).button("disable");
+				saveCallback();
+				modalDialog.dialog({hide:true});
+				modalDialog.remove();
+				$(newButton).button("enable");
+			});
+		
+		contentToInsert.append($("<div></div>").append(addButton));
+		modalDialog.html(contentToInsert);
+	}
+	
 	function prepareConverters()
 	{
 		if(!ajaxCache.fileTypeSettings || !ajaxCache.commandSettings || !ajaxCache.fileConverterSettings)
@@ -439,7 +471,7 @@
 			});
 		};
 		var removeCommandCallback = function(obj, e){
-            var rc_id = $(obj).attr("data-commandid");
+			var rc_id = $(obj).attr("data-commandid");
 			var saveData = JSON.parse(JSON.stringify(ajaxCache.commandSettings.data));
 			for(var idx in saveData) {
 				if(saveData[idx].commandID == rc_id){
@@ -464,7 +496,7 @@
 			});
 		};
 		var removeFileTypeCallback = function(obj, e){
-            var ft_id = $(obj).attr("data-filetypeid");
+			var ft_id = $(obj).attr("data-filetypeid");
 			var saveData = JSON.parse(JSON.stringify(ajaxCache.fileTypeSettings.data));
 			for(var idx in saveData) {
 				if(saveData[idx].fileTypeID == ft_id){
@@ -493,6 +525,7 @@
 			tableCell.text(value);
 			return tableCell;
 		}, removeCommandCallback);
+		
 		var fileTypeTable = jsonObjectToTable(converterSettings.fileTypes, ajaxCache.fileTypeSettings.schema, "filetypes", function(tableCell, key, value) {
 			var thisID = "fc_" + key;
 			switch(key)
@@ -513,6 +546,7 @@
 			}
 			return tableCell;
 		}, removeFileTypeCallback);
+		
 		var converterTable = jsonObjectToTable(converterSettings.converters, ajaxCache.fileConverterSettings.schema, "converters", function(tableCell, key, value) {
 			var thisID = "fc_" + key;
 			switch(key)
@@ -543,15 +577,11 @@
 				icons: {primary: "ui-icon-circle-plus"},
 				text: true
 			}).click(function(e){
-				$(newConverterButton).hide();
+				
 				var contentToInsert = $("<div class='skeletonRow converters'></div>");
-				//this is essentially just 3 option->selects
-				//FromFileType
 				var fromFileType = $("<select name='fromFileType' id='converters_fromFileType'></select>");
-				
-				//ToFileType
 				var toFileType = $("<select name='toFileType' id='converters_toFileType'></select>");
-				
+
 				//populate options on To/From
 				for (var fileType in converterSettings.fileTypes)
 				{
@@ -569,47 +599,37 @@
 							.val(fileTypeID)
 					);
 				}
-				
+
 				var commandObject = getCommandsAsSelectBox();
 				commandObject.attr('id', "converters_commandID");
 				commandObject.attr('name', "commandID");
-				
-				contentToInsert.append("<span>FromFileType</span>", fromFileType);
-				contentToInsert.append("<span>ToFileType</span>", toFileType);
-				contentToInsert.append("<span>Command</span>", commandObject);
-				
-				var addConverterButton = $("<a href='#'>Add!</a>")
-					.button({
-						icons: {primary: "ui-icon-circle-check"},
-						text: false
-					}).click(function(){
-						var saveData = JSON.parse(JSON.stringify(ajaxCache.fileConverterSettings.data));
-						saveData[saveData.length] = {
-							"fromFileTypeID": $("#converters_fromFileType").find(":selected").val(),
-							"toFileTypeID": $("#converters_toFileType").find(":selected").val(),
-							"commandID": $("#converters_commandID").find(":selected").val()
-						};
 
-						$(addConverterButton).button("disable");
-						$.ajax({
-							url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileConverterSettings&apikey=" + apikey + "&apiver=" + apiversion,
-							type: "POST",
-							data: {
-								settings:	JSON.stringify(saveData)
-							},
-							success: function(data, textStatus,jqXHR){
-								$(newConverterButton).show();
-								$("div.skeletonRow.converters").remove();
-							},
-							error: function(jqXHR, textStatus, errorThrown){
-								alert("An error occurred while saving the user settings");
-								console.error(jqXHR, textStatus, errorThrown);
-							}
-						});
+				contentToInsert.append($("<div></div>").append("<span>FromFileType</span>", fromFileType));
+				contentToInsert.append($("<div></div>").append("<span>ToFileType</span>", toFileType));
+				contentToInsert.append($("<div></div>").append("<span>Command</span>", commandObject));
+
+				newFCObjectLightbox(contentToInsert, "Add File Converter", newConverterButton, function(){
+					var saveData = JSON.parse(JSON.stringify(ajaxCache.fileConverterSettings.data));
+					saveData[saveData.length] = {
+						"fromFileTypeID": $("#converters_fromFileType").find(":selected").val(),
+						"toFileTypeID": $("#converters_toFileType").find(":selected").val(),
+						"commandID": $("#converters_commandID").find(":selected").val()
+					};
+					$.ajax({
+						url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileConverterSettings&apikey=" + apikey + "&apiver=" + apiversion,
+						type: "POST",
+						data: {
+							settings:	JSON.stringify(saveData)
+						},
+						success: function(data, textStatus,jqXHR){
+							$("div.skeletonRow.converters").remove();
+						},
+						error: function(jqXHR, textStatus, errorThrown){
+							alert("An error occurred while saving the user settings");
+							console.error(jqXHR, textStatus, errorThrown);
+						}
 					});
-				contentToInsert.append(addConverterButton);
-				
-				$("table.configTable.converters").after(contentToInsert);
+				});
 			});
 			
 		var newCommandButton = $("<a href='#'>New</a>")
@@ -617,42 +637,33 @@
 				icons: {primary: "ui-icon-circle-plus"},
 				text: true
 			}).click(function(e){
-				$(newCommandButton).hide();
 				var contentToInsert = $("<div class='skeletonRow commands'></div>");
 				
 				contentToInsert.append("<span>Description</span>", $("<input type='text' id='commands_displayName' />"));
 				contentToInsert.append("<span>Command</span>", $("<input type='text' id='commands_command' />"));
-				
-				var addCommandButton = $("<a href='#'>Add!</a>")
-					.button({
-						icons: {primary: "ui-icon-circle-check"},
-						text: false
-					}).click(function(){
-						var saveData = JSON.parse(JSON.stringify(ajaxCache.commandSettings.data));
-						saveData[saveData.length] = {
-							"command": $("#commands_command").val(),
-							"displayName": $("#commands_displayName").val(),
-						};
 
-						$(addCommandButton).button("disable");
-						$.ajax({
-							url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveCommandSettings&apikey=" + apikey + "&apiver=" + apiversion,
-							type: "POST",
-							data: {
-								settings:	JSON.stringify(saveData)
-							},
-							success: function(data, textStatus,jqXHR){
-								$(newConverterButton).show();
-								$("div.skeletonRow.converters").remove();
-							},
-							error: function(jqXHR, textStatus, errorThrown){
-								alert("An error occurred while saving the user settings");
-								console.error(jqXHR, textStatus, errorThrown);
-							}
-						});
+				newFCObjectLightbox(contentToInsert, "Add Command", newCommandButton, function(){
+					var saveData = JSON.parse(JSON.stringify(ajaxCache.commandSettings.data));
+					saveData[saveData.length] = {
+						"command": $("#commands_command").val(),
+						"displayName": $("#commands_displayName").val()
+					};
+
+					$.ajax({
+						url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveCommandSettings&apikey=" + apikey + "&apiver=" + apiversion,
+						type: "POST",
+						data: {
+							settings:	JSON.stringify(saveData)
+						},
+						success: function(data, textStatus,jqXHR){
+							$("div.skeletonRow.commands").remove();
+						},
+						error: function(jqXHR, textStatus, errorThrown){
+							alert("An error occurred while saving the user settings");
+							console.error(jqXHR, textStatus, errorThrown);
+						}
 					});
-				contentToInsert.append(addCommandButton);
-				$("table.configTable.commands").after(contentToInsert);
+				});
 			});
 
 		var newFileTypeButton = $("<a href='#'>New</a>")
@@ -660,58 +671,47 @@
 				icons: {primary: "ui-icon-circle-plus"},
 				text: true
 			}).click(function(e){
-				$(newFileTypeButton).hide();
 				var contentToInsert = $("<div class='skeletonRow filetypes'></div>");
 				
-				contentToInsert.append("<span>Extension</span>", $("<input type='text' id='filetypes_extension' />"));
-				contentToInsert.append("<span>MIME Type</span>", $("<input type='text' id='filetypes_mimetype' />"));
-				contentToInsert.append("<span>Media Type</span>", $("<input type='text' id='filetypes_mediatype' />"));
+				contentToInsert.append($("<div></div>").append("<span>Extension</span>", $("<input type='text' id='filetypes_extension' />")));
+				contentToInsert.append($("<div></div>").append("<span>MIME Type</span>", $("<input type='text' id='filetypes_mimetype' />")));
+				contentToInsert.append($("<div></div>").append("<span>Media Type</span>", $("<input type='text' id='filetypes_mediatype' />")));
 				
 				var bitrateCmdObject = getCommandsAsSelectBox(true);
 				bitrateCmdObject.attr('id', "fileTypes_bitrateCmdID");
 				bitrateCmdObject.attr('name', "bitrateCmdID");
-				//bitrateCmdObject.append("<option value=''>None</option>");
-				contentToInsert.append("<span>Bitrate Command</span>", bitrateCmdObject);
+				contentToInsert.append($("<div></div>").append("<span>Bitrate Command</span>", bitrateCmdObject));
 				
 				var durationCmdObject = getCommandsAsSelectBox(true);
 				durationCmdObject.attr('id', "fileTypes_durationCmdID");
 				durationCmdObject.attr('name', "durationCmdID");
-				//durationCmdObject.append("<option value=''>None</option>");
-				contentToInsert.append("<span>Duration Command</span>", durationCmdObject);
+				contentToInsert.append($("<div></div>").append("<span>Duration Command</span>", durationCmdObject));
 				
-				var addFileTypeButton = $("<a href='#'>Add!</a>")
-					.button({
-						icons: {primary: "ui-icon-circle-check"},
-						text: false
-					}).click(function(){
-						var saveData = JSON.parse(JSON.stringify(ajaxCache.fileTypeSettings.data));
-						saveData[saveData.length] = {
-							"extension": $("#filetypes_extension").val(),
-							"mimeType": $("#filetypes_mimetype").val(),
-							"mediaType": $("#filetypes_mediatype").val(),
-							"bitrateCmdID": $("#fileTypes_bitrateCmdID").find(":selected").val(),
-							"durationCmdID": $("#fileTypes_durationCmdID").find(":selected").val()
-						};
+				newFCObjectLightbox(contentToInsert, "Add File Type", newFileTypeButton, function(){
+					var saveData = JSON.parse(JSON.stringify(ajaxCache.fileTypeSettings.data));
+					saveData[saveData.length] = {
+						"extension": $("#filetypes_extension").val(),
+						"mimeType": $("#filetypes_mimetype").val(),
+						"mediaType": $("#filetypes_mediatype").val(),
+						"bitrateCmdID": $("#fileTypes_bitrateCmdID").find(":selected").val(),
+						"durationCmdID": $("#fileTypes_durationCmdID").find(":selected").val()
+					};
 
-						$(addFileTypeButton).button("disable");
-						$.ajax({
-							url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileTypeSettings&apikey=" + apikey + "&apiver=" + apiversion,
-							type: "POST",
-							data: {
-								settings:	JSON.stringify(saveData)
-							},
-							success: function(data, textStatus,jqXHR){
-								$(newConverterButton).show();
-								$("div.skeletonRow.converters").remove();
-							},
-							error: function(jqXHR, textStatus, errorThrown){
-								alert("An error occurred while saving the user settings");
-								console.error(jqXHR, textStatus, errorThrown);
-							}
-						});
+					$.ajax({
+						url: g_Toboggan_basePath + "/backend/rest.php" + "?action=saveFileTypeSettings&apikey=" + apikey + "&apiver=" + apiversion,
+						type: "POST",
+						data: {
+							settings:	JSON.stringify(saveData)
+						},
+						success: function(data, textStatus,jqXHR){
+							$("div.skeletonRow.filetypes").remove();
+						},
+						error: function(jqXHR, textStatus, errorThrown){
+							alert("An error occurred while saving the user settings");
+							console.error(jqXHR, textStatus, errorThrown);
+						}
 					});
-				contentToInsert.append(addFileTypeButton);
-				$("table.configTable.filetypes").after(contentToInsert);
+				});
 			});
 		
 		content.append($("<h2>File Converters</h2>"));
