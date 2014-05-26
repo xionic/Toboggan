@@ -600,9 +600,9 @@
 				commandObject.attr('id', "converters_commandID");
 				commandObject.attr('name', "commandID");
 
-				contentToInsert.append($("<div></div>").append("<span>FromFileType</span>", fromFileType));
-				contentToInsert.append($("<div></div>").append("<span>ToFileType</span>", toFileType));
-				contentToInsert.append($("<div></div>").append("<span>Command</span>", commandObject));
+				contentToInsert.append($("<div></div>").append("<label>FromFileType</label>", fromFileType));
+				contentToInsert.append($("<div></div>").append("<label>ToFileType</label>", toFileType));
+				contentToInsert.append($("<div></div>").append("<label>Command</label>", commandObject));
 
 				newFCObjectLightbox(contentToInsert, "Add File Converter", newConverterButton, function(){
 					var saveData = JSON.parse(JSON.stringify(ajaxCache.fileConverterSettings.data));
@@ -635,8 +635,8 @@
 			}).click(function(e){
 				var contentToInsert = $("<div class='skeletonRow commands'></div>");
 				
-				contentToInsert.append("<span>Description</span>", $("<input type='text' id='commands_displayName' />"));
-				contentToInsert.append("<span>Command</span>", $("<input type='text' id='commands_command' />"));
+				contentToInsert.append($("<div></div>").append("<label>Description</label>", $("<input type='text' id='commands_displayName' />")));
+				contentToInsert.append($("<div></div>").append("<label>Command</label>", $("<input type='text' id='commands_command' />")));
 
 				newFCObjectLightbox(contentToInsert, "Add Command", newCommandButton, function(){
 					var saveData = JSON.parse(JSON.stringify(ajaxCache.commandSettings.data));
@@ -669,19 +669,19 @@
 			}).click(function(e){
 				var contentToInsert = $("<div class='skeletonRow filetypes'></div>");
 				
-				contentToInsert.append($("<div></div>").append("<span>Extension</span>", $("<input type='text' id='filetypes_extension' />")));
-				contentToInsert.append($("<div></div>").append("<span>MIME Type</span>", $("<input type='text' id='filetypes_mimetype' />")));
-				contentToInsert.append($("<div></div>").append("<span>Media Type</span>", $("<input type='text' id='filetypes_mediatype' />")));
+				contentToInsert.append($("<div></div>").append("<label>Extension</label>", $("<input type='text' id='filetypes_extension' />")));
+				contentToInsert.append($("<div></div>").append("<label>MIME Type</label>", $("<input type='text' id='filetypes_mimetype' />")));
+				contentToInsert.append($("<div></div>").append("<label>Media Type</label>", $("<input type='text' id='filetypes_mediatype' />")));
 				
 				var bitrateCmdObject = getCommandsAsSelectBox(true);
 				bitrateCmdObject.attr('id', "fileTypes_bitrateCmdID");
 				bitrateCmdObject.attr('name', "bitrateCmdID");
-				contentToInsert.append($("<div></div>").append("<span>Bitrate Command</span>", bitrateCmdObject));
+				contentToInsert.append($("<div></div>").append("<label>Bitrate Command</label>", bitrateCmdObject));
 				
 				var durationCmdObject = getCommandsAsSelectBox(true);
 				durationCmdObject.attr('id', "fileTypes_durationCmdID");
 				durationCmdObject.attr('name', "durationCmdID");
-				contentToInsert.append($("<div></div>").append("<span>Duration Command</span>", durationCmdObject));
+				contentToInsert.append($("<div></div>").append("<label>Duration Command</label>", durationCmdObject));
 				
 				newFCObjectLightbox(contentToInsert, "Add File Type", newFileTypeButton, function(){
 					var saveData = JSON.parse(JSON.stringify(ajaxCache.fileTypeSettings.data));
