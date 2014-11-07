@@ -80,7 +80,7 @@ function outputStream($streamerID, $file, $skipToTime = 0){
 				$bitrateOutput = exec($bitrateCommand);
 				appLog("Output from bitrate command: ". $bitrateOutput, appLog_DEBUG);
 				$bitrate = (int) $bitrateOutput;
-				appLog("Parsed bitrate number read from bitrate command output is " . ($bitrate==0? "invalid - no bitrate limit will be applied":$bitrate."kb/s"), appLog_DEBUG);
+				appLog("Parsed bitrate number read from bitrate command output is :".$bitrate, appLog_DEBUG);
 				if($bitrate == 0)
 					appLog("Parsed bitrate number was 0 - no bitrate limit will be applied", appLog_DEBUG);				
 			
