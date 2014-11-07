@@ -16,9 +16,10 @@
 }
 
 //labels for the config dialog
-#configDialog p label
+#configDialog p label, .skeletonRow label
 {
 	width: 10em;
+	display: inline-block;
 }
 
 //"fix" for the options being 'kin wankly arranged
