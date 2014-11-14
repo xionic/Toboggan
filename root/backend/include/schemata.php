@@ -86,6 +86,11 @@ $schema["getAddUserSchema"] = array(
 		"type"=> "text",
 		"readonly" => false
 	),
+	"password" => array(
+		"displayName"=> "Password",
+		"type"=>"password",
+		"readonly"=> false
+	),
 	"email" => array(
 		"displayName"=> "Email Address",
 		"type"=> "text",
