@@ -16,6 +16,9 @@ $config["logLevel"] = appLog_DEBUG;
 //cache permissions per session
 $config["cache_permissions"] = true; // this option might be removed in future
 
+//Can we use basic auth - this will be used instead of X-US-Auth header if enabled
+$config["enable_basic_auth"] = false;
+
 /**********************************
 *DO NOT EDIT BELOW HERE
 ***********************************/

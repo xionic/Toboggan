@@ -1,27 +1,25 @@
 <?php
 /*
 	X-US-Authorization: Method Base64(username)."|".sha1PasswordHash
-	
 */
-
 require_once("include/functions.php");
-
 class userLogin {
-
 	/**
 	* checks if a user is logged in and returns the userid
 	*/
 	public static function checkLoggedIn()
 	{
+		if(getConfig("enable_basic_auth")){
+			return userLogin::checkBasicAuth();
+		}
 		//try getting auth from session
-		if(isset($_SESSION["userid"])){
+		elseif(isset($_SESSION["userid"])){
 			return($_SESSION["userid"]);
 		}
 		//if no session then look at HTTP header auth
 		else{
 			return userLogin::checkHeaderAuth();
 		}
-		
 		//user is not authenticated
 		return false;
 	}
@@ -32,14 +30,12 @@ class userLogin {
 	{
 		return userLogin::checkLoggedIn();
 	}
-	
 	public static function getCurrentUsername()
 	{
 		$userid =  userLogin::checkLoggedIn();
 		$userinfo = getUserInfoFromID($userid);
 		return $userinfo["username"];
 	}
-	
 	/**
 	* check sent login credentials
 	*/
@@ -49,13 +45,11 @@ class userLogin {
 		userLogin::logout();
 		$_COOKIE = array();
 		start_session();
-		
 		//try POST VAR auth
 		if(isset($_POST["username"]) && isset($_POST["password"]))
 		{
 			$sentUsername = $_POST["username"];
 			$sentPassword = $_POST["password"];
-			
 			$userid = userLogin::checkUserCredsValid($sentUsername, $sentPassword);
 			if($userid)
 			{
@@ -65,13 +59,11 @@ class userLogin {
 			return true;
 		}
 		//if not session and no POST vars try HTTP header auth
-		else{
+		/*else{
 			return userLogin::checkHeaderAuth();			
-		}
-		
+		}*/
 		//No auth sent or no existing sessions 
 		return false;
-		
 	}
 	/**
 	* check if there is auth data in headers and if it is valid
@@ -85,19 +77,34 @@ class userLogin {
 			return false;
 		}
 		list($method, $authData) = explode(" ", $headers['X-US-Authorization']);
-		
 		switch($method)
 		{
 			case "US-Auth1":
 				list($sentUsername, $sentPassHash) = explode("|",$authData);
 				$sentUsername = base64_decode($sentUsername);					
 				appLog("Authing with credentials from HTTP header. username: $sentUsername", appLog_DEBUG);
-
 				return userLogin::checkUserCredsValid($sentUsername, $sentPassHash);
 				break;
 		}
 	}
-	
+	/**
+	 * check standard http auth headers
+	 */
+	public static function checkBasicAuth()
+	{
+		if (!isset($_SERVER['PHP_AUTH_USER']) || !isset($_SERVER['PHP_AUTH_PW'])) {
+			header('WWW-Authenticate: Basic realm="My Realm"');
+			header('HTTP/1.0 401 Unauthorized');
+			return false;
+		} else {
+			$sentUsername = $_SERVER['PHP_AUTH_USER'];
+			$sendPass = $_SERVER['PHP_AUTH_PW'];
+
+			return userLogin::checkUserCredsValid($sentUsername, $sentPass);
+		}
+	}
+
+
 	/*
 	* check that user credentials are valid and that the user is enabled etc, and return userid on success, false on failure
 	* password should be as received from client, i.e. not rehashed yet
@@ -114,7 +121,6 @@ class userLogin {
 		reportError("Authentication failed", 401, "text/plain");
 		return false;
 	}
-	
 	/**
 	* log a user out if they have a session
 	*/
@@ -122,7 +128,6 @@ class userLogin {
 	{
 		// Unset all of the session variables.
 		$_SESSION = array();
-		
 		// If it's desired to kill the session, also delete the session cookie.
 		// Note: This will destroy the session, and not just the session data!
 		if(ini_get("session.use_cookies"))
@@ -133,11 +138,9 @@ class userLogin {
 				$params["secure"], $params["httponly"]
 			);
 		}
-		
 		// Finally, destroy the session.
 		session_destroy();
 	}
-	
 	/**
 	* returns a hashed, base64 encoded value of the password with the salt
 	*/
