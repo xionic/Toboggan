@@ -5,20 +5,30 @@
 require_once("include/functions.php");
 class userLogin {
 	/**
-	* checks if a user is logged in and returns the userid
+	* checks if a user is logged in and returns the userid. Optionally, basic auth can be tried if it is also enabled in the config
 	*/
-	public static function checkLoggedIn()
+	public static function checkLoggedIn($allowBA = false)
 	{
-		if(getConfig("enable_basic_auth")){
-			return userLogin::checkBasicAuth();
-		}
 		//try getting auth from session
-		elseif(isset($_SESSION["userid"])){
+		if(isset($_SESSION["userid"])){
 			return($_SESSION["userid"]);
 		}
-		//if no session then look at HTTP header auth
-		else{
-			return userLogin::checkHeaderAuth();
+		else { // no session in progress - try header auth
+			$headerAuth = false;
+			$headerAuth = userLogin::checkHeaderAuth();
+
+			if($headerAuth){
+				//header auth was fine
+				return $headerAuth;
+			}
+			else {
+				//Header auth failed - lets try
+				if(getConfig("enable_basic_auth") && $allowBA){
+					//standard HTTP basic auth
+					appLog("Using basic auth", appLog_DEBUG);
+					return userLogin::checkBasicAuth();
+				}
+			}
 		}
 		//user is not authenticated
 		return false;
@@ -98,7 +108,9 @@ class userLogin {
 			return false;
 		} else {
 			$sentUsername = $_SERVER['PHP_AUTH_USER'];
-			$sendPass = $_SERVER['PHP_AUTH_PW'];
+			$sentPass = $_SERVER['PHP_AUTH_PW'];
+			//we expect the password to be sha256'd and base64'd
+			$sentPass = base64_encode(hash('sha256',$sentPass,true));
 
 			return userLogin::checkUserCredsValid($sentUsername, $sentPass);
 		}
@@ -118,7 +130,7 @@ class userLogin {
 		{
 			return $userRows["idUser"];			
 		}
-		reportError("Authentication failed", 401, "text/plain");
+		//reportError("Authentication failed", 401, "text/plain");
 		return false;
 	}
 	/**

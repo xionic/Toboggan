@@ -50,7 +50,13 @@ try
 	//check user is auth'd
 	if(isset($_GET["action"]) && $_GET["action"] != "login") // special case
 	{
-		if(userLogin::checkLoggedIn() === false)
+		$allowBA = false;
+		if(getConfig('enable_basic_auth') && ($action == "getStream" || $action == "downloadFile")){
+			//allow basic auth for streams
+			appLog("Allowing basic auth to be used for: $action", appLog_DEBUG);
+			$allowBA = true;
+		}
+		if(userLogin::checkLoggedIn($allowBA) === false)
 		{
 			reportError("Authentication failed", 401, "text/plain");
 			exit();
