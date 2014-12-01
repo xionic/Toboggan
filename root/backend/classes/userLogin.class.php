@@ -119,13 +119,18 @@ class userLogin {
 
 	/*
 	* check that user credentials are valid and that the user is enabled etc, and return userid on success, false on failure
-	* password should be as received from client, i.e. not rehashed yet
+	* password should be as received from client, i.e. not rehashed or decoded yet
 	*/
 	public static function checkUserCredsValid($username, $password)
 	{
 		$userRows = getUserInfo($username);
 		$passhash = $userRows['password'];
+appLog("received pass: $password");
+		//passwords come in base64 encoded, strip encoding so we can rehash, then re-encode for storage in db
+		$password = base64_decode($password);
+appLog("decoded pass: $password");
 		$ourPassStr = userLogin::hashPassword($password);
+appLog("hashed pass: $ourPassStr");
 		if($ourPassStr===$passhash && $userRows["enabled"] == 1) // passwords match and user not disabled
 		{
 			return $userRows["idUser"];			

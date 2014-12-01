@@ -12,7 +12,7 @@ INSERT INTO Action(idAction, actionName, displayName) VALUES(5, "accessStreamer"
 
 --the first user "admin"
 INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth)
-        VALUES ("admin", "AzxyIMQP9MXAOvb2IRnA1lvRV/wTHWfP1W97eYCmXlY=", "admin@test.com", 1, 320, 1000, 1000);
+        VALUES ("admin", "W3TZVp9XLQ4eo3BtfSb1yLMZ97Hi+P0gyJzUbHVvH4c=", "admin@test.com", 1, 320, 1000, 1000);
 	        
 	--give "admin" user admin permissions
 INSERT INTO UserPermission(idUser, idAction) VALUES(1,3);
