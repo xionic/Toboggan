@@ -25,7 +25,7 @@ class userLogin {
 				//Header auth failed - lets try
 				if(getConfig("enable_basic_auth") && $allowBA){
 					//standard HTTP basic auth
-					appLog("Using basic auth", appLog_DEBUG);
+					appLog("Trying basic auth", appLog_DEBUG);
 					return userLogin::checkBasicAuth();
 				}
 			}
@@ -125,12 +125,11 @@ class userLogin {
 	{
 		$userRows = getUserInfo($username);
 		$passhash = $userRows['password'];
-appLog("received pass: $password");
+		
 		//passwords come in base64 encoded, strip encoding so we can rehash, then re-encode for storage in db
 		$password = base64_decode($password);
-appLog("decoded pass: $password");
 		$ourPassStr = userLogin::hashPassword($password);
-appLog("hashed pass: $ourPassStr");
+		
 		if($ourPassStr===$passhash && $userRows["enabled"] == 1) // passwords match and user not disabled
 		{
 			return $userRows["idUser"];			
