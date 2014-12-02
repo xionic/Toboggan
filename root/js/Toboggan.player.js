@@ -109,7 +109,7 @@
 			playingObject.removeClass("jPlaying");
 			
 			var nextObjectSpan = playingObject.parent().next("li").children("a.playNow");
-			if(!nextObjectSpan)
+			if(nextObjectSpan.length == 0)
 				return;
 			
 			play_jPlayerTrack(nextObjectSpan);
