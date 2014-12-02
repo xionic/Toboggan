@@ -49,6 +49,7 @@ function outputAddUserSchema_JSON()
 {
 	$settings = new SettingGroup();
 	$settings->setSchema(getSchema("getAddUserSchema"));
+	$settings->setData(getPermissionObjects());
 	$settingsObj = $settings->getSettingsObject();
 	restTools::sendResponse(json_encode($settingsObj),200,JSON_MIME_TYPE);	
 }
@@ -798,6 +799,59 @@ function getUserTrafficLimitStats($userid)
 	}
 	
 	return $returnVal;
+}
+
+function getPermissionObjects(){
+	$conn = getDBConnection();
+	$conn->beginTransaction();
+	
+	$permissions = array();
+	
+	//get general permission
+	$stmt = $conn->prepare("
+		SELECT 
+			Action.idAction as id,
+			displayName as displayName
+		FROM 
+			Action
+		WHERE
+			Action.idAction NOT IN (:accessStreamerAction, :accessMediaSourceAction)
+	");		
+	
+	$stmt->bindValue(":accessStreamerAction", PERMISSION_ACCESSSTREAMER, PDO::PARAM_INT);
+	$stmt->bindValue(":accessMediaSourceAction", PERMISSION_ACCESSMEDIASOURCE, PDO::PARAM_INT);
+	$stmt->execute();
+	$permissions["general"] = $stmt->fetchAll(PDO::FETCH_ASSOC);	
+
+	//get mediaSources
+	$stmt = $conn->prepare("
+		SELECT 
+			idMediaSource as id,
+			displayName
+		FROM
+			mediaSource
+	");		
+	$stmt->execute();
+	$permissions["mediaSources"] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	
+	//get mediaSources
+	$stmt = $conn->prepare("
+		SELECT 
+			idFileConverter as id,
+			fromExt.extension || ' -> ' || toExt.extension as displayName
+		FROM
+			FileConverter
+			INNER JOIN FileType fromExt ON (fromExt.idfileType = FileConverter.fromidFileType)
+			INNER JOIN FileType toExt ON (toExt.idfileType = FileConverter.toidFileType)
+	");		
+	$stmt->execute();
+	$permissions["fileConverters"] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+	
+
+	$conn->commit();
+	closeDBConnection($conn);
+	
+	return array("permissions" => $permissions);
 }
 
 ?>
