@@ -105,8 +105,8 @@ if(isset($_POST["Submit"])){
 		//perms for first user
 		$sql = "INSERT INTO UserPermission(idUser, idAction) VALUES(1,".PERMISSION_ADMINISTRATOR.");";
 		$conn->query($sql);
-	} catch(PDOException poe){
-		die ("DB Error: " . poe.printStackTrace());
+	} catch(PDOException $poe){
+		die ("DB Error: " . $poe.printStackTrace());
 	}
 		
 	//clean up
