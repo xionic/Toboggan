@@ -978,7 +978,7 @@
 			
 				if(data.length == 0){
 					//no media sources, can't really do anything
-					alert("No Media Sources! Has the server been set up?")
+					alert("No Media Sources! Has the server been set up? Do you have permission for any media sources")
 					return;
 				}
 				

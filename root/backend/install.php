@@ -2,8 +2,12 @@
 
 include_once("include/functions.php");
 
+//sanity checks
 if(file_exists(DBPATH)){
 		die("Toboggan looks like install already installed: Db file already exists: " . DBPATH);
+}
+if(!is_writable(dirname(DBPATH))){
+		die("DB directory not writable: " . DBPATH);
 }
 
 if(isset($_POST["Submit"])){
@@ -15,15 +19,7 @@ if(isset($_POST["Submit"])){
 	}
 	if(!isset($_POST["first_password"])){
 		die("password not sent");
-	}	
-	
-	if(file_exists(DBPATH)){
-		die("DB file already exists: " . DBPATH);
-	} 
-	
-	if(!is_writable(dirname(DBPATH))){
-		die("DB file not writable: " . DBPATH);
-	}
+	}		
 	
 	/* 
 	* Create config
@@ -127,7 +123,7 @@ if(isset($_POST["Submit"])){
 <body>
 	<form method="POST" action="">		
 		<div>
-			Setup First User:
+			Setup first admin user:
 		</div>
 		<div>
 			<label for="uname">Username</label>
