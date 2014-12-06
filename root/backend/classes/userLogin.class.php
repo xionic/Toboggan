@@ -138,7 +138,7 @@ class userLogin {
 				appLog("Login attempt for disabled user: $username", appLog_INFO);	
 			}
 		}
-		//reportError("Authentication failed", 401, "text/plain");
+		appLog("Login attempt failed for user: $username", appLog_VERBOSE);
 		return false;
 	}
 	/**

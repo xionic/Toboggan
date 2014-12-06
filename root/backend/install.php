@@ -18,7 +18,11 @@ if(isset($_POST["Submit"])){
 	}	
 	
 	if(file_exists(DBPATH)){
-		die("Db file already exists");
+		die("DB file already exists: " . DBFILE);
+	} 
+	
+	if(!is_writable(DBPATH)){
+		die("DB file not writable: " . DBFILE);
 	}
 	
 	/* 
@@ -51,7 +55,7 @@ if(isset($_POST["Submit"])){
 			$val = "'".$val."'";
 		}
 		$configStr .= '//'. $com . "\n";
-		$configStr .= '$config["' . $name . '"] = ' . $val . ';' . "\n";
+		$configStr .= "\t" . '$config["' . $name . '"] = ' . $val . ';' . "\n";
 	}
 	$configStr .= '?>';
 	
@@ -73,36 +77,42 @@ if(isset($_POST["Submit"])){
 	}	
 
 	//run in the sql templates
-	$conn = new PDO(PDO_DSN);
-	$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);	
-	//enable foreign key enforcement - not enabled by default in sqlite and must be done per connection
-	$conn->exec("PRAGMA foreign_keys = ON");
-	
-	foreach($sqlFiles as $file){
-		$sql = file_get_contents($file);
-		$conn->exec($sql);
-	}
+	try {
+		$conn = new PDO(PDO_DSN);
+		$conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);	
+		//enable foreign key enforcement - not enabled by default in sqlite and must be done per connection
+		$conn->exec("PRAGMA foreign_keys = ON");
+		
+		foreach($sqlFiles as $file){
+			$sql = file_get_contents($file);
+			$conn->exec($sql);
+		}
 
-	//run in custom sql
-	$firstUsername = $_POST["first_username"];
-	$firstPassword = $_POST["first_password"];
-	//hash round 1 - client
-	$firstPassword = hash("sha256",$firstPassword, true);
-	//hash round 2 - server
-	$firstPassword = base64_encode(hash("sha256",$salt.$firstPassword, true));
-	//first user
-	$sql = "INSERT INTO User(username, password, enabled) VALUES(:username, :password, 1)";
-	$stmt = $conn->prepare($sql);
-	$stmt->bindValue(":username",$firstUsername,PDO::PARAM_STR);
-	$stmt->bindValue(":password",$firstPassword,PDO::PARAM_STR);
-	$stmt->execute();
-	
-	//perms for first user
-	$sql = "INSERT INTO UserPermission(idUser, idAction) VALUES(1,".PERMISSION_ADMINISTRATOR.");";
-	$conn->query($sql);
+		//run in custom sql
+		$firstUsername = $_POST["first_username"];
+		$firstPassword = $_POST["first_password"];
+		//hash round 1 - client
+		$firstPassword = hash("sha256",$firstPassword, true);
+		//hash round 2 - server
+		$firstPassword = base64_encode(hash("sha256",$salt.$firstPassword, true));
+		//first user
+		$sql = "INSERT INTO User(username, password, enabled) VALUES(:username, :password, 1)";
+		$stmt = $conn->prepare($sql);
+		$stmt->bindValue(":username",$firstUsername,PDO::PARAM_STR);
+		$stmt->bindValue(":password",$firstPassword,PDO::PARAM_STR);
+		$stmt->execute();
+		
+		//perms for first user
+		$sql = "INSERT INTO UserPermission(idUser, idAction) VALUES(1,".PERMISSION_ADMINISTRATOR.");";
+		$conn->query($sql);
+	} catch(PDOException poe){
+		die ("DB Error: " . poe.printStackTrace());
+	}
+		
 	//clean up
 	$conn = null;
 	echo "<p>DB created</p>";
+		
 } else {
 
 
