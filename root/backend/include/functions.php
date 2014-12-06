@@ -1,7 +1,10 @@
 <?php
 
 
-require_once("config.php");
+require_once("constants.php");
+
+require_once("config/app_config.php");
+require_once("config/config.php");
 require_once("schemata.php");
 
 require_once("classes/userLogin.class.php");

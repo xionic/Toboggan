@@ -201,7 +201,7 @@ function outputApplicationLog_JSON($lastNBytes)
 	fseek($fh, $startBytes);
 	
 	$results = array("logFileText" => fread($fh, $lastNBytes));
-	
+//appLog($results);
 	restTools::sendResponse(json_encode($results), 200, JSON_MIME_TYPE);
 	
 }

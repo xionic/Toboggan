@@ -122,17 +122,21 @@ class userLogin {
 	* password should be as received from client, i.e. not rehashed or decoded yet
 	*/
 	public static function checkUserCredsValid($username, $password)
-	{
+	{		
 		$userRows = getUserInfo($username);
 		$passhash = $userRows['password'];
 		
 		//passwords come in base64 encoded, strip encoding so we can rehash, then re-encode for storage in db
 		$password = base64_decode($password);
-		$ourPassStr = userLogin::hashPassword($password);
-		
-		if($ourPassStr===$passhash && $userRows["enabled"] == 1) // passwords match and user not disabled
+		$ourPassStr = userLogin::hashPassword($password);		
+		appLog("$ourPassStr $passhash");
+		if($ourPassStr === $passhash) // passwords match and user not disabled
 		{
-			return $userRows["idUser"];			
+			if($userRows["enabled"] == 1){
+				return $userRows["idUser"];					
+			} else {
+				appLog("Login attempt for disabled user: $username", appLog_INFO);	
+			}
 		}
 		//reportError("Authentication failed", 401, "text/plain");
 		return false;

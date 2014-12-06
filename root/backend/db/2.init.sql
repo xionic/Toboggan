@@ -9,10 +9,3 @@ INSERT INTO Action(idAction, actionName, displayName) VALUES(2, "downloadFile", 
 INSERT INTO Action(idAction, actionName, displayName) VALUES(3, "administrator", "Is Administrator");
 INSERT INTO Action(idAction, actionName, displayName) VALUES(4, "accessMediaSource", "Access a Media Source");
 INSERT INTO Action(idAction, actionName, displayName) VALUES(5, "accessStreamer", "Access a Streamer");
-
---the first user "admin"
-INSERT INTO User(username, password, email, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth)
-        VALUES ("admin", "W3TZVp9XLQ4eo3BtfSb1yLMZ97Hi+P0gyJzUbHVvH4c=", "admin@test.com", 1, 320, 1000, 1000);
-	        
-	--give "admin" user admin permissions
-INSERT INTO UserPermission(idUser, idAction) VALUES(1,3);
