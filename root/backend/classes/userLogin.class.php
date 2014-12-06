@@ -129,7 +129,7 @@ class userLogin {
 		//passwords come in base64 encoded, strip encoding so we can rehash, then re-encode for storage in db
 		$password = base64_decode($password);
 		$ourPassStr = userLogin::hashPassword($password);		
-		appLog("$ourPassStr $passhash");
+
 		if($ourPassStr === $passhash) // passwords match and user not disabled
 		{
 			if($userRows["enabled"] == 1){

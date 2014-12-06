@@ -54,7 +54,7 @@ if(isset($_POST["Submit"])){
 			//assume string
 			$val = "'".$val."'";
 		}
-		$configStr .= '//'. $com . "\n";
+		$configStr .= "\t" . '//'. $com . "\n";
 		$configStr .= "\t" . '$config["' . $name . '"] = ' . $val . ';' . "\n";
 	}
 	$configStr .= '?>';
@@ -112,6 +112,9 @@ if(isset($_POST["Submit"])){
 	//clean up
 	$conn = null;
 	echo "<p>DB created</p>";
+	
+	
+	echo "<p>Installation successful</p>";
 		
 } else {
 
