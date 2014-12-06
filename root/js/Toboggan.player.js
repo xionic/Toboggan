@@ -974,7 +974,13 @@
 				if(jqxhr.status==401)
 					doLogin();
 			},
-			success: function(data, status, jqxhr) {	
+			success: function(data, status, jqxhr) {
+			
+				if(data.length == 0){
+					//no media sources, can't really do anything
+					alert("No Media Sources! Has the server been set up?")
+					return;
+				}
 				
 				$("#mediaSourceSelector, #search_mediaSourceSelector").empty();
 				$("#search_mediaSourceSelector").append("<option value='all'>All</option>");
