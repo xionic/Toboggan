@@ -18,11 +18,11 @@ if(isset($_POST["Submit"])){
 	}	
 	
 	if(file_exists(DBPATH)){
-		die("DB file already exists: " . DBFILE);
+		die("DB file already exists: " . DBPATH);
 	} 
 	
-	if(!is_writable(DBPATH)){
-		die("DB file not writable: " . DBFILE);
+	if(!is_writable(dirname(DBPATH))){
+		die("DB file not writable: " . DBPATH);
 	}
 	
 	/* 
