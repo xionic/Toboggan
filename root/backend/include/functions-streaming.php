@@ -2,7 +2,7 @@
 require_once("functions.php");
 
 function outputStream($streamerID, $file, $skipToTime = 0){
-
+	
 	//set errorhandler so errors are captures and not output
 	set_error_handler("appErrorHandler");
 	
@@ -242,11 +242,11 @@ function passthroughStreamRange($file, $startByte, $endByte, $fileSize){
 
 	//limit bandwidth
 	$maxBandwidth = getCurrentMaxBandwidth();
-	if(!(is_numeric($maxBandwidth) && $maxBandwidth >= 0))
+	if(!is_numeric($maxBandwidth) || $maxBandwidth <= 0)
 	{
-		reportError("Could not get maxBandwidth or it is 0");
-		exit();
-	}
+		appLog("Could not get maxBandwidth or it is 0 - assuming no limit. Setting to obscenely high value", appLog_VERBOSE);
+		$maxBandwidth = 9999999999;
+	}	
 	appLog("Limiting bandwidth to ". $maxBandwidth . "KB/s", appLog_DEBUG);
 	
 	//calc bytes to read each second
@@ -348,10 +348,10 @@ function transcodeStream($streamerObj, $file, $skipToTime){
 	
 	//bandwidth limit
 	$maxBandwidth = getCurrentMaxBandwidth();
-	if(!(is_numeric($maxBandwidth) && $maxBandwidth >= 0))
+	if(!is_numeric($maxBandwidth) || $maxBandwidth <= 0)
 	{
-		reportError("Could not get maxBandwidth or it is 0");
-		exit();
+		appLog("Could not get maxBandwidth or it is 0 - assuming no limit. Setting to obscenely high value", appLog_VERBOSE);
+		$maxBandwidth = 9999999999;
 	}
 	appLog("Limiting bandwidth to ". $maxBandwidth . "KB/s", appLog_DEBUG);
 	
