@@ -7,8 +7,9 @@ class userLogin {
 	/**
 	* checks if a user is logged in and returns the userid. Optionally, basic auth can be tried if it is also enabled in the config
 	*/
-	public static function checkLoggedIn($allowBA = false)
+	public static function checkLoggedIn()
 	{
+		global $action;
 		//try getting auth from session
 		if(isset($_SESSION["userid"])){
 			return($_SESSION["userid"]);
@@ -16,18 +17,14 @@ class userLogin {
 		else { // no session in progress - try header auth
 			$headerAuth = false;
 			$headerAuth = userLogin::checkHeaderAuth();
-
 			if($headerAuth){
 				//header auth was fine
 				return $headerAuth;
 			}
-			else {
-				//Header auth failed - lets try
-				if(getConfig("enable_basic_auth") && $allowBA){
-					//standard HTTP basic auth
-					appLog("Trying basic auth", appLog_DEBUG);
-					return userLogin::checkBasicAuth();
-				}
+			else if(getConfig("enable_basic_auth") && in_array($action, getConfig("basic_auth_actions"))){
+				//standard HTTP basic auth
+				appLog("Trying basic auth", appLog_DEBUG);
+				return userLogin::checkBasicAuth();
 			}
 		}
 		//user is not authenticated
@@ -83,7 +80,7 @@ class userLogin {
 		$headers = apache_request_headers();
 		if(!isset($headers['X-US-Authorization']))
 		{
-			reportError("Authentication Required", 401, "text/plain");
+			//reportError("Authentication Required", 401, "text/plain");
 			return false;
 		}
 		list($method, $authData) = explode(" ", $headers['X-US-Authorization']);
@@ -133,7 +130,7 @@ class userLogin {
 		if($ourPassStr === $passhash) // passwords match and user not disabled
 		{
 			if($userRows["enabled"] == 1){
-				return $userRows["idUser"];					
+				return $userRows["idUser"];		
 			} else {
 				appLog("Login attempt for disabled user: $username", appLog_INFO);	
 			}

@@ -20,4 +20,10 @@ $config["singleReadMaxBytes"] = 1048576; // 1MB
 //cache permissions per session
 $config["cache_permissions"] = true; // this option might be removed in future
 
+//actions for which basic auth is permitted to be used - setting this to the wrong setting will prevent session auth from working
+$config["basic_auth_actions"] = array(
+	"getStream",
+	"downloadFile",
+);
+
 ?>
