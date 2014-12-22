@@ -6,9 +6,9 @@
 	$config["testAPIVer"] = "0.6";
 	$config["testUser"] = "autotest";
 	$config["testPass"] =  base64_encode(hash("sha256","password", true));
-	$config["basicAuth"] = isset($_GET["bauser"]);
-	$config["basicAuthUser"] = $_GET["bauser"];
-	$config["basicAuthPass"] = $_GET["bapass"];
+	$config["basicAuth"] = @isset($_GET["bauser"]);
+	$config["basicAuthUser"] = @$_GET["bauser"];
+	$config["basicAuthPass"] = @$_GET["bapass"];
 	define("DBPATH", "../db/main.db");
 	define("PDO_DSN", "sqlite:".DBPATH);
 	
