@@ -344,8 +344,15 @@
 				data: { },
 				complete: function(jqxhr, status) {},
 				error: function(jqxhr, status, errorThrown) {
-					alert("AJAX ERROR - check the console!");
-					console.error(jqxhr, status, errorThrown);
+					//perhaps the session has expired for whatever reason
+					if(jqxhr.status == 401){
+						alert("Session has expired!");
+						doLogin();
+					} 
+					else{
+						alert("AJAX ERROR - check the console!");
+						console.error(jqxhr, status, errorThrown);
+					}
 				},
 				
 				success: function(data, status, jqxhr) {
@@ -1062,6 +1069,10 @@
 	*/
 	function doLogin()
 	{
+		//make sure the form is clear
+		$("#username").val("");
+		$("#passwordInput").val("");
+
 		$("#loginForm").keypress(function(e) {
 			if(e.which === 13)
 			{
