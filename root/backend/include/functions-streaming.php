@@ -206,7 +206,7 @@ function passthroughStream($file){
 		$rangeContentLength = $end - $start +1;
 
 		//We're OK to proceed
-		header("Content-Range: bytes " . $reqByteStart . "-" . $reqByteEnd . "/" . $fileSize);
+		header("Content-Range: bytes " . $start . "-" . $end . "/" . $fileSize);
 		
 		//This needs to be the size of the request - i.e. think about ranges
 		appLog("Setting Content-Length to " . $rangeContentLength , appLog_DEBUG);
