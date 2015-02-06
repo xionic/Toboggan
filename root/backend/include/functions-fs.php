@@ -23,6 +23,7 @@ function outputDirContents_JSON($dir, $mediaSourceID){
 	//check that the path is a dir
 	if(!is_dir($mediaSourcePath.$dir))
 	{
+		appLog("Requested directory does not exist: $mediaSourcePath.$dir", appLog_DEBUG);
 		reportError("Directory does not exist");
 	}
 

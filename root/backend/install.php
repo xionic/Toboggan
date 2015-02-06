@@ -1,10 +1,22 @@
-<?php
+<html>
+<head>
+	<style type="text/css">
+		.warn {
+			background:red;
+			color:yellow;
+		}
+	</style>
+</head>
+<body>
 
+<?php
 include_once("include/functions.php");
 
 //sanity checks
 if(file_exists(DBPATH)){
-		die("Toboggan looks like install already installed: Db file already exists: " . DBPATH);
+	echo "<p>It looks like ".APPNAME. " is already installed: Db file already exists: " . DBPATH . "</p>";
+	echo "<p class='warn'>If this is the case, you should delete install.php</p>";
+	die;
 }
 if(!is_writable(dirname(DBPATH))){
 		die("DB directory not writable: " . DBPATH);
@@ -28,7 +40,7 @@ if(isset($_POST["Submit"])){
 	*/
 	$configItems = array(
 		array("logFile", "/tmp/toboggan.log", "Log File"),
-		array("logLevel", appLog_INFO, "Log Level"),
+		array("logLevel", "appLog_VERBOSE", "Log Level"),
 		array("sessionName", "Toboggan", "Name for the PHP session"),
 		array("enable_basic_auth", false, "Enable basic auth for file streams/downloads (useful for using external players)"),		
 	);
@@ -92,7 +104,9 @@ if(isset($_POST["Submit"])){
 		//hash round 2 - server
 		$firstPassword = base64_encode(hash("sha256",$salt.$firstPassword, true));
 		//first user
-		$sql = "INSERT INTO User(username, password, enabled) VALUES(:username, :password, 1)";
+		$sql = "INSERT INTO 
+				User(username, password, enabled, maxAudioBitrate, maxVideoBitrate, maxBandwidth) 
+				VALUES(:username, :password, 1, 320, 1000, 10000)";
 		$stmt = $conn->prepare($sql);
 		$stmt->bindValue(":username",$firstUsername,PDO::PARAM_STR);
 		$stmt->bindValue(":password",$firstPassword,PDO::PARAM_STR);
@@ -102,7 +116,7 @@ if(isset($_POST["Submit"])){
 		$sql = "INSERT INTO UserPermission(idUser, idAction) VALUES(1,".PERMISSION_ADMINISTRATOR.");";
 		$conn->query($sql);
 	} catch(PDOException $poe){
-		die ("DB Error: " . $poe.printStackTrace());
+		die ("DB Error: " . $poe->getMessage());
 	}
 		
 	//clean up
@@ -111,16 +125,11 @@ if(isset($_POST["Submit"])){
 	
 	
 	echo "<p>Installation successful</p>";
+	echo "<p class='warn'>IMPORTANT: You should now delete install.php</p>";
 		
 } else {
-
-
 ?>
 
-<html>
-<head>
-</head>
-<body>
 	<form method="POST" action="">		
 		<div>
 			Setup first admin user:
