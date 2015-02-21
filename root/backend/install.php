@@ -40,7 +40,7 @@ if(isset($_POST["Submit"])){
 	*/
 	$configItems = array(
 		array("logFile", "/tmp/toboggan.log", "Log File"),
-		array("logLevel", "appLog_VERBOSE", "Log Level"),
+		array("logLevel", appLog_VERBOSE, "Log Level"),
 		array("sessionName", "Toboggan", "Name for the PHP session"),
 		array("enable_basic_auth", false, "Enable basic auth for file streams/downloads (useful for using external players)"),		
 	);
