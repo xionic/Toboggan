@@ -562,6 +562,9 @@ function changeUserPassword($userid, $password)
 		reportError("Password cannot be blank", 400);
 		exit();
 	}
+	//decode password before rehashing to prevent encoding differences causing problems
+	$password = base64_decode($password);
+
 	$conn = null;
 	$conn = getDBConnection();
 	$conn->beginTransaction();
